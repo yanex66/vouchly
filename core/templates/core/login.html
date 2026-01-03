@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4 fw-bold" style="color: var(--deep-blue);">Sign In</h3>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Username</label>
+                            <input type="text" name="username" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" name="password" class="form-control form-control-lg" required>
+                        </div>
+                        <button class="btn btn-primary w-100 btn-lg" type="submit">Login</button>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none fw-bold">Sign Up</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

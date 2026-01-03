@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Profile</h4>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ user.profile.image.url }}" class="rounded-circle mb-3 border border-3 border-primary" width="150" height="150" style="object-fit: cover;">
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3 text-start">
+                            <label class="form-label">Upload New Image</label>
+                            {{ form.as_p }}
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Update Profile</button>
+                    </form>
+                    
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary w-100 mt-2">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

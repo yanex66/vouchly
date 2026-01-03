@@ -1,0 +1,155 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" class="img-fluid rounded shadow" alt="{{ item.name }}">
+            {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center rounded shadow" style="height: 400px;">
+                <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                <span class="ms-2 text-muted">No Image Available</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'category_detail' item.category.slug %}">{{ item.category.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="fw-bold">{{ item.name }}</h1>
+            
+            <div class="mb-3">
+                <span class="fs-2 fw-bold text-primary">₦{{ item.price }}</span>
+                {% if item.discount_price %}
+                <span class="text-decoration-line-through text-muted ms-2 fs-5">₦{{ item.discount_price }}</span>
+                <span class="badge bg-danger ms-2">Deal</span>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <span class="text-warning fs-4">
+                    {% if avg_rating %}
+                        {{ avg_rating|floatformat:1 }} ★
+                    {% else %}
+                        No ratings yet
+                    {% endif %}
+                </span>
+                <span class="text-muted">({{ reviews.count }} reviews)</span>
+            </div>
+
+            <p class="lead">{{ item.description }}</p>
+
+            {% if item.specifications %}
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Specifications</h5>
+                    <ul class="list-unstyled mb-0">
+                        {% for key, value in item.specifications.items %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="card border-success mb-4">
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="bi bi-cash-coin"></i> Promote & Earn
+                </div>
+                <div class="card-body">
+                    <p class="card-text small text-muted mb-2">
+                        Share this link! If someone buys through it, you earn a <strong>commission</strong>.
+                    </p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="{{ referral_link }}" id="refLink" readonly>
+                        <button class="btn btn-outline-success" type="button" onclick="copyLink()">
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-grid gap-2 mb-4">
+                <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-warning btn-lg fw-bold shadow-sm text-dark">
+                    <i class="bi bi-cart-check-fill me-2"></i> Buy Now
+                </a>
+                <small class="text-muted text-center">Price checked: Today</small>
+
+                {% if user.is_authenticated %}
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
+                    Write a Review
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-secondary">Log in to Review & Earn</a>
+                {% endif %}
+            </div>
+
+            <div class="collapse mb-4" id="reviewForm">
+                <div class="card card-body shadow-sm">
+                    <h5 class="card-title fw-bold">Add Your Review</h5>
+                    <form method="POST" action="{% url 'add_review' item.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            {{ form.rating }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Review</label>
+                            {{ form.content }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h3 class="mb-4 fw-bold">User Reviews</h3>
+        {% for review in reviews %}
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="{{ review.author.profile.image.url }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        <div>
+                            <h6 class="mb-0 fw-bold">{{ review.author.username }}</h6>
+                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                    <span class="text-warning fw-bold">{{ review.rating }} ★</span>
+                </div>
+                <h5 class="mt-3 fw-bold">{{ review.title }}</h5>
+                <p class="card-text">{{ review.content }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center py-4 bg-light rounded">No reviews yet. Be the first to vouch for this product!</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function copyLink() {
+        var copyText = document.getElementById("refLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("Referral link copied to clipboard!");
+    }
+</script>
+{% endblock %}

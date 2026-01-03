@@ -1,0 +1,184 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ user.profile.image.url }}" class="rounded-circle mb-3 border border-3 border-success" width="100" height="100" style="object-fit: cover;">
+                    
+                    <h4>{{ user.username }}</h4>
+                    <p class="text-muted small">Member since {{ user.date_joined|date:"M Y" }}</p>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-success border-0 shadow-sm">
+                        <h6 class="mb-1 text-uppercase text-muted" style="font-size: 0.8rem;">Total Earnings</h6>
+                        <h2 class="fw-bold text-success mb-2">${{ user.profile.earnings|floatformat:2 }}</h2>
+                        
+                        <a href="{% url 'request_payout' %}" class="btn btn-sm btn-success w-100 fw-bold">
+                            <i class="bi bi-wallet2"></i> Request Payout
+                        </a>
+                    </div>
+
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            
+            <h3 class="text-success"><i class="bi bi-graph-up-arrow"></i> Affiliate Performance</h3>
+            <div class="card shadow-sm mb-5 border-success">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light text-success">
+                                <tr>
+                                    <th>Product Promoted</th>
+                                    <th class="text-center">Clicks</th>
+                                    <th class="text-center">Sales</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for referral in my_referrals %}
+                                <tr>
+                                    <td class="fw-bold">{{ referral.item.name }}</td>
+                                    
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border">{{ referral.clicks }}</span>
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        {% if referral.sales_count > 0 %}
+                                            <span class="badge bg-success rounded-pill px-3">{{ referral.sales_count }} Sold</span>
+                                        {% else %}
+                                            <span class="text-muted small">-</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a href="{% url 'item_detail' referral.item.slug %}" class="btn btn-sm btn-outline-secondary">
+                                            Get Link
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        You haven't promoted any products yet.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-primary"><i class="bi bi-clock-history"></i> Payout History</h3>
+            <div class="card shadow-sm mb-5 border-primary">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light text-primary">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>To Account</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payout in my_payouts %}
+                                <tr>
+                                    <td>{{ payout.created_at|date:"M d, Y" }}</td>
+                                    <td class="fw-bold">${{ payout.amount }}</td>
+                                    <td>
+                                        {% if payout.status == 'PENDING' %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif payout.status == 'PAID' %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                            {% if payout.rejection_reason %}
+                                                <div class="text-danger small mt-1" style="font-size: 0.75rem; line-height: 1.2;">
+                                                    <i class="bi bi-info-circle"></i> {{ payout.rejection_reason }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="small text-muted">
+                                        <strong>{{ payout.bank_name }}</strong><br>
+                                        {{ payout.account_number }}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        No payout requests yet.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h3>My Reviews ({{ user_reviews.count }})</h3>
+            <div class="card shadow-sm mt-3">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Rating</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in user_reviews %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'item_detail' review.item.slug %}" class="fw-bold text-decoration-none">
+                                            {{ review.item.name }}
+                                        </a>
+                                    </td>
+                                    <td><span class="badge bg-warning text-dark">{{ review.rating }}/5</span></td>
+                                    <td>{{ review.title }}</td>
+                                    <td class="text-muted small">{{ review.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'delete_review' review.id %}" onsubmit="return confirm('Are you sure you want to delete this review?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        You haven't written any reviews yet. 
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

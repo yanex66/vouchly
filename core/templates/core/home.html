@@ -1,0 +1,254 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<style>
+    .carousel-item .display-4 { animation: fadeInUp 1s ease-out; }
+    .carousel-item .lead { animation: fadeInUp 1.2s ease-out; }
+    .carousel-item .btn-group-hero { animation: fadeInUp 1.4s ease-out; }
+    .carousel-item img { animation: zoomIn 1.5s ease-out; }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes zoomIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .transform-hover:hover { transform: scale(1.05); transition: 0.3s; }
+    .cta-gradient-bg { background: linear-gradient(45deg, #002060 0%, #004080 100%) !important; position: relative; overflow: hidden; }
+    .hero-price { font-size: 1.8rem; font-weight: bold; color: #ffc107; margin-bottom: 1rem; }
+    .card-price { font-size: 1.2rem; font-weight: bold; color: #002060; }
+    .text-strike { text-decoration: line-through; opacity: 0.5; font-size: 0.9rem; color: #fff; }
+    .card-strike { text-decoration: line-through; opacity: 0.5; font-size: 0.8rem; color: #6c757d; }
+</style>
+
+<div id="heroCarousel" class="carousel slide carousel-fade mb-5 shadow" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for item in hero_items %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="10000">
+            <div class="hero-section d-flex align-items-center" style="background: linear-gradient(135deg, #002060 0%, #004080 100%); min-height: 550px; padding: 60px 0;">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-white text-md-start text-center">
+                            <h1 class="display-4 fw-bold mb-2">{{ item.name }}</h1>
+                            <div class="hero-price">
+                                ₦{{ item.price }}
+                                {% if item.discount_price %}
+                                <span class="text-strike ms-2">₦{{ item.discount_price }}</span>
+                                {% endif %}
+                            </div>
+                            <p class="lead mb-4 opacity-75">{{ item.description|truncatewords:25 }}</p>
+                            <div class="d-flex justify-content-center justify-content-md-start gap-3 btn-group-hero">
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow transform-hover">Read Review</a>
+                                {% if item.affiliate_link %}
+                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-4 transform-hover">Buy Now</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-none d-md-block text-center">
+                            {% if item.image %}
+                            <img src="{{ item.image.url }}" class="img-fluid rounded-4 shadow-lg" style="max-height: 400px; width: 100%; object-fit: contain;" alt="{{ item.name }}">
+                            {% else %}
+                            <div class="bg-light bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center mx-auto" style="height: 350px; width: 350px; border: 2px dashed rgba(255,255,255,0.2);">
+                                <i class="bi bi-image text-white opacity-25" style="font-size: 5rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="hero-section text-center text-white" style="background: var(--deep-blue); padding: 100px 0;">
+            <div class="container">
+                <h1 class="display-4 fw-bold">Welcome to Vouchly</h1>
+                <p class="lead">Honest reviews for the products you love.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if hero_items|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+    {% endif %}
+</div>
+
+<div class="container">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color: #002060;">How It Works</h2>
+        <p class="text-muted">Start earning in three simple steps</p>
+    </div>
+
+    <div class="row g-4 text-center mb-5 py-4 bg-light rounded-4 shadow-sm mx-0">
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
+                    <i class="bi bi-person-plus fs-3 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">1. Join</h5>
+                <p class="small text-muted px-lg-4">Register for free and join our community of Vouchly Creators.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
+                    <i class="bi bi-share fs-3 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">2. Share</h5>
+                <p class="small text-muted px-lg-4">Copy your unique link and share it with your audience.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
+                    <i class="bi bi-cash-stack fs-3 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">3. Earn</h5>
+                <p class="small text-muted px-lg-4">Earn commissions for every sale made through your vouch.</p>
+            </div>
+        </div>
+    </div>
+
+    {% if featured_review %}
+    <div class="row mb-5 mt-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold" style="color: #002060;">Review of the Week</h2>
+        </div>
+        <div class="col-12">
+            <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
+                <div class="row g-0">
+                    <div class="col-md-4 bg-primary d-flex flex-column align-items-center justify-content-center text-white p-4">
+                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fw-bold text-uppercase">Featured Creator</span>
+                        <img src="{{ featured_review.author.profile.image.url }}" class="rounded-circle border border-4 border-white mb-3 shadow" width="100" height="100" style="object-fit: cover;">
+                        <h5 class="mb-0 fw-bold">{{ featured_review.author.username }}</h5>
+                        <small class="opacity-75">Community Expert</small>
+                    </div>
+                    <div class="col-md-8 p-4 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold text-primary mb-0">{{ featured_review.item.name }}</h4>
+                            <span class="text-warning fs-5">{{ featured_review.rating }} ★</span>
+                        </div>
+                        <h5 class="fw-bold">"{{ featured_review.title }}"</h5>
+                        <p class="text-muted lead" style="font-size: 1.1rem;">{{ featured_review.content|truncatewords:45 }}</p>
+                        <a href="{% url 'item_detail' featured_review.item.slug %}" class="btn btn-outline-primary fw-bold px-4 transform-hover">Read Full Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+        <h2 class="fw-bold" style="color: #002060;">Top Rated Picks</h2>
+        <a href="{% url 'category_list' %}" class="btn btn-outline-primary btn-sm">View All Categories</a>
+    </div>
+
+    <div class="row mb-5">
+        {% for item in top_rated %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">No Image</div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title text-truncate mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
+                    <div class="card-price mb-2">
+                        ₦{{ item.price }}
+                        {% if item.discount_price %}
+                        <span class="card-strike ms-1">₦{{ item.discount_price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2 text-warning">
+                        {% if item.avg_rating %}
+                            <span class="fw-bold">{{ item.avg_rating|floatformat:1 }}</span> ★
+                        {% else %}
+                            <span class="text-muted small">No ratings yet</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-primary btn-sm w-100 stretched-link">Read Review</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mb-5 mt-5">
+        <h2 class="fw-bold" style="color: #002060;">Top Contributors</h2>
+        <p class="text-muted">Meet the experts helping our community make better choices.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        {% for reviewer in featured_reviewers %}
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="card-body">
+                    <img src="{{ reviewer.profile.image.url }}" class="rounded-circle mb-3 border border-3 border-primary" width="80" height="80" style="object-fit: cover;">
+                    <h5 class="fw-bold mb-1">{{ reviewer.username }}</h5>
+                    <p class="text-muted small mb-3">Member since {{ reviewer.date_joined|date:"Y" }}</p>
+                    <div class="badge bg-primary rounded-pill px-3">{{ reviewer.num_reviews }} Reviews Written</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr class="my-5">
+
+    <h3 class="mb-4">Just Added</h3>
+    <div class="row mb-5">
+        {% for item in latest_items %}
+        <div class="col-md-6 mb-3">
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ item.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
+                            <p class="card-price mb-1">₦{{ item.price }}</p>
+                            <p class="card-text small text-muted">{{ item.description|truncatewords:15 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="cta-gradient-bg rounded-4 shadow-lg mb-5 p-5 text-center text-white">
+        <div class="position-relative z-index-1">
+            <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-bold text-uppercase">Join the Elite</span>
+            <h2 class="display-5 fw-bold mb-3">Ready to Turn Your Influence into Income?</h2>
+            <p class="lead mb-4 mx-auto opacity-75" style="max-width: 700px;">
+                Don't just shop—partner with us. Become a <strong>Vouchly Creator</strong> today and start earning commissions for every product you recommend.
+            </p>
+            {% if not user.is_authenticated %}
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-bold px-5 py-3 text-dark shadow transform-hover">
+                        Start Earning Now <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg fw-bold px-5 py-3 shadow transform-hover">
+                    Go to My Creator Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
