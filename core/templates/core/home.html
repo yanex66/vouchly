@@ -3,8 +3,35 @@
 {% block content %}
 
 <style>
+    /* Hero Search Bar Styling */
+    .hero-search-wrapper {
+        max-width: 100%;
+        margin: 1.5rem 0;
+    }
+    .hero-search-input {
+        border-radius: 50px 0 0 50px !important;
+        padding: 0.8rem 1.2rem !important;
+        border: none;
+        font-size: 1rem;
+    }
+    .hero-search-btn {
+        border-radius: 0 50px 50px 0 !important;
+        padding: 0 1.5rem !important;
+        background-color: var(--accent-gold);
+        color: var(--deep-blue);
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .hero-search-btn:hover {
+        background-color: white; /* FIXED: Removed the # typo */
+        color: var(--deep-blue);
+    }
+
     .carousel-item .display-4 { animation: fadeInUp 1s ease-out; }
     .carousel-item .lead { animation: fadeInUp 1.2s ease-out; }
+    /* Search bar animation */
+    .carousel-item .hero-search-wrapper { animation: fadeInUp 1.3s ease-out; }
     .carousel-item .btn-group-hero { animation: fadeInUp 1.4s ease-out; }
     .carousel-item img { animation: zoomIn 1.5s ease-out; }
     
@@ -18,6 +45,13 @@
     }
     .transform-hover:hover { transform: scale(1.05); transition: 0.3s; }
     .cta-gradient-bg { background: linear-gradient(45deg, #002060 0%, #004080 100%) !important; position: relative; overflow: hidden; }
+
+    /* Mobile Responsive Search */
+    @media (max-width: 768px) {
+        .hero-search-wrapper { margin: 1rem auto; max-width: 90%; }
+        .hero-search-input { font-size: 0.9rem; padding: 0.6rem 1rem !important; }
+        .hero-search-btn { padding: 0 1rem !important; }
+    }
 </style>
 
 <div id="heroCarousel" class="carousel slide carousel-fade mb-5 shadow" data-bs-ride="carousel">
@@ -30,6 +64,16 @@
                         <div class="col-md-6 text-white text-md-start text-center">
                             <h1 class="display-4 fw-bold mb-2">{{ item.name }}</h1>
                             <p class="lead mb-4 opacity-75">{{ item.description|truncatewords:25 }}</p>
+                            
+                            <div class="hero-search-wrapper">
+                                <form action="{% url 'search' %}" method="GET" class="input-group shadow-sm">
+                                    <input type="text" name="query" class="form-control hero-search-input" placeholder="Search products..." required>
+                                    <button class="btn hero-search-btn" type="submit">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+
                             <div class="d-flex justify-content-center justify-content-md-start gap-3 btn-group-hero">
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow transform-hover">PROMOTE</a>
                                 {% if item.affiliate_link %}
