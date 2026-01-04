@@ -3,4 +3,4 @@ __pycache__/
 db.sqlite3
 media/
 .env
-vouchly_env/
+vouchly_env/db.sqlite3
