@@ -16,7 +16,12 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-muted">Password</label>
-                            <input type="password" name="password" class="form-control form-control-lg" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="passwordField" class="form-control form-control-lg" required style="border-right: none;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" style="border-left: none; background: #fff;">
+                                    <i class="bi bi-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
                         </div>
                         <button class="btn btn-primary w-100 btn-lg" type="submit">Login</button>
                     </form>
@@ -29,4 +34,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("passwordField");
+        const toggleIcon = document.getElementById("toggleIcon");
+        
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.replace("bi-eye", "bi-eye-slash");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.replace("bi-eye-slash", "bi-eye");
+        }
+    }
+</script>
 {% endblock %}

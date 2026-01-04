@@ -3,17 +3,28 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-5">
             <div class="card shadow border-0">
                 <div class="card-body p-5">
-                    <h3 class="text-center mb-4 fw-bold" style="color: var(--deep-blue);">Join ReviewHub</h3>
+                    <h3 class="text-center mb-4 fw-bold" style="color: var(--deep-blue);">Join Vouchly</h3>
                     
                     <form method="POST">
                         {% csrf_token %}
                         {% for field in form %}
                         <div class="mb-3">
                             <label class="form-label text-muted">{{ field.label }}</label>
-                            {{ field }} 
+                            
+                            {% if "password" in field.name %}
+                                <div class="input-group">
+                                    {{ field }}
+                                    <button class="btn btn-outline-secondary toggle-password" type="button" style="background: #fff; border-left: none;">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            {% else %}
+                                {{ field }} 
+                            {% endif %}
+
                             {% if field.errors %}
                             <div class="text-danger small mt-1">
                                 {% for error in field.errors %}
@@ -21,6 +32,7 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
+                            
                             {% if field.help_text %}
                             <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">{{ field.help_text }}</small>
                             {% endif %}
@@ -46,17 +58,36 @@
         border: 1px solid #ced4da; 
         border-radius: 0.375rem; 
     }
+    .input-group input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
     input:focus {
         border-color: #86b7fe;
         outline: 0;
-        /* FIXED: box-shadow (was box_shadow) */
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
-    /* Removes the dots/bullets from Django's default help text lists */
     ul {
         list-style-type: none;
         padding: 0;
         margin: 0;
     }
 </style>
+
+<script>
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+            }
+        });
+    });
+</script>
 {% endblock %}

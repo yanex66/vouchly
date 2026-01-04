@@ -19,11 +19,37 @@
         .card-img-top { height: 200px; object-fit: cover; }
         body { display: flex; flex-direction: column; min-height: 100vh; }
         main { flex: 1; }
-        footer { background-color: #f8f9fa; border-top: 5px solid var(--deep-blue); }
-        footer a { color: #6c757d; text-decoration: none; }
-        footer a:hover { color: var(--deep-blue); }
+        
+        footer { background-color: var(--deep-blue); color: white; }
+        footer a { color: rgba(255,255,255,0.75); text-decoration: none; transition: 0.3s; }
+        footer a:hover { color: var(--accent-gold); }
+        footer hr { border-top: 1px solid rgba(255,255,255,0.1); }
+        
         .hover-card { transition: transform 0.2s; }
         .hover-card:hover { transform: translateY(-5px); }
+
+        /* BACK TO TOP BUTTON STYLES */
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: none;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-gold);
+            color: var(--deep-blue);
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        #backToTop:hover {
+            background-color: white;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -78,15 +104,19 @@
         {% endblock %}
     </main>
 
+    <button id="backToTop" title="Go to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
     <footer class="py-5 mt-5">
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-4">
-                    <h5 class="fw-bold" style="color: var(--deep-blue);">Vouchly</h5>
-                    <p class="text-muted small">The community-driven platform for authentic product reviews and affiliate rewards.</p>
+                    <h5 class="fw-bold text-white">Vouchly</h5>
+                    <p class="small opacity-75">The community-driven platform for authentic product reviews and affiliate rewards.</p>
                 </div>
                 <div class="col-md-2">
-                    <h6 class="fw-bold">Explore</h6>
+                    <h6 class="fw-bold text-white">Explore</h6>
                     <ul class="list-unstyled small">
                         <li><a href="{% url 'home' %}">Home</a></li>
                         <li><a href="{% url 'category_list' %}">Categories</a></li>
@@ -94,7 +124,7 @@
                     </ul>
                 </div>
                 <div class="col-md-2">
-                    <h6 class="fw-bold">Support</h6>
+                    <h6 class="fw-bold text-white">Support</h6>
                     <ul class="list-unstyled small">
                         <li><a href="{% url 'contact' %}">Contact Us</a></li>
                         <li><a href="{% url 'terms' %}">Terms</a></li>
@@ -102,7 +132,7 @@
                     </ul>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <h6 class="fw-bold">Connect</h6>
+                    <h6 class="fw-bold text-white">Connect</h6>
                     <div class="fs-4">
                         <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
                         <a href="#" class="me-3"><i class="bi bi-twitter-x"></i></a>
@@ -111,12 +141,29 @@
                 </div>
             </div>
             <hr class="my-4">
-            <div class="text-center text-muted small">
+            <div class="text-center opacity-50 small">
                 © 2026 Vouchly. All rights reserved.
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Back to Top Logic
+        const backToTopBtn = document.getElementById("backToTop");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.style.display = "block";
+            } else {
+                backToTopBtn.style.display = "none";
+            }
+        };
+
+        backToTopBtn.onclick = function() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        };
+    </script>
 </body>
 </html>

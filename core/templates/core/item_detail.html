@@ -23,16 +23,8 @@
                 </ol>
             </nav>
 
-            <h1 class="fw-bold">{{ item.name }}</h1>
+            <h1 class="fw-bold mb-3">{{ item.name }}</h1>
             
-            <div class="mb-3">
-                <span class="fs-2 fw-bold text-primary">₦{{ item.price }}</span>
-                {% if item.discount_price %}
-                <span class="text-decoration-line-through text-muted ms-2 fs-5">₦{{ item.discount_price }}</span>
-                <span class="badge bg-danger ms-2">Deal</span>
-                {% endif %}
-            </div>
-
             <div class="mb-3">
                 <span class="text-warning fs-4">
                     {% if avg_rating %}
@@ -62,11 +54,11 @@
             {% if user.is_authenticated %}
             <div class="card border-success mb-4">
                 <div class="card-header bg-success text-white fw-bold">
-                    <i class="bi bi-cash-coin"></i> Promote & Earn
+                    <i class="bi bi-cash-coin"></i> PROMOTE & EARN
                 </div>
                 <div class="card-body">
                     <p class="card-text small text-muted mb-2">
-                        Share this link! If someone buys through it, you earn a <strong>commission</strong>.
+                        Share your unique link! You earn when others PURCHASE.
                     </p>
                     <div class="input-group">
                         <input type="text" class="form-control" value="{{ referral_link }}" id="refLink" readonly>
@@ -80,20 +72,34 @@
 
             <div class="d-grid gap-2 mb-4">
                 <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-warning btn-lg fw-bold shadow-sm text-dark">
-                    <i class="bi bi-cart-check-fill me-2"></i> Buy Now
+                    <i class="bi bi-cart-check-fill me-2"></i> PURCHASE
                 </a>
-                <small class="text-muted text-center">Price checked: Today</small>
 
                 {% if user.is_authenticated %}
                 <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
-                    Write a Review
+                    PROMOTE
                 </button>
                 {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-secondary">Log in to Review & Earn</a>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-secondary">LOG IN TO PROMOTE</a>
                 {% endif %}
             </div>
 
-            <div class="collapse mb-4" id="reviewForm">
+            <div class="mt-4 pt-3 border-top">
+                <h6 class="fw-bold text-muted mb-3 text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Spread the Word</h6>
+                <div class="d-flex gap-2">
+                    <a href="https://api.whatsapp.com/send?text={{ item.name }} - Check it out on Vouchly: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%;">
+                        <i class="bi bi-whatsapp fs-5"></i>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%; background-color: #1877F2;">
+                        <i class="bi bi-facebook fs-5"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?text={{ item.name }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%;">
+                        <i class="bi bi-twitter-x fs-5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="collapse mb-4 mt-3" id="reviewForm">
                 <div class="card card-body shadow-sm">
                     <h5 class="card-title fw-bold">Add Your Review</h5>
                     <form method="POST" action="{% url 'add_review' item.slug %}">
@@ -138,7 +144,7 @@
             </div>
         </div>
         {% empty %}
-        <p class="text-muted text-center py-4 bg-light rounded">No reviews yet. Be the first to vouch for this product!</p>
+        <p class="text-muted text-center py-4 bg-light rounded">No reviews yet. Be the first to PROMOTE this product!</p>
         {% endfor %}
     </div>
 </div>
@@ -149,7 +155,7 @@
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyText.value);
-        alert("Referral link copied to clipboard!");
+        alert("Promotional link copied to clipboard!");
     }
 </script>
 {% endblock %}

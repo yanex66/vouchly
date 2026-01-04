@@ -18,10 +18,6 @@
     }
     .transform-hover:hover { transform: scale(1.05); transition: 0.3s; }
     .cta-gradient-bg { background: linear-gradient(45deg, #002060 0%, #004080 100%) !important; position: relative; overflow: hidden; }
-    .hero-price { font-size: 1.8rem; font-weight: bold; color: #ffc107; margin-bottom: 1rem; }
-    .card-price { font-size: 1.2rem; font-weight: bold; color: #002060; }
-    .text-strike { text-decoration: line-through; opacity: 0.5; font-size: 0.9rem; color: #fff; }
-    .card-strike { text-decoration: line-through; opacity: 0.5; font-size: 0.8rem; color: #6c757d; }
 </style>
 
 <div id="heroCarousel" class="carousel slide carousel-fade mb-5 shadow" data-bs-ride="carousel">
@@ -33,17 +29,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-6 text-white text-md-start text-center">
                             <h1 class="display-4 fw-bold mb-2">{{ item.name }}</h1>
-                            <div class="hero-price">
-                                ₦{{ item.price }}
-                                {% if item.discount_price %}
-                                <span class="text-strike ms-2">₦{{ item.discount_price }}</span>
-                                {% endif %}
-                            </div>
                             <p class="lead mb-4 opacity-75">{{ item.description|truncatewords:25 }}</p>
                             <div class="d-flex justify-content-center justify-content-md-start gap-3 btn-group-hero">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow transform-hover">Read Review</a>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow transform-hover">PROMOTE</a>
                                 {% if item.affiliate_link %}
-                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-4 transform-hover">Buy Now</a>
+                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-4 transform-hover">PURCHASE</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -139,7 +129,7 @@
                         </div>
                         <h5 class="fw-bold">"{{ featured_review.title }}"</h5>
                         <p class="text-muted lead" style="font-size: 1.1rem;">{{ featured_review.content|truncatewords:45 }}</p>
-                        <a href="{% url 'item_detail' featured_review.item.slug %}" class="btn btn-outline-primary fw-bold px-4 transform-hover">Read Full Review</a>
+                        <a href="{% url 'item_detail' featured_review.item.slug %}" class="btn btn-outline-primary fw-bold px-4 transform-hover">PROMOTE</a>
                     </div>
                 </div>
             </div>
@@ -163,12 +153,6 @@
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title text-truncate mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
-                    <div class="card-price mb-2">
-                        ₦{{ item.price }}
-                        {% if item.discount_price %}
-                        <span class="card-strike ms-1">₦{{ item.discount_price }}</span>
-                        {% endif %}
-                    </div>
                     <div class="mb-2 text-warning">
                         {% if item.avg_rating %}
                             <span class="fw-bold">{{ item.avg_rating|floatformat:1 }}</span> ★
@@ -176,7 +160,7 @@
                             <span class="text-muted small">No ratings yet</span>
                         {% endif %}
                     </div>
-                    <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-primary btn-sm w-100 stretched-link">Read Review</a>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-primary btn-sm w-100 stretched-link">PROMOTE</a>
                 </div>
             </div>
         </div>
@@ -219,7 +203,6 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
-                            <p class="card-price mb-1">₦{{ item.price }}</p>
                             <p class="card-text small text-muted">{{ item.description|truncatewords:15 }}</p>
                         </div>
                     </div>
