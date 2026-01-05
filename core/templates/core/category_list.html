@@ -1,29 +1,98 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">Browse Categories</h1>
-    <div class="row">
+<style>
+    :root {
+        --vouchly-blue: #002060;
+        --vouchly-gold: #ffc107;
+    }
+
+    .category-flex-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* Smaller gap for mobile */
+        justify-content: start;
+        margin-top: 20px;
+    }
+
+    /* Category Card Base Style */
+    .category-compact-card {
+        background: white;
+        border-radius: 15px;
+        padding: 12px 10px;
+        border: 1.5px solid #eee;
+        transition: 0.3s;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Default: 3 per row on laptop */
+        flex: 1 1 calc(33.333% - 10px); 
+    }
+
+    /* PHONE OPTIMIZATION (2 per row) */
+    @media (max-width: 576px) {
+        .category-compact-card {
+            flex: 1 1 calc(50% - 10px); /* Exactly 2 per row on phones */
+            padding: 10px 5px;
+        }
+        .cat-title-sm { font-size: 0.85rem !important; }
+        .cat-icon-sm, .cat-folder-icon { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+    }
+
+    .category-compact-card:hover {
+        border-color: var(--vouchly-gold);
+        transform: translateY(-3px);
+    }
+
+    .cat-icon-sm { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
+
+    .cat-folder-icon {
+        width: 40px; height: 40px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        font-size: 20px;
+    }
+
+    .cat-title-sm {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--vouchly-blue);
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .cat-count-sm { font-size: 0.7rem; color: #888; }
+</style>
+
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold" style="color: var(--vouchly-blue);">Categories</h2>
+    </div>
+
+    <div class="category-flex-container">
         {% for cat in categories %}
-        <div class="col-md-4 mb-4">
-            <a href="{% url 'category_detail' cat.slug %}" class="text-decoration-none">
-                <div class="card h-100 shadow-sm text-center p-4 hover-effect">
-                    <div class="card-body">
-                        {% if cat.icon %}
-                            <img src="{{ cat.icon.url }}" alt="{{ cat.name }}" style="width: 64px; height: 64px; margin-bottom: 15px;">
-                        {% else %}
-                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 24px;">
-                                📁
-                            </div>
-                        {% endif %}
-                        <h4 class="card-title text-dark">{{ cat.name }}</h4>
-                        <p class="text-muted small">{{ cat.items.count }} items</p>
-                    </div>
-                </div>
+            <a href="{% url 'category_detail' cat.slug %}" class="category-compact-card text-decoration-none">
+                {% if cat.icon %}
+                    <img src="{{ cat.icon.url }}" alt="{{ cat.name }}" class="cat-icon-sm">
+                {% else %}
+                    <div class="cat-folder-icon">📁</div>
+                {% endif %}
+                
+                <h4 class="cat-title-sm">{{ cat.name }}</h4>
+                <span class="cat-count-sm">{{ cat.items.count }} items</span>
             </a>
-        </div>
         {% empty %}
-        <p>No categories found.</p>
+            <p class="text-muted small">No categories found.</p>
         {% endfor %}
     </div>
 </div>

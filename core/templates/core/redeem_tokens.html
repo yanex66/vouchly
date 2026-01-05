@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+    :root { --v-blue: #002060; --v-gold: #ffc107; }
+    .redeem-box { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .token-stat { background: #f8faff; border: 1.5px dashed var(--v-blue); border-radius: 15px; padding: 2rem; }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="redeem-box p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold" style="color: var(--v-blue);">Redeem VOCOIN</h3>
+                    <p class="text-muted">Convert your tokens into spendable wallet cash.</p>
+                </div>
+
+                <div class="token-stat text-center mb-4">
+                    <span class="text-uppercase small fw-bold text-muted d-block">Available Tokens</span>
+                    <h1 class="display-5 fw-bold text-dark">{{ vocoin_balance }} <small class="fs-4">VOCOIN</small></h1>
+                    <span class="badge bg-primary-subtle text-primary mt-2">Cash Value: ₦{{ naira_value|floatformat:2 }}</span>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <label class="fw-bold mb-2">Amount to Redeem (₦)</label>
+                            <button type="button" class="btn btn-link btn-sm p-0 fw-bold text-decoration-none" onclick="redeemAll()">Redeem All</button>
+                        </div>
+                        <input type="number" name="amount" id="id_amount" class="form-control form-control-lg text-center fw-bold" step="0.01" value="{{ naira_value }}">
+                    </div>
+
+                    <div class="alert alert-info small border-0 py-3">
+                        <i class="bi bi-info-circle me-2"></i> Funds will be transferred instantly to your Wallet Balance.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold rounded-3" style="background: var(--v-blue);">Redeem Now</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-link text-muted fw-bold">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function redeemAll() {
+        document.getElementById('id_amount').value = "{{ naira_value }}";
+    }
+</script>
+{% endblock %}

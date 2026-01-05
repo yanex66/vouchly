@@ -1,27 +1,135 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="display-4 mb-4">About Us</h1>
-            <p class="lead text-muted">Empowering shoppers with honest reviews and great deals.</p>
+<style>
+    :root {
+        --vouchly-blue: #002060;
+        --vouchly-gold: #ffc107;
+        --soft-bg: #f8f9fa;
+    }
+
+    /* Hero Section */
+    .about-hero {
+        background: linear-gradient(135deg, var(--vouchly-blue) 0%, #004080 100%);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 50px;
+    }
+
+    .about-card {
+        background: white;
+        border: none;
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,32,96,0.08);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .about-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 193, 7, 0.15);
+        color: var(--vouchly-blue);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-weight: 500;
+        color: #444;
+    }
+
+    .feature-item i {
+        color: var(--vouchly-gold);
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Mobile Optimization */
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 60px 15px;
+            border-radius: 0 0 30px 30px;
+        }
+        .about-hero h1 { font-size: 2.5rem; }
+        .about-card { padding: 30px 20px; margin-bottom: 20px; }
+    }
+</style>
+
+<div class="about-hero">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">About Vouchly</h1>
+        <p class="lead opacity-75 mx-auto" style="max-width: 700px;">
+            Empowering the next generation of shoppers through transparency, community, and rewarding experiences.
+        </p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="about-card">
+                <div class="icon-box">
+                    <i class="bi bi-rocket-takeoff-fill"></i>
+                </div>
+                <h2 class="fw-bold mb-3" style="color: var(--vouchly-blue);">Our Mission</h2>
+                <p class="text-muted leading-relaxed">
+                    We believe that shopping online should be transparent and rewarding. Vouchly was built to bridge the gap between real users and real products. Our platform allows you to share your genuine experiences, helping a global community make better, more informed decisions every single day.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="about-card">
+                <div class="icon-box">
+                    <i class="bi bi-shield-check-fill"></i>
+                </div>
+                <h2 class="fw-bold mb-3" style="color: var(--vouchly-blue);">Why Vouchly?</h2>
+                <div class="mt-4">
+                    <div class="feature-item">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <span>100% Genuine User Reviews</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-link-45deg"></i>
+                        <span>Verified & Safe Affiliate Links</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Fast & Secure Payout System</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-people-fill"></i>
+                        <span>A Community-Driven Platform</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <h3>Our Mission</h3>
-            <p>We believe that shopping online should be transparent and rewarding. Our platform connects real users with real products, allowing you to share your experiences and help others make informed decisions.</p>
-        </div>
-        <div class="col-md-6">
-            <h3>Why Choose Us?</h3>
-            <ul class="list-unstyled">
-                <li><i class="bi bi-check-circle-fill text-success"></i> Genuine User Reviews</li>
-                <li><i class="bi bi-check-circle-fill text-success"></i> Verified Affiliate Links</li>
-                <li><i class="bi bi-check-circle-fill text-success"></i> Secure Payout System</li>
-                <li><i class="bi bi-check-circle-fill text-success"></i> Community Driven</li>
-            </ul>
+
+    <div class="row mt-5 text-center">
+        <div class="col-12">
+            <div class="p-5 rounded-4" style="background: rgba(0, 32, 96, 0.03); border: 1px dashed #ccc;">
+                <h4 class="fw-bold mb-2">Ready to join the community?</h4>
+                <p class="text-muted mb-4">Start sharing your vouchers and earning rewards today.</p>
+                <a href="{% url 'register' %}" class="btn btn-warning fw-bold px-5 py-3 rounded-pill text-dark">
+                    Get Started Now
+                </a>
+            </div>
         </div>
     </div>
 </div>

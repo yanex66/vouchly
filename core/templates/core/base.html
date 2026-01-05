@@ -1,9 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vouchly - Honest Reviews & Rewards</title>
+    <title>Vouchly - Real People. Real Rewards.</title>
+    
+    <link rel="icon" type="image/png" href="{% static 'core/images/vlogo.png' %}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -11,19 +15,47 @@
             --deep-blue: #002060;
             --light-blue: #004080;
             --accent-gold: #ffc107;
+            --vouchly-blue: #002060;
         }
+        
         .navbar-custom { background-color: var(--deep-blue) !important; padding: 0.5rem 1rem; }
-        body { display: flex; flex-direction: column; min-height: 100vh; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa; }
         main { flex: 1; }
         
-        footer { background-color: var(--deep-blue); color: white; }
-        footer a { color: rgba(255,255,255,0.75); text-decoration: none; transition: 0.3s; }
-        footer a:hover { color: var(--accent-gold); }
+        /* Logo Styling */
+        .navbar-brand img {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
 
-        /* PROFILE AVATAR STYLES */
+        .navbar-nav .nav-link {
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 5px;
+            margin: 0 12px;
+            color: rgba(255,255,255,0.85) !important;
+            transition: 0.3s;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--accent-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover::after { width: 100%; }
+        .navbar-nav .nav-link:hover { color: #fff !important; }
+
         .profile-circle, .profile-img-nav {
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -38,51 +70,54 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-        .profile-circle:hover { background-color: white; }
 
-        /* MOBILE SIDEBAR CONFIGuration */
         @media (max-width: 991.98px) {
             .navbar-collapse {
                 position: fixed;
                 top: 0;
                 right: -100%;
                 height: 100vh;
-                width: 60%;
+                width: 75%;
                 background: var(--deep-blue);
                 transition: 0.3s ease-in-out;
                 display: block !important;
                 z-index: 1050;
-                padding: 2rem 1rem;
-                box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+                padding: 2.5rem 1.5rem;
+                box-shadow: -10px 0 20px rgba(0,0,0,0.4);
             }
             .navbar-collapse.show { right: 0; }
+            .navbar-nav .nav-link { margin: 15px 0; font-size: 1.1rem; }
+            .navbar-nav .nav-link::after { left: 0; transform: none; }
         }
+
+        footer { background-color: var(--deep-blue); color: white; border-top: 4px solid var(--accent-gold); }
+        footer a { color: rgba(255,255,255,0.7); text-decoration: none; transition: 0.3s; font-weight: 500; }
+        footer a:hover { color: var(--accent-gold); padding-left: 5px; }
 
         #backToTop {
             position: fixed;
             bottom: 30px;
             right: 30px;
             display: none;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background-color: var(--accent-gold);
             color: var(--deep-blue);
             border: none;
             border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             z-index: 1000;
-            transition: transform 0.3s, background-color 0.3s;
+            transition: 0.3s;
         }
-        #backToTop:hover { background-color: white; transform: scale(1.1); }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-3" href="{% url 'home' %}">Vouchly</a>
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly" class="me-2">
+                <span class="fw-bold fs-3 d-none d-sm-inline-block" style="letter-spacing: -1px;">Vouchly</span>
+            </a>
 
             <div class="d-flex align-items-center ms-auto d-lg-none">
                 {% if user.is_authenticated %}
@@ -99,6 +134,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li class="px-3 py-2 border-bottom small fw-bold text-muted">{{ user.username }}</li>
+                            <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Profile</a></li>
                             <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
                         </ul>
                     </div>
@@ -116,12 +152,14 @@
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     
                     {% if user.is_authenticated %}
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link fw-bold text-warning" href="{% url 'dashboard' %}">Dashboard</a>
+                            <a class="nav-link text-warning" href="{% url 'dashboard' %}">Dashboard</a>
                         </li>
-                        <li class="nav-item dropdown d-none d-lg-block ms-lg-3">
+                        <li class="nav-item dropdown d-none d-lg-block ms-lg-2">
                             <a href="#" role="button" data-bs-toggle="dropdown">
                                 {% if user.profile.image %}
                                     <img src="{{ user.profile.image.url }}" class="profile-img-nav border border-2 border-warning">
@@ -131,12 +169,13 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                                 <li class="px-3 py-2 border-bottom small fw-bold text-muted">{{ user.username }}</li>
+                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Profile Settings</a></li>
                                 <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-warning btn-sm ms-lg-2 text-dark fw-bold" href="{% url 'register' %}">Sign Up</a></li>
+                        <li class="nav-item"><a class="btn btn-warning btn-sm ms-lg-3 text-dark fw-bold px-4 rounded-pill" href="{% url 'register' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -147,33 +186,36 @@
         {% block content %}{% endblock %}
     </main>
 
-    <button id="backToTop" title="Go to top">
-        <i class="bi bi-arrow-up"></i>
-    </button>
+    <button id="backToTop" class="shadow"><i class="bi bi-arrow-up"></i></button>
 
     <footer class="py-5 mt-5">
         <div class="container">
             <div class="row g-4 text-center text-md-start">
                 <div class="col-md-4">
-                    <h5 class="fw-bold text-white">Vouchly</h5>
-                    <p class="small opacity-75">Community-driven platform for authentic product reviews.</p>
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3">
+                        <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly" height="35" class="me-2">
+                        <h4 class="fw-bold text-white mb-0">Vouchly</h4>
+                    </div>
+                    <p class="small opacity-75">Real People. Real Rewards. Your trusted community for authentic feedback and shared success.</p>
                 </div>
                 <div class="col-md-2 col-6">
-                    <h6 class="fw-bold text-white">Explore</h6>
+                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Explore</h6>
                     <ul class="list-unstyled small">
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'category_list' %}">Categories</a></li>
+                        <li class="mb-2"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'category_list' %}">Categories</a></li>
+                        <li class="mb-2"><a href="{% url 'about' %}">About Us</a></li>
                     </ul>
                 </div>
-                <div class="col-md-2 col-6">
-                    <h6 class="fw-bold text-white">Support</h6>
+                <div class="col-md-3 col-6">
+                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Support & Legal</h6>
                     <ul class="list-unstyled small">
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'terms' %}">Terms</a></li>
+                        <li class="mb-2"><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li class="mb-2"><a href="{% url 'terms' %}">Terms of Service</a></li>
+                        <li class="mb-2"><a href="{% url 'privacy' %}">Privacy Policy</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <h6 class="fw-bold text-white">Connect</h6>
+                <div class="col-md-3 text-md-end">
+                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Connect</h6>
                     <div class="fs-4">
                         <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
                         <a href="#" class="me-3"><i class="bi bi-twitter-x"></i></a>
@@ -188,17 +230,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const backToTopBtn = document.getElementById("backToTop");
-        window.onscroll = function() {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                backToTopBtn.style.display = "block";
-            } else {
-                backToTopBtn.style.display = "none";
-            }
+        const btn = document.getElementById("backToTop");
+        window.onscroll = () => {
+            btn.style.display = (window.scrollY > 300) ? "block" : "none";
         };
-        backToTopBtn.onclick = function() {
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        };
+        btn.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
     </script>
 </body>
 </html>

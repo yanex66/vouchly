@@ -1,0 +1,116 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-3 mb-4">
+             <div class="card border-0 shadow-sm p-3 rounded-4">
+                <nav class="nav flex-column dash-nav" style="gap: 10px;">
+                    <a class="nav-link" href="{% url 'dashboard' %}" style="color:#495057; font-weight:600; text-decoration:none; padding:10px; border-radius:10px;">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link active" href="{% url 'referrals' %}" style="background: rgba(0, 32, 96, 0.05); color: #002060; border-left: 4px solid #002060; text-decoration:none; padding:10px; border-radius:0 10px 10px 0; font-weight:600;">
+                        <i class="bi bi-people me-2"></i> Refer & Earn
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4 text-center text-white" style="background: linear-gradient(135deg, #002060 0%, #004080 100%);">
+                <h2 class="fw-bold mb-3">Invite Friends, Earn VOCOIN</h2>
+                <p class="opacity-75 mb-4">Earn 1 VOCOIN (₦100) for every friend who joins Vouchly using your link.</p>
+                
+                <div class="bg-white rounded-3 p-3 shadow-sm mx-auto" style="max-width: 500px;">
+                    <label class="small fw-bold text-dark text-uppercase d-block mb-2">Your Personal Invite Link</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control border-0 bg-light text-center fw-bold text-primary" id="refLink" value="vouchly.com/?ref={{ user.username }}" readonly>
+                        <button class="btn btn-warning fw-bold px-4" onclick="copyRef()">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4 text-center">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <span class="text-muted small fw-bold text-uppercase">Total Referrals</span>
+                        <h2 class="display-6 fw-bold text-primary mt-2">{{ my_referrals.count }}</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 border-warning" style="border-width: 2px;">
+                        <span class="text-muted small fw-bold text-uppercase text-warning">VOCOIN Tokens</span>
+                        <h2 class="display-6 fw-bold text-dark mt-2">{{ vocoin_balance }}</h2>
+                        <a href="{% url 'redeem_tokens' %}" class="btn btn-sm btn-warning mt-2 fw-bold rounded-pill px-3">Redeem to Wallet</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-success-subtle border-success" style="border-width: 1px; border-style: dashed;">
+                        <span class="text-muted small fw-bold text-uppercase text-success">Total Cash Earned</span>
+                        <h2 class="display-6 fw-bold text-success mt-2">₦{{ lifetime_total|floatformat:0 }}</h2>
+                        <span class="small text-muted fw-bold">Lifetime Total</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Recent Referrals</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Invited Friend</th>
+                                <th class="text-center">Date Joined</th>
+                                <th class="text-end pe-4">Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for referral in my_referrals %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info-subtle p-2 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-person text-info"></i>
+                                        </div>
+                                        <span class="fw-bold">{{ referral.referred_user.username }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-center text-muted small">
+                                    {{ referral.created_at|date:"M d, Y" }}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <span class="badge bg-warning-subtle text-dark rounded-pill px-3">
+                                        <i class="bi bi-coin me-1"></i> +1 VOCOIN
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people display-6 d-block mb-3 opacity-25"></i>
+                                    You haven't referred anyone yet. Start sharing your link!
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyRef() {
+        const el = document.getElementById('refLink');
+        el.select();
+        navigator.clipboard.writeText(el.value).then(() => {
+            alert("Invite Link Copied!");
+        });
+    }
+</script>
+{% endblock %}

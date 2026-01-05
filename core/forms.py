@@ -1,7 +1,7 @@
 from django import forms
-from .models import Review, Profile, PayoutRequest
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from .models import Review, Profile, PayoutRequest, Category
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -14,11 +14,18 @@ class ReviewForm(forms.ModelForm):
         }
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()
+    email = forms.EmailField(required=True, help_text="Required. A valid email address.")
 
     class Meta:
         model = User
         fields = ['username', 'email']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+        return user
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -30,10 +37,22 @@ class PayoutRequestForm(forms.ModelForm):
         model = PayoutRequest
         fields = ['amount', 'bank_name', 'account_number', 'account_name']
         widgets = {
-            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '10'}),
-            'bank_name': forms.Select(attrs={'class': 'form-select'}), 
-            'account_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0123456789'}),
-            'account_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Account Holder Name'}),
+            'amount': forms.NumberInput(attrs={
+                'class': 'form-control fw-bold', 
+                'placeholder': 'Enter Naira amount'
+            }),
+            'bank_name': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'account_number': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': '10-digit Account Number',
+                'maxlength': '10'
+            }),
+            'account_name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Full Name on Account'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -43,8 +62,13 @@ class PayoutRequestForm(forms.ModelForm):
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
         if amount > self.user_balance:
-            raise forms.ValidationError("Insufficient funds. You cannot withdraw more than you have.")
-        if amount < 10:
-            # Updated to Naira symbol
-            raise forms.ValidationError("Minimum withdrawal is ₦10.00")
+            raise forms.ValidationError(f"Insufficient balance. You only have ₦{self.user_balance} available.")
+        if amount < 1000:
+            raise forms.ValidationError("Minimum withdrawal is ₦1,000.00")
         return amount
+
+    def clean_account_number(self):
+        acc_num = self.cleaned_data.get('account_number')
+        if acc_num and (not acc_num.isdigit() or len(acc_num) != 10):
+            raise forms.ValidationError("Account number must be exactly 10 digits.")
+        return acc_num

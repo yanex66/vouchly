@@ -1,80 +1,179 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow border-0">
-                <div class="card-body p-5">
-                    <h3 class="text-center mb-4 fw-bold" style="color: var(--deep-blue);">Join Vouchly</h3>
-                    
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label text-muted">{{ field.label }}</label>
-                            
-                            {% if "password" in field.name %}
-                                <div class="input-group">
-                                    {{ field }}
-                                    <button class="btn btn-outline-secondary toggle-password" type="button" style="background: #fff; border-left: none;">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                </div>
-                            {% else %}
-                                {{ field }} 
-                            {% endif %}
+<style>
+    :root {
+        --vouchly-blue: #002060;
+        --vouchly-gold: #ffc107;
+        --soft-bg: #f0f2f5;
+    }
 
-                            {% if field.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in field.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            
-                            {% if field.help_text %}
-                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">{{ field.help_text }}</small>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                        
-                        <button class="btn btn-success w-100 btn-lg mt-3" type="submit">Sign Up</button>
-                    </form>
+    body { background-color: var(--soft-bg); }
+
+    .auth-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 30px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 32, 96, 0.1);
+        overflow: hidden;
+    }
+
+    .auth-header {
+        background: var(--vouchly-blue);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .auth-body { padding: 40px 35px; }
+
+    .form-label-custom {
+        font-weight: 700;
+        color: var(--vouchly-blue);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Input Styling */
+    .input-custom {
+        border-radius: 12px !important;
+        padding: 12px 15px;
+        border: 1.5px solid #eee;
+        background-color: #f9f9f9;
+        font-size: 1rem;
+        transition: 0.2s;
+        width: 100%;
+    }
+
+    .input-custom:focus {
+        background-color: #fff;
+        border-color: var(--vouchly-gold);
+        box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+        outline: none;
+    }
+
+    /* Eye Icon Container */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-wrapper .input-custom {
+        padding-right: 45px; /* Space for the eye icon inside */
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        background: none !important;
+        border: none !important;
+        color: #888;
+        cursor: pointer;
+        padding: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .btn-auth {
+        background: var(--vouchly-blue);
+        color: white;
+        border-radius: 12px;
+        padding: 14px;
+        font-weight: 700;
+        border: none;
+        width: 100%;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+
+    .btn-auth:hover {
+        background: #003399;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 5px 0 0;
+        color: #dc3545;
+        font-size: 0.75rem;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2 class="fw-bold mb-1">Join Vouchly</h2>
+            <p class="small opacity-75 mb-0">Create an account to start earning</p>
+        </div>
+
+        <div class="auth-body">
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-4">
+                    <label class="form-label-custom">{{ field.label }}</label>
                     
-                    <div class="mt-4 text-center">
-                        <small class="text-muted">Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Log In</a></small>
-                    </div>
+                    {% if "password" in field.name %}
+                        <div class="password-wrapper">
+                            {{ field }}
+                            <button class="toggle-password" type="button" tabindex="-1">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                        <div class="text-muted mt-1" style="font-size: 0.7rem; line-height: 1.2;">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
                 </div>
+                {% endfor %}
+
+                <button class="btn btn-auth shadow-sm" type="submit">Create Account</button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <span class="text-muted small">Already a member?</span>
+                <a href="{% url 'login' %}" class="text-decoration-none fw-bold small ms-1" style="color: var(--vouchly-blue);">Log In</a>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    input { 
-        width: 100%; 
-        padding: 10px; 
-        border: 1px solid #ced4da; 
-        border-radius: 0.375rem; 
-    }
-    .input-group input {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
-    input:focus {
-        border-color: #86b7fe;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-    ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
-</style>
-
 <script>
+    // Style Django inputs
+    document.querySelectorAll('input').forEach(input => {
+        if (input.type !== 'checkbox') {
+            input.classList.add('input-custom');
+        }
+    });
+
+    // Toggle Eye Logic
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function() {
             const input = this.parentElement.querySelector('input');

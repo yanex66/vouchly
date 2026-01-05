@@ -1,59 +1,149 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+    :root {
+        --vouchly-blue: #002060;
+        --vouchly-gold: #ffc107;
+        --soft-bg: #f8f9fa;
+    }
+
+    body { background-color: var(--soft-bg); }
+
+    .redemption-card {
+        border: none;
+        border-radius: 24px;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,32,96,0.05);
+    }
+
+    .balance-display {
+        background: linear-gradient(135deg, #002060 0%, #004080 100%);
+        border-radius: 20px;
+        padding: 30px 20px;
+        color: white;
+    }
+
+    .form-label-custom {
+        font-weight: 700;
+        color: var(--vouchly-blue);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .input-custom {
+        border-radius: 12px !important;
+        padding: 12px 15px;
+        border: 1.5px solid #eee;
+        background-color: #f9f9f9;
+        font-size: 1rem;
+        transition: 0.2s;
+        width: 100%;
+        color: var(--vouchly-blue);
+    }
+
+    .input-custom:focus {
+        background-color: #fff;
+        border-color: var(--vouchly-gold);
+        box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+        outline: none;
+    }
+
+    .btn-withdraw {
+        background: var(--vouchly-blue);
+        color: white;
+        border-radius: 12px;
+        padding: 16px;
+        font-weight: 700;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-withdraw:hover {
+        background: #003399;
+        transform: translateY(-2px);
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="bi bi-wallet2"></i> Request Payout</h4>
+        <div class="col-lg-7 col-md-9">
+            <div class="card redemption-card p-4 p-md-5">
+                
+                <div class="balance-display text-center mb-4">
+                    <span class="opacity-75 small fw-bold text-uppercase mb-2 d-block">Available for Withdrawal</span>
+                    <h1 class="display-5 fw-bold mb-0">₦{{ user.profile.balance|floatformat:2 }}</h1>
                 </div>
-                <div class="card-body">
+
+                <div class="text-center mb-4">
+                    <h4 class="fw-bold" style="color: var(--vouchly-blue);">Request Payout</h4>
+                    <p class="text-muted small">Enter your bank details and the amount you wish to withdraw.</p>
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
                     
-                    <div class="alert alert-light border text-center mb-4">
-                        <p class="text-muted mb-0">Available Balance</p>
-                        <h2 class="fw-bold text-success">${{ user.profile.earnings|floatformat:2 }}</h2>
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger small rounded-3">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label class="form-label-custom">Amount to Withdraw (₦)</label>
+                        {{ form.amount }}
+                        <div class="form-text small">Minimum withdrawal: ₦1,000.00</div>
+                        {% if form.amount.errors %}
+                            <div class="text-danger small mt-1">{{ form.amount.errors }}</div>
+                        {% endif %}
                     </div>
 
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    <hr class="my-4 opacity-25">
+
+                    <div class="mb-3">
+                        <label class="form-label-custom">Bank Name</label>
+                        {{ form.bank_name }}
+                        {% if form.bank_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.bank_name.errors }}</div>
                         {% endif %}
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Amount ($)</label>
-                            {{ form.amount }}
-                            {% if form.amount.errors %}<div class="text-danger small">{{ form.amount.errors }}</div>{% endif %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom">Account Number</label>
+                            {{ form.account_number }}
+                            {% if form.account_number.errors %}
+                                <div class="text-danger small mt-1">{{ form.account_number.errors }}</div>
+                            {% endif %}
                         </div>
-
-                        <hr>
-                        <h6 class="text-muted mb-3">Bank Details</h6>
-
-                        <div class="mb-3">
-                            <label class="form-label">Bank Name</label>
-                            {{ form.bank_name }}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom">Account Name</label>
+                            {{ form.account_name }}
+                            {% if form.account_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.account_name.errors }}</div>
+                            {% endif %}
                         </div>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Account Number</label>
-                                {{ form.account_number }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Account Name</label>
-                                {{ form.account_name }}
-                            </div>
-                        </div>
+                    <div class="alert alert-warning border-0 small mt-3 rounded-3">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Payouts are processed within 24-48 business hours.
+                    </div>
 
-                        <div class="d-grid gap-2 mt-3">
-                            <button type="submit" class="btn btn-success btn-lg">Submit Request</button>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="d-grid gap-3 mt-4">
+                        <button type="submit" class="btn btn-withdraw shadow-sm">Submit Payout Request</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-link text-decoration-none text-muted small fw-bold text-center">Back to Dashboard</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('input, select').forEach(el => {
+        el.classList.add('input-custom');
+    });
+</script>
 {% endblock %}
