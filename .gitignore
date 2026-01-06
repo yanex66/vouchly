@@ -4,3 +4,4 @@ db.sqlite3
 media/
 .env
 vouchly_env/db.sqlite3
+config/settings.py
