@@ -3,141 +3,280 @@
 {% block content %}
 <style>
     :root {
-        --vouchly-blue: #002060;
-        --vouchly-gold: #ffc107;
-        --soft-bg: #f8f9fa;
-        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --nav-inactive-text: #475569; 
+        --nav-inactive-icon: #64748b;
+        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
+    
     body { background-color: var(--soft-bg); }
+
+    /* Glass Sidebar */
+    .dash-sidebar {
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 32px;
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+    }
+
     .dash-nav .nav-link {
-        color: #495057; font-weight: 600; padding: 0.8rem 1rem; border-radius: 10px; transition: 0.3s; display: flex; align-items: center;
+        color: var(--nav-inactive-text) !important; 
+        font-weight: 700;
+        padding: 14px 20px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        text-decoration: none;
     }
-    .dash-nav .nav-link i { margin-right: 12px; font-size: 1.2rem; }
-    .dash-nav .nav-link:hover, .dash-nav .nav-link.active {
-        background-color: rgba(0, 32, 96, 0.05); color: var(--vouchly-blue);
+
+    .dash-nav .nav-link i { 
+        margin-right: 14px; 
+        font-size: 1.25rem; 
+        color: var(--nav-inactive-icon);
     }
-    .dash-nav .nav-link.active { border-left: 4px solid var(--vouchly-blue); }
-    .stat-card { background: white; border: 1px solid #e9ecef; border-radius: 12px; padding: 1.5rem; height: 100%; box-shadow: var(--card-shadow); }
-    .stat-val { font-size: 1.75rem; font-weight: 800; color: var(--vouchly-blue); }
-    .stat-label { font-size: 0.85rem; color: #6c757d; font-weight: 700; text-transform: uppercase; }
-    .balance-box { background: white; border-radius: 12px; padding: 2rem; border: 1px solid #e9ecef; box-shadow: var(--card-shadow); }
+
+    .dash-nav .nav-link.active {
+        background-color: var(--midnight) !important;
+        color: white !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .dash-nav .nav-link.active i { color: white !important; }
+
+    .dash-nav .nav-link:not(.active):hover {
+        background-color: #f1f5f9;
+        color: var(--midnight) !important;
+        transform: translateX(5px);
+    }
+
+    /* Profile Header */
+    .profile-banner {
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 20px;
+    }
+
+    .avatar-box img {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: var(--card-shadow);
+    }
+
+    .avatar-placeholder {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        background: var(--midnight);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        padding: 1.8rem;
+        height: 100%;
+        box-shadow: var(--card-shadow);
+        transition: 0.3s;
+        text-align: center;
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .stat-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--midnight); letter-spacing: -1.5px; }
+    .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Invite Box */
+    .invite-box {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        border-radius: 28px;
+        padding: 2.5rem;
+        color: white;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+        border-bottom: 4px solid var(--accent);
+    }
+
+    .invite-box .form-control {
+        border-radius: 15px;
+        border: none;
+        padding: 14px 22px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.1);
+        color: var(--accent);
+    }
+
+    .btn-copy {
+        background: var(--accent);
+        color: var(--midnight);
+        font-weight: 800;
+        border-radius: 15px;
+        border: none;
+        padding: 0 30px;
+    }
+
+    /* Tables */
+    .table-card {
+        background: white;
+        border-radius: 28px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: var(--midnight);
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        padding: 20px 25px;
+        border: none;
+    }
+
+    .table tbody td { padding: 22px 25px; border-bottom: 1px solid #f1f5f9; font-weight: 500; }
+    .badge-vocoin { background: #fef9c3; color: #854d0e; font-weight: 800; border-radius: 50px; padding: 6px 16px; }
+
 </style>
 
-<div class="container py-4 mt-2">
-    <div class="row">
+<div class="container py-5 mt-3">
+    <div class="row g-4">
         <div class="col-lg-3">
-            <div class="card border-0 shadow-sm p-3 rounded-4 mb-4">
+            <div class="dash-sidebar mb-4">
                 <nav class="nav flex-column dash-nav">
-                    <a class="nav-link active" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                    <a class="nav-link" href="{% url 'referrals' %}"><i class="bi bi-people"></i> Refer & Earn</a>
-                    <a class="nav-link" href="{% url 'edit_profile' %}"><i class="bi bi-person-gear"></i> Settings</a>
-                    <a class="nav-link" href="{% url 'request_payout' %}"><i class="bi bi-wallet2"></i> Payments</a>
-                    <a class="nav-link text-danger mt-3" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    <a class="nav-link active" href="{% url 'dashboard' %}"><i class="bi bi-grid-fill"></i> Overview</a>
+                    <a class="nav-link" href="{% url 'referrals' %}"><i class="bi bi-people-fill"></i> Referrals</a>
+                    <a class="nav-link" href="{% url 'edit_profile' %}"><i class="bi bi-person-fill-gear"></i> Settings</a>
+                    <a class="nav-link" href="{% url 'request_payout' %}"><i class="bi bi-bank2"></i> Payouts</a>
+                    <hr class="opacity-10 my-4">
+                    <a class="nav-link text-danger" href="#" onclick="confirmLogout(event)">
+                        <i class="bi bi-power"></i> Logout
+                    </a>
                 </nav>
             </div>
         </div>
 
         <div class="col-lg-9">
-            <h3 class="fw-bold mb-4">Affiliate Dashboard</h3>
-
-            <div class="row g-4 mb-4">
-                <div class="col-md-12">
-                    <div class="balance-box">
-                        <span class="stat-label d-block mb-2 text-primary">Your Invite Link</span>
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light" id="affLink" value="{{ request.scheme }}://{{ request.get_host }}{% url 'register' %}?ref={{ user.username }}" readonly>
-                            <button class="btn btn-primary px-4" onclick="copyToClipboard('affLink')">Copy Link</button>
+            <div class="profile-banner">
+                <div class="avatar-box">
+                    {% if user.socialaccount_set.all.0.get_avatar_url %}
+                        <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Avatar">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
                         </div>
-                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2 class="fw-800 mb-0" style="color: var(--midnight); letter-spacing: -1.5px;">Welcome, {{ user.username }}</h2>
+                    <p class="text-muted fw-bold small mb-0">Track your community rewards and payouts</p>
                 </div>
             </div>
 
-            <div class="row g-4 mb-4 text-center">
+            <div class="invite-box mb-5">
+                <span class="stat-label text-warning d-block mb-3">Personal Referral Link</span>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="affLink" value="{{ request.scheme }}://{{ request.get_host }}{% url 'register' %}?ref={{ user.username }}" readonly>
+                    <button class="btn btn-copy" onclick="copyToClipboard('affLink')">Copy</button>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
                 <div class="col-6 col-md-4">
-                    <div class="stat-card border-primary">
-                        <span class="stat-label text-primary">Wallet Balance</span>
+                    <div class="stat-card">
+                        <span class="stat-label">Wallet Balance</span>
                         <div class="stat-val mt-2">₦{{ user.profile.balance|floatformat:0 }}</div>
-                        <span class="small text-muted fw-bold">Spendable Cash</span>
+                        <p class="small text-muted mb-0 fw-bold">Ready to Withdraw</p>
                     </div>
                 </div>
-
                 <div class="col-6 col-md-4">
-                    <div class="stat-card border-success">
-                        <span class="stat-label text-success">Lifetime Total</span>
+                    <div class="stat-card" style="border-bottom: 4px solid var(--accent);">
+                        <span class="stat-label">Lifetime Total</span>
                         <div class="stat-val mt-2">₦{{ lifetime_total|floatformat:0 }}</div>
-                        <span class="stat-growth bg-success-subtle text-success mt-2 d-inline-block px-2 rounded-pill small">Total Earned</span>
+                        <p class="small text-muted mb-0 fw-bold">Verified Earnings</p>
                     </div>
                 </div>
-
                 <div class="col-12 col-md-4">
                     <div class="stat-card">
-                        <span class="stat-label">Pending VOCOIN</span>
-                        <div class="stat-val mt-2">{{ vocoin_balance }}</div>
-                        <a href="{% url 'redeem_tokens' %}" class="btn btn-sm btn-warning mt-2 fw-bold rounded-pill px-3 shadow-sm">Redeem to Wallet</a>
+                        <span class="stat-label">Available VOCOIN</span>
+                        <div class="stat-val mt-2 text-warning">{{ vocoin_balance }}</div>
+                        <a href="{% url 'redeem_tokens' %}" class="btn btn-dark btn-sm w-100 mt-3 fw-800 rounded-pill">Swap to Cash</a>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-                <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0">Friends Invited</h5>
+            <div class="table-card mb-5">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-800 mb-0">Recent Referrals</h5>
+                    <i class="bi bi-people text-muted fs-4"></i>
                 </div>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
-                        <thead class="bg-light">
+                        <thead>
                             <tr>
-                                <th class="ps-4">Username</th>
+                                <th>New Member</th>
                                 <th class="text-center">Joined Date</th>
-                                <th class="text-end pe-4">Reward</th>
+                                <th class="text-end">Reward</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for ref in my_referrals %}
                             <tr>
-                                <td class="ps-4 fw-bold text-dark">{{ ref.referred_user.username }}</td>
-                                <td class="text-center small text-muted">{{ ref.created_at|date:"M d, Y" }}</td>
-                                <td class="text-end pe-4">
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-3">+1 VOCOIN</span>
-                                </td>
+                                <td class="fw-bold" style="color: var(--midnight);">{{ ref.referred_user.username }}</td>
+                                <td class="text-center text-muted small">{{ ref.created_at|date:"M d, Y" }}</td>
+                                <td class="text-end"><span class="badge-vocoin">+100 VOCOIN</span></td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="3" class="text-center py-5 text-muted">No friends invited yet.</td></tr>
+                            <tr><td colspan="3" class="text-center py-5 text-muted">No referrals recorded yet.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0">Transaction History</h5>
+            <div class="table-card">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-800 mb-0">Latest Payouts</h5>
+                    <i class="bi bi-receipt text-muted fs-4"></i>
                 </div>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
-                        <thead class="bg-light">
+                        <thead>
                             <tr>
-                                <th class="ps-4">Date</th>
+                                <th>Transaction Date</th>
                                 <th class="text-center">Amount</th>
-                                <th class="text-end pe-4">Status</th>
+                                <th class="text-end">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for payout in my_payouts %}
                             <tr>
-                                <td class="ps-4 small">
-                                    <div class="fw-bold text-dark">{{ payout.created_at|date:"M d, Y" }}</div>
-                                    <div class="text-muted small">
-                                        {% if payout.status == 'PAID' %}Internal Redemption{% else %}Bank Payout{% endif %}
-                                    </div>
+                                <td>
+                                    <div class="fw-bold" style="color: var(--midnight);">{{ payout.created_at|date:"M d, Y" }}</div>
+                                    <div class="text-muted small">Electronic Transfer</div>
                                 </td>
-                                <td class="text-center fw-bold text-primary">₦{{ payout.amount|floatformat:2 }}</td>
-                                <td class="text-end pe-4">
+                                <td class="text-center fw-800 text-dark">₦{{ payout.amount|floatformat:2 }}</td>
+                                <td class="text-end">
                                     {% if payout.status == 'PAID' %}
-                                        <span class="badge bg-success rounded-pill px-3">Completed</span>
+                                        <span class="badge bg-success rounded-pill px-3">Success</span>
                                     {% elif payout.status == 'PENDING' %}
                                         <span class="badge bg-warning text-dark rounded-pill px-3">Pending</span>
                                     {% else %}
-                                        <span class="badge bg-danger rounded-pill px-3">{{ payout.status }}</span>
+                                        <span class="badge bg-danger rounded-pill px-3">Failed</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -157,9 +296,10 @@
         const el = document.getElementById(id);
         el.select();
         navigator.clipboard.writeText(el.value).then(() => {
-            const btn = document.querySelector('[onclick="copyToClipboard(\'affLink\')"]');
-            btn.innerText = "Copied!";
-            setTimeout(() => { btn.innerText = "Copy Link"; }, 2000);
+            const btn = document.querySelector('.btn-copy');
+            const oldText = btn.innerText;
+            btn.innerText = "COPIED!";
+            setTimeout(() => { btn.innerText = oldText; }, 2000);
         });
     }
 </script>

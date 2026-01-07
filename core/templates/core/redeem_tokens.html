@@ -2,46 +2,216 @@
 
 {% block content %}
 <style>
-    :root { --v-blue: #002060; --v-gold: #ffc107; }
-    .redeem-box { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .token-stat { background: #f8faff; border: 1.5px dashed var(--v-blue); border-radius: 15px; padding: 2rem; }
+    :root {
+        --midnight: #0f172a;
+        --midnight-dark: #020617;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+    }
+
+    body { background-color: var(--soft-bg); color: var(--text-main); }
+
+    .redeem-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+    }
+
+    /* Premium Redemption Card */
+    .redeem-card {
+        width: 100%;
+        max-width: 500px;
+        background: white;
+        border-radius: 32px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+    }
+
+    .redeem-header {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        padding: 50px 30px;
+        text-align: center;
+        color: white;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .redeem-header h2 {
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .redeem-body { padding: 40px; }
+
+    /* Token Balance Display */
+    .token-stat-box {
+        background: var(--soft-bg);
+        border: 2px dashed #e2e8f0;
+        border-radius: 24px;
+        padding: 30px 20px;
+        text-align: center;
+        margin-bottom: 35px;
+        transition: 0.3s;
+    }
+
+    .token-stat-box:hover { border-color: var(--accent); background: #fff; }
+
+    .token-label {
+        font-weight: 800;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .token-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--midnight);
+        letter-spacing: -1px;
+        line-height: 1;
+    }
+
+    .cash-badge {
+        background: #fef9c3;
+        color: #854d0e;
+        font-weight: 800;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-top: 15px;
+    }
+
+    /* Form Elements */
+    .form-label-custom {
+        font-weight: 800;
+        color: var(--midnight);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .input-custom {
+        border-radius: 15px !important;
+        padding: 14px 18px;
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        width: 100%;
+        color: var(--midnight);
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .input-custom:focus {
+        background-color: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.15);
+        outline: none;
+    }
+
+    .btn-redeem-premium {
+        background: var(--midnight);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 16px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        width: 100%;
+        text-transform: uppercase;
+        transition: 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-redeem-premium:hover {
+        background: var(--midnight-dark);
+        color: var(--accent);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .cancel-link {
+        color: var(--text-muted);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.2s;
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .cancel-link:hover { color: var(--midnight); }
+
+    .info-alert {
+        background: #f0f9ff;
+        border: 1px solid #e0f2fe;
+        color: #0369a1;
+        border-radius: 15px;
+        padding: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+    }
 </style>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="redeem-box p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold" style="color: var(--v-blue);">Redeem VOCOIN</h3>
-                    <p class="text-muted">Convert your tokens into spendable wallet cash.</p>
-                </div>
+<div class="redeem-container">
+    <div class="redeem-card">
+        <div class="redeem-header">
+            <h2>Redeem Tokens</h2>
+            <p class="small opacity-75 fw-500 mb-0">Convert VOCOIN to Wallet Cash</p>
+        </div>
 
-                <div class="token-stat text-center mb-4">
-                    <span class="text-uppercase small fw-bold text-muted d-block">Available Tokens</span>
-                    <h1 class="display-5 fw-bold text-dark">{{ vocoin_balance }} <small class="fs-4">VOCOIN</small></h1>
-                    <span class="badge bg-primary-subtle text-primary mt-2">Cash Value: ₦{{ naira_value|floatformat:2 }}</span>
-                </div>
-
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <label class="fw-bold mb-2">Amount to Redeem (₦)</label>
-                            <button type="button" class="btn btn-link btn-sm p-0 fw-bold text-decoration-none" onclick="redeemAll()">Redeem All</button>
-                        </div>
-                        <input type="number" name="amount" id="id_amount" class="form-control form-control-lg text-center fw-bold" step="0.01" value="{{ naira_value }}">
-                    </div>
-
-                    <div class="alert alert-info small border-0 py-3">
-                        <i class="bi bi-info-circle me-2"></i> Funds will be transferred instantly to your Wallet Balance.
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary py-3 fw-bold rounded-3" style="background: var(--v-blue);">Redeem Now</button>
-                        <a href="{% url 'dashboard' %}" class="btn btn-link text-muted fw-bold">Cancel</a>
-                    </div>
-                </form>
+        <div class="redeem-body">
+            <div class="token-stat-box">
+                <span class="token-label">Available for Swap</span>
+                <div class="token-value">{{ vocoin_balance }} <small style="font-size: 1rem; opacity: 0.6;">VOCOIN</small></div>
+                <div class="cash-badge">₦{{ naira_value|floatformat:2 }} Cash Value</div>
             </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label-custom mb-0">Amount to Transfer (₦)</label>
+                        <button type="button" class="btn btn-link p-0 text-decoration-none fw-800 small text-midnight" onclick="redeemAll()" style="font-size: 0.7rem; text-transform: uppercase;">
+                            Redeem Max
+                        </button>
+                    </div>
+                    <input type="number" name="amount" id="id_amount" class="input-custom" step="0.01" value="{{ naira_value }}">
+                </div>
+
+                <div class="info-alert">
+                    <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+                    <span>Converted funds are transferred instantly to your Spendable Wallet.</span>
+                </div>
+
+                <button type="submit" class="btn btn-redeem-premium shadow-sm">
+                    Confirm Redemption
+                </button>
+            </form>
+
+            <a href="{% url 'dashboard' %}" class="cancel-link">
+                Return to Dashboard
+            </a>
         </div>
     </div>
 </div>

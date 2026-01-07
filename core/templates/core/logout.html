@@ -1,11 +1,126 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <div class="py-5">
-        <h2 class="mb-3">You have been logged out</h2>
-        <p class="text-muted mb-4">Thanks for visiting. We hope to see you back soon!</p>
-        <a href="{% url 'login' %}" class="btn btn-primary px-4">Log in again</a>
+<style>
+    :root {
+        --midnight: #0f172a;
+        --midnight-dark: #020617;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
+    }
+
+    body { background-color: var(--soft-bg); }
+
+    .logout-container {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+    }
+
+    /* Premium Logout Card */
+    .logout-card {
+        width: 100%;
+        max-width: 480px;
+        background: white;
+        border-radius: 32px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .logout-header {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        padding: 50px 30px;
+        color: white;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .logout-header h2 {
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+        margin-bottom: 0;
+    }
+
+    .logout-body { padding: 50px 40px; }
+
+    /* Icon Box matching the Security/Settings pages */
+    .status-icon-box {
+        width: 80px;
+        height: 80px;
+        background: var(--soft-bg);
+        color: var(--midnight);
+        border-radius: 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .btn-login-premium {
+        background: var(--midnight);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 16px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        width: 100%;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s;
+    }
+
+    .btn-login-premium:hover {
+        background: var(--midnight-dark);
+        color: var(--accent);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .home-link {
+        color: var(--midnight);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.2s;
+    }
+
+    .home-link:hover { color: var(--accent); }
+</style>
+
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-header">
+            <h2>Session Ended</h2>
+        </div>
+
+        <div class="logout-body">
+            <div class="status-icon-box">
+                <i class="bi bi-door-open-fill"></i>
+            </div>
+            
+            <h3 class="fw-800 mb-3" style="color: var(--midnight); letter-spacing: -0.5px;">You have been logged out</h3>
+            <p class="text-muted fw-500 mb-5">Thanks for spending time with us. We hope to see you back soon to claim more rewards!</p>
+
+            <div class="d-grid gap-3">
+                <a href="{% url 'login' %}" class="btn btn-login-premium shadow-sm">
+                    Log In Again
+                </a>
+                <a href="{% url 'home' %}" class="home-link mt-2">
+                    Return to Homepage
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

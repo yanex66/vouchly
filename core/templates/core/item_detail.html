@@ -1,161 +1,238 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* 1. Global Font & Boldness Application */
+    :root {
+        --vouchly-font: 'Poppins', sans-serif;
+        --deep-blue: #002060;
+        --accent-gold: #ffc107;
+        --success-green: #28a745;
+    }
+
+    /* Target every element including form fields */
+    body, .container, h1, h2, h3, h4, h5, h6, p, a, span, button, input, select, textarea {
+        font-family: var(--vouchly-font) !important;
+    }
+
+    /* Extra Boldness for UI Elements */
+    h1, h2, h3, h4, .fw-bold, .btn, .breadcrumb-item, label, strong {
+        font-weight: 800 !important;
+    }
+
+    /* 2. Fix for Dropdown Visibility and Styling */
+    select, .form-select, input, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 700 !important; /* Bold text inside dropdown */
+        color: #212529;
+        background-color: #fff;
+        border: 2px solid #ced4da;
+        border-radius: 10px;
+        appearance: auto !important; /* Forces the browser to show the dropdown arrow */
+    }
+
+    .lead {
+        font-weight: 600 !important;
+        color: #333 !important;
+    }
+
+    /* 3. Modern Breadcrumb Styling */
+    .custom-breadcrumb {
+        background: #f1f3f5;
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+    .custom-breadcrumb a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #6c757d;
+        padding: 0 10px;
+        font-weight: 800;
+    }
+
+    /* 4. Premium PROMOTE & EARN Card */
+    .promote-card {
+        border: 3px solid var(--success-green);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+        background: #fff;
+    }
+    .promote-header {
+        background: linear-gradient(45deg, var(--success-green), #1e7e34);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+    
+    .ref-link-container {
+        display: flex;
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .ref-link-input {
+        border: none !important;
+        background: transparent;
+        flex-grow: 1;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--deep-blue);
+    }
+    .copy-btn {
+        border: none;
+        background: #212529;
+        color: #fff;
+        padding: 0 25px;
+        font-weight: 800;
+    }
+
+    /* 5. Circle Pulse Indicator Animation */
+    @keyframes pulse-circle {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.5); }
+        70% { box-shadow: 0 0 0 35px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+    .pulse-active { animation: pulse-circle 1.5s infinite; }
+
+    .btn-purchase {
+        background-color: var(--accent-gold);
+        border: none;
+        color: var(--deep-blue);
+        font-weight: 800 !important;
+        padding: 18px;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    }
+
+    html { scroll-behavior: smooth; }
+    #promoteSection { scroll-margin-top: 160px; }
+</style>
+
 <div class="container mt-5">
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6 mb-4 text-center">
             {% if item.image %}
-            <img src="{{ item.image.url }}" class="img-fluid rounded shadow" alt="{{ item.name }}">
-            {% else %}
-            <div class="bg-light d-flex align-items-center justify-content-center rounded shadow" style="height: 400px;">
-                <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
-                <span class="ms-2 text-muted">No Image Available</span>
-            </div>
+            <img src="{{ item.image.url }}" class="img-fluid rounded-4 shadow-lg border" alt="{{ item.name }}" style="max-height: 500px; object-fit: contain;">
             {% endif %}
         </div>
 
         <div class="col-md-6">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'category_detail' item.category.slug %}">{{ item.category.name }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+                <ol class="breadcrumb custom-breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">HOME</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'category_detail' item.category.slug %}">{{ item.category.name|upper }}</a></li>
+                    <li class="breadcrumb-item active">{{ item.name|upper }}</li>
                 </ol>
             </nav>
 
-            <h1 class="fw-bold mb-3">{{ item.name }}</h1>
+            <h1 class="display-5 fw-bold mb-3" style="color: var(--deep-blue);">{{ item.name }}</h1>
             
-            <div class="mb-3">
-                <span class="text-warning fs-4">
-                    {% if avg_rating %}
-                        {{ avg_rating|floatformat:1 }} ★
-                    {% else %}
-                        No ratings yet
-                    {% endif %}
+            <div class="mb-4">
+                <span class="badge bg-dark text-warning px-3 py-2 fs-6 shadow-sm">
+                    {{ avg_rating|default:"5.0"|floatformat:1 }} ★
                 </span>
-                <span class="text-muted">({{ reviews.count }} reviews)</span>
+                <span class="ms-2 fw-bold text-muted">({{ reviews.count }} REVIEWS)</span>
             </div>
 
-            <p class="lead">{{ item.description }}</p>
-
-            {% if item.specifications %}
-            <div class="card bg-light border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">Specifications</h5>
-                    <ul class="list-unstyled mb-0">
-                        {% for key, value in item.specifications.items %}
-                        <li><strong>{{ key }}:</strong> {{ value }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
+            <p class="lead mb-4">{{ item.description }}</p>
 
             {% if user.is_authenticated %}
-            <div class="card border-success mb-4">
-                <div class="card-header bg-success text-white fw-bold">
-                    <i class="bi bi-cash-coin"></i> PROMOTE & EARN
+            <div id="promoteSection" class="promote-card mb-4">
+                <div class="promote-header">
+                    <i class="bi bi-rocket-takeoff-fill me-2"></i> PROMOTE & EARN
                 </div>
-                <div class="card-body">
-                    <p class="card-text small text-muted mb-2">
-                        Share your unique link! You earn when others PURCHASE.
-                    </p>
-                    <div class="input-group">
-                        <input type="text" class="form-control" value="{{ referral_link }}" id="refLink" readonly>
-                        <button class="btn btn-outline-success" type="button" onclick="copyLink()">
-                            Copy Link
-                        </button>
+                <div class="promote-body">
+                    <p class="fw-bold text-muted mb-3">Copy your unique link to earn commissions!</p>
+                    <div class="ref-link-container">
+                        <input type="text" class="ref-link-input" value="{{ referral_link }}" id="refLink" readonly>
+                        <button class="copy-btn" onclick="copyLink()">COPY</button>
                     </div>
                 </div>
             </div>
             {% endif %}
 
-            <div class="d-grid gap-2 mb-4">
-                <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-warning btn-lg fw-bold shadow-sm text-dark">
-                    <i class="bi bi-cart-check-fill me-2"></i> PURCHASE
+            <div class="d-grid gap-3 mb-5">
+                <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-purchase">
+                    <i class="bi bi-cart-check-fill me-2"></i> PURCHASE NOW
                 </a>
 
                 {% if user.is_authenticated %}
-                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
-                    PROMOTE
-                </button>
-                {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-secondary">LOG IN TO PROMOTE</a>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button onclick="animatePromoteSection()" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow">
+                            PROMOTE
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-outline-dark w-100 py-3 fw-bold rounded-3 border-2" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
+                            REVIEW
+                        </button>
+                    </div>
+                </div>
                 {% endif %}
             </div>
 
-            <div class="mt-4 pt-3 border-top">
-                <h6 class="fw-bold text-muted mb-3 text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Spread the Word</h6>
-                <div class="d-flex gap-2">
-                    <a href="https://api.whatsapp.com/send?text={{ item.name }} - Check it out on Vouchly: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%;">
-                        <i class="bi bi-whatsapp fs-5"></i>
-                    </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%; background-color: #1877F2;">
-                        <i class="bi bi-facebook fs-5"></i>
-                    </a>
-                    <a href="https://twitter.com/intent/tweet?text={{ item.name }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 50%;">
-                        <i class="bi bi-twitter-x fs-5"></i>
-                    </a>
-                </div>
-            </div>
-
             <div class="collapse mb-4 mt-3" id="reviewForm">
-                <div class="card card-body shadow-sm">
-                    <h5 class="card-title fw-bold">Add Your Review</h5>
+                <div class="card card-body shadow border-0 bg-light rounded-4 p-4">
+                    <h4 class="fw-bold mb-4 text-dark text-center">SHARE YOUR VOUCH</h4>
                     <form method="POST" action="{% url 'add_review' item.slug %}">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label class="form-label">Rating</label>
-                            {{ form.rating }}
-                        </div>
+                            <label class="form-label">HOW WOULD YOU RATE THIS?</label>
+                            {{ form.rating }} </div>
                         <div class="mb-3">
-                            <label class="form-label">Title</label>
+                            <label class="form-label">VOUCH TITLE</label>
                             {{ form.title }}
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Review</label>
+                        <div class="mb-4">
+                            <label class="form-label">YOUR EXPERIENCE</label>
                             {{ form.content }}
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow">SUBMIT VOUCH</button>
                     </form>
                 </div>
             </div>
-
         </div>
-    </div>
-
-    <div class="mt-5">
-        <h3 class="mb-4 fw-bold">User Reviews</h3>
-        {% for review in reviews %}
-        <div class="card mb-3 border-0 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <img src="{{ review.author.profile.image.url }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
-                        <div>
-                            <h6 class="mb-0 fw-bold">{{ review.author.username }}</h6>
-                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
-                        </div>
-                    </div>
-                    <span class="text-warning fw-bold">{{ review.rating }} ★</span>
-                </div>
-                <h5 class="mt-3 fw-bold">{{ review.title }}</h5>
-                <p class="card-text">{{ review.content }}</p>
-            </div>
-        </div>
-        {% empty %}
-        <p class="text-muted text-center py-4 bg-light rounded">No reviews yet. Be the first to PROMOTE this product!</p>
-        {% endfor %}
     </div>
 </div>
 
 <script>
+    function animatePromoteSection() {
+        const section = document.getElementById("promoteSection");
+        if(section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+            section.classList.add("pulse-active");
+            setTimeout(() => { section.classList.remove("pulse-active"); }, 3000);
+        }
+    }
+
     function copyLink() {
         var copyText = document.getElementById("refLink");
         copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value);
-        alert("Promotional link copied to clipboard!");
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = "COPIED!";
+            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+        });
     }
 </script>
 {% endblock %}

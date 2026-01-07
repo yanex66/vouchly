@@ -1,12 +1,15 @@
+import os
+import decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Avg, Count
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.conf import settings
 from .models import Item, Category, Review, Profile, Referral, PayoutRequest
 from .forms import ReviewForm, UserRegisterForm, ProfileUpdateForm, PayoutRequestForm
-import decimal
 
 # --- 1. Homepage ---
 def home(request):
@@ -41,7 +44,6 @@ def register(request):
                     referrer = User.objects.get(username=referrer_name)
                     Referral.objects.create(referrer=referrer, referred_user=new_user)
                     profile = referrer.profile
-                    # Reward is added as full Naira value
                     profile.token_rewards += 100
                     profile.save()
                     del request.session['referrer']
@@ -57,16 +59,22 @@ def register(request):
 @login_required(login_url='/login/')
 def user_dashboard(request):
     profile = request.user.profile
-    my_referrals = Referral.objects.filter(referrer=request.user).order_by('-created_at')
-    my_payouts = PayoutRequest.objects.filter(user=request.user).order_by('-created_at')
+    referral_list = Referral.objects.filter(referrer=request.user).order_by('-created_at')
+    ref_paginator = Paginator(referral_list, 5) 
+    ref_page_num = request.GET.get('ref_page')
+    my_referrals = ref_paginator.get_page(ref_page_num)
     
-    # FIXED: Showing full Naira value instead of dividing by 100
+    payout_list = PayoutRequest.objects.filter(user=request.user).order_by('-created_at')
+    pay_paginator = Paginator(payout_list, 5) 
+    pay_page_num = request.GET.get('pay_page')
+    my_payouts = pay_paginator.get_page(pay_page_num)
+    
     vocoin_balance = profile.token_rewards if profile.token_rewards else 0
     lifetime_total = profile.token_rewards + profile.balance
     
     context = {
         'profile': profile,
-        'my_referrals': my_referrals,
+        'my_referrals': my_referrals, 
         'my_payouts': my_payouts, 
         'vocoin_balance': vocoin_balance,
         'lifetime_total': lifetime_total,
@@ -77,7 +85,6 @@ def user_dashboard(request):
 @login_required(login_url='/login/')
 def redeem_tokens(request):
     profile = request.user.profile
-    # FIXED: Using full Naira value
     vocoin_balance = profile.token_rewards if profile.token_rewards else 0
     naira_value = profile.token_rewards 
     
@@ -91,7 +98,6 @@ def redeem_tokens(request):
                 profile.balance += amount
                 profile.save()
                 
-                # Internal transfer recorded as PAID
                 PayoutRequest.objects.create(
                     user=request.user, 
                     amount=amount, 
@@ -136,9 +142,13 @@ def request_payout(request):
 @login_required(login_url='/login/')
 def referrals_page(request):
     profile = request.user.profile
+    referral_list = Referral.objects.filter(referrer=request.user).order_by('-created_at')
+    paginator = Paginator(referral_list, 5) 
+    page_number = request.GET.get('page')
+    my_referrals = paginator.get_page(page_number)
+    
     context = {
-        'my_referrals': Referral.objects.filter(referrer=request.user).order_by('-created_at'),
-        # FIXED: Using full Naira value
+        'my_referrals': my_referrals,
         'vocoin_balance': profile.token_rewards if profile.token_rewards else 0,
         'lifetime_total': profile.token_rewards + profile.balance,
     }
@@ -149,8 +159,18 @@ def item_detail(request, slug):
     item = get_object_or_404(Item, slug=slug)
     reviews = item.reviews.all().order_by('-created_at')
     avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+    
+    referral_link = ""
+    if request.user.is_authenticated:
+        base_url = request.build_absolute_uri().split('?')[0]
+        referral_link = f"{base_url}?ref={request.user.username}"
+
     return render(request, 'core/item_detail.html', {
-        'item': item, 'reviews': reviews, 'avg_rating': avg_rating, 'form': ReviewForm()
+        'item': item, 
+        'reviews': reviews, 
+        'avg_rating': avg_rating, 
+        'form': ReviewForm(),
+        'referral_link': referral_link 
     })
 
 @login_required(login_url='/login/')

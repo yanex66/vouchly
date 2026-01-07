@@ -3,131 +3,225 @@
 {% block content %}
 <style>
     :root {
-        --vouchly-blue: #002060;
-        --vouchly-gold: #ffc107;
-        --soft-bg: #f8f9fa;
+        --midnight: #0f172a;
+        --midnight-dark: #020617;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
     }
 
     /* Hero Section */
     .about-hero {
-        background: linear-gradient(135deg, var(--vouchly-blue) 0%, #004080 100%);
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
         color: white;
-        padding: 80px 20px;
+        padding: 120px 20px;
         text-align: center;
-        border-radius: 0 0 50px 50px;
-        margin-bottom: 50px;
+        border-radius: 0 0 40px 40px;
+        margin-bottom: 80px;
+        border-bottom: 5px solid var(--accent);
     }
 
-    .about-card {
+    .about-hero h1 { font-weight: 800; letter-spacing: -1px; }
+
+    .hero-subtitle {
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    /* Mission Section */
+    .mission-box {
         background: white;
-        border: none;
-        border-radius: 25px;
-        padding: 40px;
-        box-shadow: 0 15px 35px rgba(0,32,96,0.08);
+        border-radius: 30px;
+        padding: 60px 40px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+        margin-bottom: 80px;
+    }
+
+    /* Value Cards */
+    .value-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
         height: 100%;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .about-card:hover {
-        transform: translateY(-5px);
+    .value-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
     }
 
-    .icon-box {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 193, 7, 0.15);
-        color: var(--vouchly-blue);
+    .value-icon {
+        width: 70px; height: 70px;
+        background: var(--soft-bg);
         border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        margin-bottom: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 25px;
+        color: var(--midnight);
+        font-size: 2rem;
+        border-bottom: 3px solid var(--accent);
     }
 
-    .feature-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        font-weight: 500;
-        color: #444;
+    /* EXPANDED TIMELINE SECTION */
+    .timeline { position: relative; max-width: 1000px; margin: 60px auto; }
+    .timeline::after {
+        content: '';
+        position: absolute;
+        width: 4px; background: var(--midnight);
+        top: 0; bottom: 0; left: 50%;
+        margin-left: -2px; opacity: 0.1;
     }
 
-    .feature-item i {
-        color: var(--vouchly-gold);
-        margin-right: 12px;
-        font-size: 1.2rem;
+    .timeline-item { padding: 25px 40px; position: relative; width: 50%; }
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        width: 20px; height: 20px;
+        right: -10px; background: var(--accent);
+        border: 4px solid white;
+        top: 35px; border-radius: 50%; z-index: 1;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* Mobile Optimization */
+    .left { left: 0; text-align: right; }
+    .right { left: 50%; }
+    .right::after { left: -10px; }
+
+    .timeline-content {
+        padding: 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: 0.3s;
+    }
+    .timeline-content:hover { border-color: var(--accent); transform: scale(1.02); }
+
+    .section-title {
+        font-weight: 800;
+        color: var(--midnight);
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 60px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 50%;
+        transform: translateX(-50%);
+        width: 80px; height: 4px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+
+    .cta-box {
+        background: var(--midnight-dark);
+        border-radius: 35px;
+        padding: 80px 40px;
+        border: 2px solid var(--accent);
+    }
+
     @media (max-width: 768px) {
-        .about-hero {
-            padding: 60px 15px;
-            border-radius: 0 0 30px 30px;
-        }
-        .about-hero h1 { font-size: 2.5rem; }
-        .about-card { padding: 30px 20px; margin-bottom: 20px; }
+        .timeline::after { left: 31px; }
+        .timeline-item { width: 100%; padding-left: 70px; text-align: left; }
+        .timeline-item::after { left: 21px; }
+        .right { left: 0%; }
+        .about-hero { padding: 80px 20px; }
     }
 </style>
 
 <div class="about-hero">
     <div class="container">
-        <h1 class="display-3 fw-bold mb-3">About Vouchly</h1>
-        <p class="lead opacity-75 mx-auto" style="max-width: 700px;">
-            Empowering the next generation of shoppers through transparency, community, and rewarding experiences.
+        <span class="hero-subtitle">Vouchly Evolution</span>
+        <h1 class="display-3 mb-4 mt-2">Turning Insight into Income</h1>
+        <p class="lead opacity-75 mx-auto fw-400" style="max-width: 750px;">
+            We bridge the gap between world-class services and the people who need them through the power of authentic community vouchers.
         </p>
     </div>
 </div>
 
 <div class="container mb-5">
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="about-card">
-                <div class="icon-box">
-                    <i class="bi bi-rocket-takeoff-fill"></i>
-                </div>
-                <h2 class="fw-bold mb-3" style="color: var(--vouchly-blue);">Our Mission</h2>
-                <p class="text-muted leading-relaxed">
-                    We believe that shopping online should be transparent and rewarding. Vouchly was built to bridge the gap between real users and real products. Our platform allows you to share your genuine experiences, helping a global community make better, more informed decisions every single day.
-                </p>
+    <div class="mission-box text-center">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="lead text-muted mx-auto" style="max-width: 800px; font-weight: 500;">
+            To create the world's most transparent reward ecosystem where every recommendation carries weight and every creator is compensated fairly for their influence.
+        </p>
+    </div>
+
+    <div class="row g-4 mb-5 pb-5 text-center">
+        <div class="col-md-4">
+            <div class="value-card">
+                <div class="value-icon"><i class="bi bi-shield-check"></i></div>
+                <h4 class="fw-bold mb-3">Transparency</h4>
+                <p class="text-muted fw-500">Real-time tracking of every vouch and conversion in your dashboard.</p>
             </div>
         </div>
-
-        <div class="col-lg-6">
-            <div class="about-card">
-                <div class="icon-box">
-                    <i class="bi bi-shield-check-fill"></i>
-                </div>
-                <h2 class="fw-bold mb-3" style="color: var(--vouchly-blue);">Why Vouchly?</h2>
-                <div class="mt-4">
-                    <div class="feature-item">
-                        <i class="bi bi-patch-check-fill"></i>
-                        <span>100% Genuine User Reviews</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="bi bi-link-45deg"></i>
-                        <span>Verified & Safe Affiliate Links</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="bi bi-wallet2"></i>
-                        <span>Fast & Secure Payout System</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="bi bi-people-fill"></i>
-                        <span>A Community-Driven Platform</span>
-                    </div>
-                </div>
+        <div class="col-md-4">
+            <div class="value-card">
+                <div class="value-icon"><i class="bi bi-lightning-charge"></i></div>
+                <h4 class="fw-bold mb-3">Efficiency</h4>
+                <p class="text-muted fw-500">Optimized infrastructure ensuring your rewards are processed without delay.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="value-card">
+                <div class="value-icon"><i class="bi bi-wallet2"></i></div>
+                <h4 class="fw-bold mb-3">Prosperity</h4>
+                <p class="text-muted fw-500">A clear pathway to turning social engagement into spendable wallet balance.</p>
             </div>
         </div>
     </div>
 
-    <div class="row mt-5 text-center">
+    <h2 class="section-title">The Evolution</h2>
+    <div class="timeline">
+        <div class="timeline-item left">
+            <div class="timeline-content">
+                <h5 class="fw-800" style="color: var(--midnight);">JANUARY 2025</h5>
+                <p class="text-muted mb-0 small fw-bold">Blueprint Phase: The initial concept for a community-driven reward architecture was finalized.</p>
+            </div>
+        </div>
+        <div class="timeline-item right">
+            <div class="timeline-content">
+                <h5 class="fw-800" style="color: var(--midnight);">MARCH 2025</h5>
+                <p class="text-muted mb-0 small fw-bold">Beta testing commenced with a select group of creators to refine the user experience.</p>
+            </div>
+        </div>
+        <div class="timeline-item left">
+            <div class="timeline-content">
+                <h5 class="fw-800" style="color: var(--midnight);">MAY 6, 2025</h5>
+                <p class="text-muted mb-0 small fw-bold">Infrastructure Launch: We officially transitioned to our high-performance core architecture.</p>
+            </div>
+        </div>
+        <div class="timeline-item right">
+            <div class="timeline-content">
+                <h5 class="fw-800" style="color: var(--midnight);">OCTOBER 2025</h5>
+                <p class="text-muted mb-0 small fw-bold">Expansion: The platform integrated major categories including Global Flights and Car Rentals.</p>
+            </div>
+        </div>
+        <div class="timeline-item left">
+            <div class="timeline-content">
+                <h5 class="fw-800" style="color: var(--midnight);">JANUARY 2026</h5>
+                <p class="text-muted mb-0 small fw-bold">Community Milestone: Successfully verified over 50,000 unique reviews and processed thousands of redemptions.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-5 text-center">
         <div class="col-12">
-            <div class="p-5 rounded-4" style="background: rgba(0, 32, 96, 0.03); border: 1px dashed #ccc;">
-                <h4 class="fw-bold mb-2">Ready to join the community?</h4>
-                <p class="text-muted mb-4">Start sharing your vouchers and earning rewards today.</p>
-                <a href="{% url 'register' %}" class="btn btn-warning fw-bold px-5 py-3 rounded-pill text-dark">
-                    Get Started Now
+            <div class="cta-box shadow-lg">
+                <h2 class="display-5 fw-800 text-white mb-3">Ready to Start?</h2>
+                <p class="text-white opacity-75 mb-5 lead fw-500">Join thousands of creators who have already started earning through the Vouchly ecosystem.</p>
+                <a href="{% url 'register' %}" class="btn btn-warning fw-800 px-5 py-3 rounded-pill text-dark shadow-lg">
+                    CREATE YOUR FREE ACCOUNT
                 </a>
             </div>
         </div>

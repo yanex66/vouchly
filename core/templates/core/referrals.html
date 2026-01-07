@@ -1,104 +1,255 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-3 mb-4">
-             <div class="card border-0 shadow-sm p-3 rounded-4">
-                <nav class="nav flex-column dash-nav" style="gap: 10px;">
-                    <a class="nav-link" href="{% url 'dashboard' %}" style="color:#495057; font-weight:600; text-decoration:none; padding:10px; border-radius:10px;">
-                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                    </a>
-                    <a class="nav-link active" href="{% url 'referrals' %}" style="background: rgba(0, 32, 96, 0.05); color: #002060; border-left: 4px solid #002060; text-decoration:none; padding:10px; border-radius:0 10px 10px 0; font-weight:600;">
-                        <i class="bi bi-people me-2"></i> Refer & Earn
+<style>
+    :root {
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        /* CONTRAST FIX: Clearly visible inactive colors */
+        --nav-inactive-text: #475569; 
+        --nav-inactive-icon: #64748b;
+        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    
+    body { background-color: var(--soft-bg); }
+
+    /* Glass Sidebar - High Contrast Fix */
+    .dash-sidebar {
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 32px;
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .dash-nav .nav-link {
+        color: var(--nav-inactive-text) !important; 
+        font-weight: 700;
+        padding: 14px 20px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        text-decoration: none;
+    }
+
+    .dash-nav .nav-link i { 
+        margin-right: 14px; 
+        font-size: 1.25rem; 
+        color: var(--nav-inactive-icon);
+    }
+
+    /* Active Referrals State */
+    .dash-nav .nav-link.active {
+        background-color: var(--midnight) !important;
+        color: white !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .dash-nav .nav-link.active i { color: white !important; }
+
+    .dash-nav .nav-link:not(.active):hover {
+        background-color: #f1f5f9;
+        color: var(--midnight) !important;
+        transform: translateX(5px);
+    }
+
+    /* Invite Hero Card */
+    .invite-hero {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        border-radius: 32px;
+        padding: 60px 40px;
+        color: white;
+        text-align: center;
+        border-bottom: 5px solid var(--accent);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+    }
+
+    .invite-hero h2 { font-weight: 800; letter-spacing: -1.5px; text-transform: uppercase; }
+
+    .link-box {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 25px;
+        max-width: 550px;
+        margin: 30px auto 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ref-input {
+        background: white !important;
+        border-radius: 12px !important;
+        border: none !important;
+        font-weight: 700;
+        color: var(--midnight);
+        text-align: center;
+        padding: 12px !important;
+    }
+
+    .btn-copy-gold {
+        background: var(--accent);
+        color: var(--midnight);
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        padding: 0 25px;
+        text-transform: uppercase;
+        transition: 0.3s;
+    }
+
+    .btn-copy-gold:hover { background: white; transform: scale(1.05); }
+
+    /* Stat Cards */
+    .stat-card-mini {
+        background: white;
+        border-radius: 24px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--card-shadow);
+        height: 100%;
+    }
+
+    .stat-card-mini .val { font-size: 2rem; font-weight: 800; color: var(--midnight); }
+    .stat-card-mini .lab { font-size: 0.7rem; font-weight: 800; color: var(--nav-inactive-icon); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Table Card */
+    .table-card {
+        background: white;
+        border-radius: 28px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: var(--midnight);
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        padding: 20px 25px;
+        border: none;
+    }
+
+    .table tbody td { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; font-weight: 500; }
+    .badge-reward { background: #f0fdf4; color: #16a34a; font-weight: 800; border-radius: 50px; padding: 6px 15px; font-size: 0.75rem; }
+
+    /* Pagination */
+    .page-link { border-radius: 10px !important; margin: 0 3px; font-weight: 700; color: var(--midnight); border: none; background: #f1f5f9; }
+    .active .page-link { background: var(--midnight) !important; color: white !important; }
+
+</style>
+
+<div class="container py-5 mt-3">
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="dash-sidebar mb-4">
+                <nav class="nav flex-column dash-nav">
+                    <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid-fill"></i> Overview</a>
+                    <a class="nav-link active" href="{% url 'referrals' %}"><i class="bi bi-people-fill"></i> Refer & Earn</a>
+                    <a class="nav-link" href="{% url 'edit_profile' %}"><i class="bi bi-person-fill-gear"></i> Settings</a>
+                    <a class="nav-link" href="{% url 'request_payout' %}"><i class="bi bi-bank2"></i> Payouts</a>
+                    <hr class="opacity-10 my-4">
+                    <a class="nav-link text-danger" href="#" onclick="confirmLogout(event)">
+                        <i class="bi bi-power"></i> Logout
                     </a>
                 </nav>
             </div>
         </div>
 
         <div class="col-lg-9">
-            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4 text-center text-white" style="background: linear-gradient(135deg, #002060 0%, #004080 100%);">
-                <h2 class="fw-bold mb-3">Invite Friends, Earn VOCOIN</h2>
-                <p class="opacity-75 mb-4">Earn 1 VOCOIN (₦100) for every friend who joins Vouchly using your link.</p>
+            <div class="invite-hero mb-5">
+                <h2 class="mb-2">Invite Friends, Earn VOCOIN</h2>
+                <p class="opacity-75 fw-500">Earn 100 VOCOIN for every person who joins the community using your link.</p>
                 
-                <div class="bg-white rounded-3 p-3 shadow-sm mx-auto" style="max-width: 500px;">
-                    <label class="small fw-bold text-dark text-uppercase d-block mb-2">Your Personal Invite Link</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control border-0 bg-light text-center fw-bold text-primary" id="refLink" value="vouchly.com/?ref={{ user.username }}" readonly>
-                        <button class="btn btn-warning fw-bold px-4" onclick="copyRef()">Copy</button>
+                <div class="link-box">
+                    <span class="small fw-800 text-uppercase d-block mb-3" style="color: var(--accent); letter-spacing: 1px;">Your Unique Invite Link</span>
+                    <div class="input-group shadow-sm">
+                        <input type="text" class="form-control ref-input" id="refLink" value="{{ request.scheme }}://{{ request.get_host }}{% url 'register' %}?ref={{ user.username }}" readonly>
+                        <button class="btn btn-copy-gold" onclick="copyRef()">Copy</button>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4 mb-4 text-center">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-                        <span class="text-muted small fw-bold text-uppercase">Total Referrals</span>
-                        <h2 class="display-6 fw-bold text-primary mt-2">{{ my_referrals.count }}</h2>
+            <div class="row g-4 mb-5">
+                <div class="col-6 col-md-4">
+                    <div class="stat-card-mini">
+                        <span class="lab">Total Referrals</span>
+                        <div class="val mt-1">{{ my_referrals.paginator.count }}</div>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 border-warning" style="border-width: 2px;">
-                        <span class="text-muted small fw-bold text-uppercase text-warning">VOCOIN Tokens</span>
-                        <h2 class="display-6 fw-bold text-dark mt-2">{{ vocoin_balance }}</h2>
-                        <a href="{% url 'redeem_tokens' %}" class="btn btn-sm btn-warning mt-2 fw-bold rounded-pill px-3">Redeem to Wallet</a>
+                <div class="col-6 col-md-4">
+                    <div class="stat-card-mini" style="border-bottom: 4px solid var(--accent);">
+                        <span class="lab">Token Balance</span>
+                        <div class="val mt-1">{{ vocoin_balance }}</div>
+                        <a href="{% url 'redeem_tokens' %}" class="btn btn-link p-0 text-decoration-none fw-800 small text-midnight mt-1">Redeem Now</a>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-success-subtle border-success" style="border-width: 1px; border-style: dashed;">
-                        <span class="text-muted small fw-bold text-uppercase text-success">Total Cash Earned</span>
-                        <h2 class="display-6 fw-bold text-success mt-2">₦{{ lifetime_total|floatformat:0 }}</h2>
-                        <span class="small text-muted fw-bold">Lifetime Total</span>
+                <div class="col-12 col-md-4">
+                    <div class="stat-card-mini">
+                        <span class="lab">Lifetime Earnings</span>
+                        <div class="val mt-1">₦{{ lifetime_total|floatformat:0 }}</div>
+                        <span class="small text-muted fw-800" style="font-size: 0.65rem;">Verified Cash</span>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="fw-bold mb-0">Recent Referrals</h5>
+            <div class="table-card">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-800 mb-0">Recent Arrivals</h5>
+                    <i class="bi bi-people text-muted fs-4"></i>
                 </div>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
-                        <thead class="bg-light">
+                        <thead>
                             <tr>
-                                <th class="ps-4">Invited Friend</th>
+                                <th>New Member</th>
                                 <th class="text-center">Date Joined</th>
-                                <th class="text-end pe-4">Reward</th>
+                                <th class="text-end">Bonus</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for referral in my_referrals %}
                             <tr>
-                                <td class="ps-4">
+                                <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-info-subtle p-2 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-person text-info"></i>
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 38px; height: 38px;">
+                                            <i class="bi bi-person text-midnight"></i>
                                         </div>
-                                        <span class="fw-bold">{{ referral.referred_user.username }}</span>
+                                        <span class="fw-bold" style="color: var(--midnight);">{{ referral.referred_user.username }}</span>
                                     </div>
                                 </td>
-                                <td class="text-center text-muted small">
-                                    {{ referral.created_at|date:"M d, Y" }}
-                                </td>
-                                <td class="text-end pe-4">
-                                    <span class="badge bg-warning-subtle text-dark rounded-pill px-3">
-                                        <i class="bi bi-coin me-1"></i> +1 VOCOIN
-                                    </span>
+                                <td class="text-center text-muted small">{{ referral.created_at|date:"M d, Y" }}</td>
+                                <td class="text-end">
+                                    <span class="badge-reward">+100 VOCOIN</span>
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr>
-                                <td colspan="3" class="text-center py-5 text-muted">
-                                    <i class="bi bi-people display-6 d-block mb-3 opacity-25"></i>
-                                    You haven't referred anyone yet. Start sharing your link!
-                                </td>
-                            </tr>
+                            <tr><td colspan="3" class="text-center py-5 text-muted">No referrals found. Start sharing your link!</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+
+                {% if my_referrals.has_other_pages %}
+                <div class="p-4 bg-light d-flex justify-content-center">
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            {% if my_referrals.has_previous %}
+                                <li class="page-item"><a class="page-link shadow-sm" href="?page={{ my_referrals.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li class="page-item active"><span class="page-link shadow-sm">{{ my_referrals.number }}</span></li>
+                            {% if my_referrals.has_next %}
+                                <li class="page-item"><a class="page-link shadow-sm" href="?page={{ my_referrals.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -109,7 +260,14 @@
         const el = document.getElementById('refLink');
         el.select();
         navigator.clipboard.writeText(el.value).then(() => {
-            alert("Invite Link Copied!");
+            const btn = document.querySelector('.btn-copy-gold');
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            btn.style.background = "#fff";
+            setTimeout(() => { 
+                btn.innerText = originalText; 
+                btn.style.background = "var(--accent)";
+            }, 2000);
         });
     }
 </script>

@@ -4,13 +4,35 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Review, Profile, PayoutRequest, Category
 
 class ReviewForm(forms.ModelForm):
+    # 1. Define the choices for the dropdown
+    RATING_CHOICES = [
+        ('', 'SELECT RATING'),
+        (5, '5 STARS - EXCELLENT'),
+        (4, '4 STARS - VERY GOOD'),
+        (3, '3 STARS - GOOD'),
+        (2, '2 STARS - FAIR'),
+        (1, '1 STAR - POOR'),
+    ]
+
+    # 2. Add the field with choices and bold styling
+    rating = forms.ChoiceField(
+        choices=RATING_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select fw-bold border-2'})
+    )
+
     class Meta:
         model = Review
         fields = ['rating', 'title', 'content']
         widgets = {
-            'rating': forms.Select(attrs={'class': 'form-select'}),
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Summarize your experience'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'What did you like or dislike?'}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control fw-bold border-2', 
+                'placeholder': 'SUMMARIZE YOUR EXPERIENCE'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control fw-bold border-2', 
+                'rows': 4, 
+                'placeholder': 'WHAT DID YOU LIKE OR DISLIKE?'
+            }),
         }
 
 class UserRegisterForm(UserCreationForm):
@@ -31,6 +53,9 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image']
+        widgets = {
+            'image': forms.FileInput(attrs={'class': 'form-control fw-bold'})
+        }
 
 class PayoutRequestForm(forms.ModelForm):
     class Meta:
@@ -38,20 +63,20 @@ class PayoutRequestForm(forms.ModelForm):
         fields = ['amount', 'bank_name', 'account_number', 'account_name']
         widgets = {
             'amount': forms.NumberInput(attrs={
-                'class': 'form-control fw-bold', 
-                'placeholder': 'Enter Naira amount'
+                'class': 'form-control fw-bold border-2', 
+                'placeholder': 'ENTER NAIRA AMOUNT'
             }),
             'bank_name': forms.Select(attrs={
-                'class': 'form-select',
+                'class': 'form-select fw-bold border-2',
             }),
             'account_number': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': '10-digit Account Number',
+                'class': 'form-control fw-bold border-2', 
+                'placeholder': '10-DIGIT ACCOUNT NUMBER',
                 'maxlength': '10'
             }),
             'account_name': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Full Name on Account'
+                'class': 'form-control fw-bold border-2', 
+                'placeholder': 'FULL NAME ON ACCOUNT'
             }),
         }
 
@@ -62,13 +87,13 @@ class PayoutRequestForm(forms.ModelForm):
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
         if amount > self.user_balance:
-            raise forms.ValidationError(f"Insufficient balance. You only have ₦{self.user_balance} available.")
+            raise forms.ValidationError(f"INSUFFICIENT BALANCE. YOU ONLY HAVE ₦{self.user_balance} AVAILABLE.")
         if amount < 1000:
-            raise forms.ValidationError("Minimum withdrawal is ₦1,000.00")
+            raise forms.ValidationError("MINIMUM WITHDRAWAL IS ₦1,000.00")
         return amount
 
     def clean_account_number(self):
         acc_num = self.cleaned_data.get('account_number')
         if acc_num and (not acc_num.isdigit() or len(acc_num) != 10):
-            raise forms.ValidationError("Account number must be exactly 10 digits.")
+            raise forms.ValidationError("ACCOUNT NUMBER MUST BE EXACTLY 10 DIGITS.")
         return acc_num

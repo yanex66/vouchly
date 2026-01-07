@@ -7,234 +7,244 @@
     <title>Vouchly - Real People. Real Rewards.</title>
     
     <link rel="icon" type="image/png" href="{% static 'core/images/vlogo.png' %}">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --deep-blue: #002060;
-            --light-blue: #004080;
-            --accent-gold: #ffc107;
-            --vouchly-blue: #002060;
+            --midnight: #0f172a;
+            --accent: #ffc107;
+            --soft-bg: #f8fafc;
+            --wa-green: #25D366;
         }
-        
-        .navbar-custom { background-color: var(--deep-blue) !important; padding: 0.5rem 1rem; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa; }
-        main { flex: 1; }
-        
-        /* Logo Styling */
+
+        /* --- COMPACT SITE SCALE --- */
+        html { font-size: 14px; } 
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--soft-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- COMPACT NAVBAR --- */
+        .navbar-custom {
+            background: var(--midnight) !important;
+            padding: 0.5rem 0; 
+            border-bottom: 3px solid var(--accent);
+        }
+
         .navbar-brand img {
-            max-height: 40px;
+            height: 45px; 
             width: auto;
-            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            transition: 0.3s ease;
         }
 
-        .navbar-nav .nav-link {
-            font-weight: 700;
-            position: relative;
-            padding-bottom: 5px;
-            margin: 0 12px;
-            color: rgba(255,255,255,0.85) !important;
+        .nav-link {
+            color: #f1f5f9 !important;
+            font-weight: 600;
+            margin: 0 10px;
             transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
         }
 
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: var(--accent-gold);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
+        .btn-auth {
+            background: var(--accent);
+            color: var(--midnight) !important;
+            font-weight: 800;
+            border-radius: 8px;
+            padding: 6px 20px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
         }
 
-        .navbar-nav .nav-link:hover::after { width: 100%; }
-        .navbar-nav .nav-link:hover { color: #fff !important; }
+        /* --- PROFILE ICON --- */
+        .profile-nav-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+        }
 
-        .profile-circle, .profile-img-nav {
-            width: 38px;
-            height: 38px;
+        .dropdown-menu {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-size: 0.85rem;
+        }
+
+        .wa-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--wa-green);
+            color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 24px;
+            z-index: 1000;
+            animation: pulse-wa 2s infinite;
             text-decoration: none;
-            transition: 0.3s;
-            object-fit: cover;
         }
-        .profile-circle {
-            background-color: var(--accent-gold);
-            color: var(--deep-blue);
-            font-weight: bold;
+
+        @keyframes pulse-wa {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        main { flex: 1; }
+
+        /* --- COMPACT FOOTER --- */
+        .site-footer {
+            background: #020617;
+            color: #94a3b8;
+            padding: 50px 0 25px;
+            margin-top: 40px;
+        }
+
+        .footer-logo { 
+            height: 50px; 
+            width: auto;
+            margin-bottom: 20px; 
+        }
+
+        .footer-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .footer-head {
+            color: white;
+            font-weight: 800;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
             text-transform: uppercase;
         }
 
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 75%;
-                background: var(--deep-blue);
-                transition: 0.3s ease-in-out;
-                display: block !important;
-                z-index: 1050;
-                padding: 2.5rem 1.5rem;
-                box-shadow: -10px 0 20px rgba(0,0,0,0.4);
-            }
-            .navbar-collapse.show { right: 0; }
-            .navbar-nav .nav-link { margin: 15px 0; font-size: 1.1rem; }
-            .navbar-nav .nav-link::after { left: 0; transform: none; }
+        #backToTop {
+            position: fixed; bottom: 20px; right: 20px; display: none;
+            width: 40px; height: 40px; background: white;
+            border: 2px solid var(--accent); border-radius: 10px;
+            color: var(--midnight); z-index: 1000;
         }
 
-        footer { background-color: var(--deep-blue); color: white; border-top: 4px solid var(--accent-gold); }
-        footer a { color: rgba(255,255,255,0.7); text-decoration: none; transition: 0.3s; font-weight: 500; }
-        footer a:hover { color: var(--accent-gold); padding-left: 5px; }
-
-        #backToTop {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: none;
-            width: 45px;
-            height: 45px;
-            background-color: var(--accent-gold);
-            color: var(--deep-blue);
-            border: none;
-            border-radius: 50%;
-            z-index: 1000;
-            transition: 0.3s;
+        @media (max-width: 991px) {
+            .navbar-brand img { height: 40px; }
+            .navbar-collapse { background: var(--midnight); padding: 15px; border-radius: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
+    <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
+        {% csrf_token %}
+    </form>
+
+    <a href="https://wa.me/2349130273282" class="wa-float" target="_blank">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly" class="me-2">
-                <span class="fw-bold fs-3 d-none d-sm-inline-block" style="letter-spacing: -1px;">Vouchly</span>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly Logo">
             </a>
 
-            <div class="d-flex align-items-center ms-auto d-lg-none">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="text-white me-3 fs-4">
-                        <i class="bi bi-speedometer2"></i>
-                    </a>
-                    <div class="dropdown">
-                        <a href="#" role="button" data-bs-toggle="dropdown">
-                            {% if user.profile.image %}
-                                <img src="{{ user.profile.image.url }}" class="profile-img-nav border border-2 border-warning">
-                            {% else %}
-                                <div class="profile-circle">{{ user.username|first }}</div>
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                            <li class="px-3 py-2 border-bottom small fw-bold text-muted">{{ user.username }}</li>
-                            <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Profile</a></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
-                        </ul>
-                    </div>
-                {% endif %}
-                <button class="navbar-toggler border-0 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="d-lg-none text-end mb-4">
-                    <button class="btn-close btn-close-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"></button>
-                </div>
-
-                <ul class="navbar-nav ms-auto align-items-lg-center">
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Categories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Support</a></li>
                     
                     {% if user.is_authenticated %}
-                        <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link text-warning" href="{% url 'dashboard' %}">Dashboard</a>
-                        </li>
-                        <li class="nav-item dropdown d-none d-lg-block ms-lg-2">
-                            <a href="#" role="button" data-bs-toggle="dropdown">
-                                {% if user.profile.image %}
-                                    <img src="{{ user.profile.image.url }}" class="profile-img-nav border border-2 border-warning">
+                        <li class="nav-item dropdown ms-lg-2">
+                            <a href="#" class="nav-link p-0 d-flex align-items-center dropdown-toggle no-caret" data-bs-toggle="dropdown">
+                                {% if user.socialaccount_set.all.0.get_avatar_url %}
+                                    <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" class="profile-nav-icon" alt="Profile">
                                 {% else %}
-                                    <div class="profile-circle">{{ user.username|first }}</div>
+                                    <i class="bi bi-person-circle fs-3 text-accent"></i>
                                 {% endif %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li class="px-3 py-2 border-bottom small fw-bold text-muted">{{ user.username }}</li>
-                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Profile Settings</a></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item fw-bold" href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">Sign Out</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-warning btn-sm ms-lg-3 text-dark fw-bold px-4 rounded-pill" href="{% url 'register' %}">Sign Up</a></li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="nav-link btn-auth" href="{% url 'register' %}">Join Now</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <main>{% block content %}{% endblock %}</main>
 
-    <button id="backToTop" class="shadow"><i class="bi bi-arrow-up"></i></button>
+    <button id="backToTop"><i class="bi bi-arrow-up-short fs-4"></i></button>
 
-    <footer class="py-5 mt-5">
+    <footer class="site-footer">
         <div class="container">
-            <div class="row g-4 text-center text-md-start">
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3">
-                        <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly" height="35" class="me-2">
-                        <h4 class="fw-bold text-white mb-0">Vouchly</h4>
-                    </div>
-                    <p class="small opacity-75">Real People. Real Rewards. Your trusted community for authentic feedback and shared success.</p>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <img src="{% static 'core/images/vlogo.png' %}" class="footer-logo" alt="Vouchly Logo">
+                    <p class="small">Real people. Real rewards. Authentic community feedback and verified growth.</p>
                 </div>
-                <div class="col-md-2 col-6">
-                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Explore</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="{% url 'home' %}">Home</a></li>
-                        <li class="mb-2"><a href="{% url 'category_list' %}">Categories</a></li>
-                        <li class="mb-2"><a href="{% url 'about' %}">About Us</a></li>
-                    </ul>
+                <div class="col-6 col-lg-2 ms-auto">
+                    <h6 class="footer-head">Nav</h6>
+                    <a href="{% url 'home' %}" class="footer-link">Home</a>
+                    <a href="{% url 'category_list' %}" class="footer-link">Explore</a>
                 </div>
-                <div class="col-md-3 col-6">
-                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Support & Legal</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="{% url 'contact' %}">Contact Us</a></li>
-                        <li class="mb-2"><a href="{% url 'terms' %}">Terms of Service</a></li>
-                        <li class="mb-2"><a href="{% url 'privacy' %}">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 text-md-end">
-                    <h6 class="fw-bold text-warning text-uppercase mb-3 small">Connect</h6>
-                    <div class="fs-4">
-                        <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="me-3"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                    </div>
+                <div class="col-6 col-lg-3">
+                    <h6 class="footer-head">Legal</h6>
+                    <a href="{% url 'terms' %}" class="footer-link">Terms</a>
+                    <a href="{% url 'privacy' %}" class="footer-link">Privacy</a>
                 </div>
             </div>
-            <hr class="my-4 opacity-25">
-            <div class="text-center opacity-50 small">© 2026 Vouchly. All rights reserved.</div>
+            <div class="text-center pt-4 mt-4 border-top border-secondary border-opacity-25">
+                <p class="small mb-0 opacity-50">© 2026 Vouchly. All rewards reserved.</p>
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const btn = document.getElementById("backToTop");
-        window.onscroll = () => {
-            btn.style.display = (window.scrollY > 300) ? "block" : "none";
-        };
+        window.onscroll = () => { btn.style.display = (window.scrollY > 300) ? "block" : "none"; };
         btn.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+        function confirmLogout(event) {
+            event.preventDefault();
+            if (confirm("Sign out?")) {
+                document.getElementById('logout-form').submit();
+            }
+        }
     </script>
 </body>
 </html>

@@ -1,7 +1,19 @@
-*.pyc
-__pycache__/
-db.sqlite3
-media/
+# Environments
 .env
+.venv/
+vouchly_env/
+
+# Databases
+db.sqlite3
 vouchly_env/db.sqlite3
-config/settings.py
+
+# Media and Static
+media/
+staticfiles/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# DO NOT ADD config/settings.py here. 
+# It is safe to push because your keys are in the .env file.

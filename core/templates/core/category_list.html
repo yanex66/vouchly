@@ -3,96 +3,175 @@
 {% block content %}
 <style>
     :root {
-        --vouchly-blue: #002060;
-        --vouchly-gold: #ffc107;
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
     }
 
-    .category-flex-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px; /* Smaller gap for mobile */
-        justify-content: start;
-        margin-top: 20px;
-    }
-
-    /* Category Card Base Style */
-    .category-compact-card {
+    /* Premium Page Header */
+    .page-header {
         background: white;
-        border-radius: 15px;
-        padding: 12px 10px;
-        border: 1.5px solid #eee;
-        transition: 0.3s;
+        padding: 80px 0 40px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 50px;
         text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .page-title {
+        font-weight: 800;
+        color: var(--midnight);
+        font-size: 3rem;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    /* Category Grid */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    /* Category Card Styling */
+    .cat-card {
+        background: white;
+        border-radius: 30px;
+        padding: 40px 20px;
+        text-align: center;
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none !important;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        /* Default: 3 per row on laptop */
-        flex: 1 1 calc(33.333% - 10px); 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
-    /* PHONE OPTIMIZATION (2 per row) */
-    @media (max-width: 576px) {
-        .category-compact-card {
-            flex: 1 1 calc(50% - 10px); /* Exactly 2 per row on phones */
-            padding: 10px 5px;
-        }
-        .cat-title-sm { font-size: 0.85rem !important; }
-        .cat-icon-sm, .cat-folder-icon { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+    .cat-card:hover {
+        transform: translateY(-15px);
+        border-color: var(--accent);
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
     }
 
-    .category-compact-card:hover {
-        border-color: var(--vouchly-gold);
-        transform: translateY(-3px);
-    }
-
-    .cat-icon-sm { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
-
-    .cat-folder-icon {
-        width: 40px; height: 40px;
-        background: #f8f9fa;
-        border-radius: 50%;
+    /* Icon/Image Wrapper */
+    .cat-icon-box {
+        width: 120px;
+        height: 120px;
+        background: var(--soft-bg);
+        border-radius: 25px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 5px;
-        font-size: 20px;
-    }
-
-    .cat-title-sm {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--vouchly-blue);
-        margin-bottom: 0;
-        white-space: nowrap;
+        margin-bottom: 25px;
+        transition: 0.3s;
+        border: 2px solid transparent;
         overflow: hidden;
-        text-overflow: ellipsis;
-        width: 100%;
     }
 
-    .cat-count-sm { font-size: 0.7rem; color: #888; }
+    .cat-card:hover .cat-icon-box {
+        background: var(--midnight);
+        border-color: var(--accent);
+        transform: scale(1.05);
+    }
+
+    .cat-img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
+
+    .cat-emoji {
+        font-size: 50px;
+    }
+
+    .cat-name {
+        font-weight: 800;
+        color: var(--midnight);
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+        text-transform: uppercase;
+    }
+
+    .cat-badge {
+        background: var(--soft-bg);
+        color: var(--midnight);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .cat-card:hover .cat-badge {
+        background: var(--accent);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 100px 20px;
+        background: white;
+        border-radius: 40px;
+        border: 3px dashed #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+        .page-title { font-size: 2.2rem; }
+        .category-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .cat-icon-box { width: 90px; height: 90px; }
+        .cat-emoji { font-size: 35px; }
+        .cat-name { font-size: 1.1rem; }
+    }
 </style>
 
-<div class="container mt-4">
-    <div class="mb-4">
-        <h2 class="fw-bold" style="color: var(--vouchly-blue);">Categories</h2>
+<div class="page-header shadow-sm">
+    <div class="container">
+        <span class="page-subtitle">The Kingdom Vault</span>
+        <h1 class="page-title">Categories</h1>
     </div>
+</div>
 
-    <div class="category-flex-container">
+<div class="container mb-5">
+    <div class="category-grid">
         {% for cat in categories %}
-            <a href="{% url 'category_detail' cat.slug %}" class="category-compact-card text-decoration-none">
-                {% if cat.icon %}
-                    <img src="{{ cat.icon.url }}" alt="{{ cat.name }}" class="cat-icon-sm">
-                {% else %}
-                    <div class="cat-folder-icon">📁</div>
-                {% endif %}
+            <a href="{% url 'category_detail' cat.slug %}" class="cat-card">
+                <div class="cat-icon-box">
+                    {% if cat.icon %}
+                        <img src="{{ cat.icon.url }}" alt="{{ cat.name }}" class="cat-img">
+                    {% else %}
+                        <span class="cat-emoji">📁</span>
+                    {% endif %}
+                </div>
                 
-                <h4 class="cat-title-sm">{{ cat.name }}</h4>
-                <span class="cat-count-sm">{{ cat.items.count }} items</span>
+                <h4 class="cat-name">{{ cat.name }}</h4>
+                <span class="cat-badge">{{ cat.items.count }} ITEMS</span>
             </a>
         {% empty %}
-            <p class="text-muted small">No categories found.</p>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-folder-x text-muted mb-4" style="font-size: 4rem; opacity: 0.3;"></i>
+                    <h3 class="fw-bold text-midnight mb-2">The Vault is Empty</h3>
+                    <p class="text-muted mb-4">No categories have been added to the Kingdom yet.</p>
+                    {% if user.is_staff %}
+                        <a href="/admin/core/category/add/" class="btn btn-warning fw-bold px-4 py-2 rounded-pill">
+                            Add Category in Admin
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
     </div>
 </div>

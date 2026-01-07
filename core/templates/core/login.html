@@ -1,121 +1,139 @@
 {% extends "core/base.html" %}
+{% load socialaccount %}
 
 {% block content %}
 <style>
     :root {
-        --vouchly-blue: #002060;
-        --vouchly-gold: #ffc107;
-        --soft-bg: #f0f2f5;
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
     }
 
     body { background-color: var(--soft-bg); }
 
     .auth-container {
-        min-height: 80vh;
+        min-height: 85vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
+        padding: 60px 20px;
     }
 
     .auth-card {
         width: 100%;
-        max-width: 420px;
+        max-width: 440px;
         background: white;
-        border-radius: 30px;
-        border: none;
-        box-shadow: 0 15px 35px rgba(0, 32, 96, 0.1);
+        border-radius: 32px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.1);
         overflow: hidden;
     }
 
     .auth-header {
-        background: var(--vouchly-blue);
-        padding: 40px 30px;
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        padding: 50px 30px;
         text-align: center;
         color: white;
+        border-bottom: 5px solid var(--accent);
     }
 
-    .auth-body { padding: 40px 35px; }
+    .auth-header h2 { font-weight: 800; text-transform: uppercase; letter-spacing: -1.5px; }
+
+    .auth-body { padding: 45px 40px; }
+
+    /* Google Button Styling */
+    .btn-google-premium {
+        background: white;
+        color: var(--midnight);
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 12px;
+        font-weight: 800;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.3s;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .btn-google-premium:hover {
+        background: #f8fafc;
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 30px 0;
+        color: var(--text-muted);
+        font-weight: 800;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .auth-divider::before, .auth-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .auth-divider:not(:empty)::before { margin-right: 15px; }
+    .auth-divider:not(:empty)::after { margin-left: 15px; }
 
     .form-label-custom {
-        font-weight: 700;
-        color: var(--vouchly-blue);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        display: block;
+        font-weight: 800; color: var(--midnight);
+        font-size: 0.75rem; text-transform: uppercase;
+        letter-spacing: 1.5px; margin-bottom: 10px; display: block;
     }
 
     .input-custom {
-        border-radius: 12px !important;
-        padding: 12px 15px;
-        border: 1.5px solid #eee;
-        background-color: #f9f9f9;
-        font-size: 1rem;
-        transition: 0.2s;
-        width: 100%;
+        border-radius: 15px !important; padding: 14px 18px;
+        border: 2px solid #f1f5f9; background-color: #f8fafc;
+        width: 100%; font-weight: 600; transition: 0.3s;
     }
 
     .input-custom:focus {
-        background-color: #fff;
-        border-color: var(--vouchly-gold);
-        box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
-        outline: none;
+        border-color: var(--accent); background-color: #fff;
+        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.15); outline: none;
     }
 
-    .password-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .password-wrapper .input-custom {
-        padding-right: 45px;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 12px;
-        background: none !important;
-        border: none !important;
-        color: #888;
-        cursor: pointer;
-        padding: 0;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        height: 100%;
-    }
-
-    .btn-auth {
-        background: var(--vouchly-blue);
-        color: white;
-        border-radius: 12px;
-        padding: 14px;
-        font-weight: 700;
-        border: none;
-        width: 100%;
-        margin-top: 10px;
+    .btn-auth-premium {
+        background: var(--midnight); color: white;
+        border: none; border-radius: 15px; padding: 16px;
+        font-weight: 800; width: 100%; text-transform: uppercase;
         transition: 0.3s;
     }
 
-    .btn-auth:hover {
-        background: #003399;
-        transform: translateY(-2px);
+    .btn-auth-premium:hover {
+        background: #020617; color: var(--accent);
+        transform: translateY(-3px); box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
     }
 </style>
 
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h2 class="fw-bold mb-1">Welcome Back</h2>
-            <p class="small opacity-75 mb-0">Sign in with your email to continue</p>
+            <h2>Welcome Back</h2>
+            <p class="small opacity-75 fw-500 mb-0">Access your community rewards</p>
         </div>
 
         <div class="auth-body">
+            <a href="{% provider_login_url 'google' %}" class="btn-google-premium">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" style="height: 18px; margin-right: 12px;">
+                Sign in with Google
+            </a>
+
+            <div class="auth-divider">Or use email</div>
+
             <form method="POST">
                 {% csrf_token %}
-                
                 <div class="mb-4">
                     <label class="form-label-custom">Email Address</label>
                     <input type="email" name="username" class="input-custom" placeholder="name@example.com" required>
@@ -123,37 +141,19 @@
 
                 <div class="mb-4">
                     <label class="form-label-custom">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" name="password" id="passwordField" class="input-custom" placeholder="••••••••" required>
-                        <button class="toggle-password" type="button" tabindex="-1">
-                            <i class="bi bi-eye" id="toggleIcon"></i>
-                        </button>
-                    </div>
+                    <input type="password" name="password" class="input-custom" placeholder="••••••••" required>
                 </div>
 
-                <button class="btn btn-auth shadow-sm" type="submit">Log In</button>
+                <button class="btn btn-auth-premium shadow-sm" type="submit">Log In</button>
             </form>
 
-            <div class="mt-4 text-center">
-                <span class="text-muted small">New to Vouchly?</span>
-                <a href="{% url 'register' %}" class="text-decoration-none fw-bold small ms-1" style="color: var(--vouchly-blue);">Create Account</a>
+            <div class="mt-5 text-center">
+                <p class="text-muted small fw-500 mb-0">
+                    New to Vouchly? 
+                    <a href="{% url 'register' %}" class="text-midnight fw-800 text-decoration-none ms-1">Create Account</a>
+                </p>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.querySelector('.toggle-password').addEventListener('click', function() {
-        const passwordField = document.getElementById("passwordField");
-        const icon = document.getElementById("toggleIcon");
-        
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            icon.classList.replace("bi-eye", "bi-eye-slash");
-        } else {
-            passwordField.type = "password";
-            icon.classList.replace("bi-eye-slash", "bi-eye");
-        }
-    });
-</script>
 {% endblock %}

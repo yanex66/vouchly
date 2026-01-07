@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+# --- EXISTING MODELS ---
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -100,12 +102,10 @@ class PayoutRequest(models.Model):
     ]
 
     user = models.ForeignKey(User, related_name='payouts', on_delete=models.CASCADE)
-    # Amount is now a typed field (choices removed)
     amount = models.DecimalField(max_digits=12, decimal_places=2) 
     bank_name = models.CharField(max_length=100, choices=BANK_CHOICES, null=True, blank=True)
     account_number = models.CharField(max_length=10, null=True, blank=True)
     account_name = models.CharField(max_length=100, null=True, blank=True)
-    # Status is now a selection dropdown
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -120,6 +120,20 @@ class PayoutRequest(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.amount} ({self.status})"
+
+# --- NEW CHAT MODEL ---
+
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    message = models.TextField()
+    is_from_admin = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        sender = self.user.username if self.user else "Guest User"
+        return f"Chat from {sender} at {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+
+# --- SIGNALS ---
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

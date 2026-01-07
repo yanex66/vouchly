@@ -1,281 +1,300 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-
 <style>
-    /* Hero Search Bar Styling */
-    .hero-search-wrapper {
-        max-width: 100%;
-        margin: 1.5rem 0;
+    :root {
+        --midnight: #0f172a;
+        --midnight-dark: #020617;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
     }
-    .hero-search-input {
-        border-radius: 50px 0 0 50px !important;
-        padding: 0.8rem 1.2rem !important;
-        border: none;
-        font-size: 1rem;
+
+    /* 1. COMPACT Top Search Bar */
+    .top-search-section {
+        background: white;
+        padding: 15px 0; /* Reduced vertical spacing */
+        border-bottom: 1px solid rgba(0,0,0,0.05);
     }
-    .hero-search-btn {
-        border-radius: 0 50px 50px 0 !important;
-        padding: 0 1.5rem !important;
-        background-color: var(--accent-gold);
-        color: var(--deep-blue);
-        font-weight: bold;
-        border: none;
+
+    .search-pill {
+        max-width: 550px; /* Reduced width from 800px */
+        margin: 0 auto;
+        background: var(--soft-bg);
+        border-radius: 50px;
+        padding: 3px; /* Reduced inner spacing */
+        border: 2px solid #f1f5f9;
         transition: 0.3s;
     }
-    .hero-search-btn:hover {
-        background-color: white; /* FIXED: Removed the # typo */
-        color: var(--deep-blue);
+
+    .search-pill:focus-within {
+        border-color: var(--accent);
+        background: white;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
     }
 
-    .carousel-item .display-4 { animation: fadeInUp 1s ease-out; }
-    .carousel-item .lead { animation: fadeInUp 1.2s ease-out; }
-    /* Search bar animation */
-    .carousel-item .hero-search-wrapper { animation: fadeInUp 1.3s ease-out; }
-    .carousel-item .btn-group-hero { animation: fadeInUp 1.4s ease-out; }
-    .carousel-item img { animation: zoomIn 1.5s ease-out; }
-    
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+    .search-input-premium {
+        background: transparent !important;
+        border: none !important;
+        padding: 8px 20px !important; /* Reduced padding/height */
+        font-weight: 600;
+        font-size: 0.9rem; /* Smaller font */
+        color: var(--midnight);
     }
-    @keyframes zoomIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-    .transform-hover:hover { transform: scale(1.05); transition: 0.3s; }
-    .cta-gradient-bg { background: linear-gradient(45deg, #002060 0%, #004080 100%) !important; position: relative; overflow: hidden; }
 
-    /* Mobile Responsive Search */
+    .btn-search-premium {
+        background: var(--midnight);
+        color: var(--accent);
+        border-radius: 50px !important;
+        padding: 8px 25px !important; /* Reduced size */
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        font-size: 0.75rem; /* Smaller text */
+        letter-spacing: 1px;
+    }
+
+    /* 2. Premium Hero Carousel */
+    .hero-gradient {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        min-height: 550px;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .display-4 {
+        font-weight: 800 !important;
+        letter-spacing: -2px;
+        line-height: 1.1;
+    }
+
+    .hero-img-premium {
+        border-radius: 30px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: transform 0.5s ease;
+    }
+
+    .hero-img-premium:hover { transform: scale(1.02); }
+
+    /* 3. "How it Works" Value Cards */
+    .step-card {
+        background: white;
+        border-radius: 28px;
+        padding: 45px 30px;
+        height: 100%;
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .step-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        border-color: var(--accent);
+    }
+
+    .step-icon-box {
+        width: 80px;
+        height: 80px;
+        background: var(--soft-bg);
+        color: var(--midnight);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 25px;
+        border-bottom: 4px solid var(--accent);
+    }
+
+    /* 4. Item Cards */
+    .premium-item-card {
+        background: white;
+        border-radius: 28px;
+        border: 1px solid rgba(0,0,0,0.04);
+        overflow: hidden;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+
+    .premium-item-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+        border-color: var(--accent);
+    }
+
+    .item-card-img {
+        height: 230px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .btn-promote-premium {
+        background: transparent;
+        border: 2px solid var(--midnight);
+        color: var(--midnight);
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 10px;
+        width: 100%;
+        transition: 0.3s;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .btn-promote-premium:hover {
+        background: var(--midnight);
+        color: var(--accent);
+        box-shadow: 0 8px 15px rgba(15, 23, 42, 0.2);
+    }
+
+    /* 6. Section Titles */
+    .section-head {
+        font-weight: 800;
+        color: var(--midnight);
+        letter-spacing: -1px;
+        text-transform: uppercase;
+    }
+
+    .section-divider {
+        width: 60px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 2px;
+        margin: 15px auto 30px;
+    }
+
     @media (max-width: 768px) {
-        .hero-search-wrapper { margin: 1rem auto; max-width: 90%; }
-        .hero-search-input { font-size: 0.9rem; padding: 0.6rem 1rem !important; }
-        .hero-search-btn { padding: 0 1rem !important; }
+        .hero-gradient { min-height: 450px; padding: 40px 0; }
+        .display-4 { font-size: 2.2rem !important; }
+        .top-search-section { padding: 10px 0; }
+        .search-pill { max-width: 90%; }
     }
 </style>
 
-<div id="heroCarousel" class="carousel slide carousel-fade mb-5 shadow" data-bs-ride="carousel">
+<div class="top-search-section">
+    <div class="container">
+        <form action="{% url 'search' %}" method="GET" class="search-pill d-flex shadow-sm">
+            <input type="text" name="query" class="form-control search-input-premium" placeholder="Find services..." required>
+            <button class="btn btn-search-premium" type="submit">
+                <i class="bi bi-search me-1"></i> Search
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="heroCarousel" class="carousel slide carousel-fade shadow-lg" data-bs-ride="carousel">
     <div class="carousel-inner">
         {% for item in hero_items %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="10000">
-            <div class="hero-section d-flex align-items-center" style="background: linear-gradient(135deg, #002060 0%, #004080 100%); min-height: 550px; padding: 60px 0;">
+        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="8000">
+            <div class="hero-gradient d-flex align-items-center py-5">
                 <div class="container">
                     <div class="row align-items-center">
-                        <div class="col-md-6 text-white text-md-start text-center">
-                            <h1 class="display-4 fw-bold mb-2">{{ item.name }}</h1>
-                            <p class="lead mb-4 opacity-75">{{ item.description|truncatewords:25 }}</p>
+                        <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0">
+                            <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-800 text-uppercase">Featured Premium Choice</span>
+                            <h1 class="display-4 mb-3">{{ item.name }}</h1>
+                            <p class="lead mb-5 opacity-75 fw-500">{{ item.description|truncatewords:20 }}</p>
                             
-                            <div class="hero-search-wrapper">
-                                <form action="{% url 'search' %}" method="GET" class="input-group shadow-sm">
-                                    <input type="text" name="query" class="form-control hero-search-input" placeholder="Search products..." required>
-                                    <button class="btn hero-search-btn" type="submit">
-                                        <i class="bi bi-search"></i>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <div class="d-flex justify-content-center justify-content-md-start gap-3 btn-group-hero">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow transform-hover">PROMOTE</a>
+                            <div class="d-flex justify-content-center justify-content-lg-start gap-3">
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg">PROMOTE</a>
                                 {% if item.affiliate_link %}
-                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-4 transform-hover">PURCHASE</a>
+                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600">PURCHASE</a>
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6 d-none d-md-block text-center">
+                        <div class="col-lg-6 text-center">
                             {% if item.image %}
-                            <img src="{{ item.image.url }}" class="img-fluid rounded-4 shadow-lg" style="max-height: 400px; width: 100%; object-fit: contain;" alt="{{ item.name }}">
-                            {% else %}
-                            <div class="bg-light bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center mx-auto" style="height: 350px; width: 350px; border: 2px dashed rgba(255,255,255,0.2);">
-                                <i class="bi bi-image text-white opacity-25" style="font-size: 5rem;"></i>
-                            </div>
+                            <img src="{{ item.image.url }}" class="img-fluid hero-img-premium" style="max-height: 450px;" alt="{{ item.name }}">
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <div class="hero-section text-center text-white" style="background: var(--deep-blue); padding: 100px 0;">
-            <div class="container">
-                <h1 class="display-4 fw-bold">Welcome to Vouchly</h1>
-                <p class="lead">Honest reviews for the products you love.</p>
-            </div>
-        </div>
         {% endfor %}
     </div>
-
-    {% if hero_items|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-    {% endif %}
 </div>
 
-<div class="container">
+<div class="container py-5 mt-5">
     <div class="text-center mb-5">
-        <h2 class="fw-bold" style="color: #002060;">How It Works</h2>
-        <p class="text-muted">Start earning in three simple steps</p>
+        <h2 class="section-head">The Kingdom Path</h2>
+        <div class="section-divider"></div>
+        <p class="text-muted fw-800 text-uppercase small">Start earning in three simple steps</p>
     </div>
 
-    <div class="row g-4 text-center mb-5 py-4 bg-light rounded-4 shadow-sm mx-0">
+    <div class="row g-4 text-center">
         <div class="col-md-4">
-            <div class="p-3">
-                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
-                    <i class="bi bi-person-plus fs-3 text-primary"></i>
-                </div>
-                <h5 class="fw-bold">1. Join</h5>
-                <p class="small text-muted px-lg-4">Register for free and join our community of Vouchly Creators.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3">
-                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
-                    <i class="bi bi-share fs-3 text-primary"></i>
-                </div>
-                <h5 class="fw-bold">2. Share</h5>
-                <p class="small text-muted px-lg-4">Copy your unique link and share it with your audience.</p>
+            <div class="step-card">
+                <div class="step-icon-box"><i class="bi bi-shield-lock-fill"></i></div>
+                <h4 class="fw-800 mb-3">1. JOIN</h4>
+                <p class="text-muted small fw-600">Register for free and join our community of creators to access premium rewards.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3">
-                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 70px; height: 70px;">
-                    <i class="bi bi-cash-stack fs-3 text-primary"></i>
-                </div>
-                <h5 class="fw-bold">3. Earn</h5>
-                <p class="small text-muted px-lg-4">Earn commissions for every sale made through your vouch.</p>
+            <div class="step-card">
+                <div class="step-icon-box"><i class="bi bi-megaphone-fill"></i></div>
+                <h4 class="fw-800 mb-3">2. VOUCH</h4>
+                <p class="text-muted small fw-600">Share your unique vouchers with the right people who need premium results.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-icon-box"><i class="bi bi-gem"></i></div>
+                <h4 class="fw-800 mb-3">3. EARN</h4>
+                <p class="text-muted small fw-600">Collect VOCOIN for every successful verified community recommendation you provide.</p>
             </div>
         </div>
     </div>
+</div>
 
-    {% if featured_review %}
-    <div class="row mb-5 mt-5">
-        <div class="col-12 text-center mb-4">
-            <h2 class="fw-bold" style="color: #002060;">Review of the Week</h2>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h2 class="section-head mb-0">Top Rated Picks</h2>
+            <div class="section-divider ms-0"></div>
         </div>
-        <div class="col-12">
-            <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
-                <div class="row g-0">
-                    <div class="col-md-4 bg-primary d-flex flex-column align-items-center justify-content-center text-white p-4">
-                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fw-bold text-uppercase">Featured Creator</span>
-                        <img src="{{ featured_review.author.profile.image.url }}" class="rounded-circle border border-4 border-white mb-3 shadow" width="100" height="100" style="object-fit: cover;">
-                        <h5 class="mb-0 fw-bold">{{ featured_review.author.username }}</h5>
-                        <small class="opacity-75">Community Expert</small>
-                    </div>
-                    <div class="col-md-8 p-4 bg-white">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="fw-bold text-primary mb-0">{{ featured_review.item.name }}</h4>
-                            <span class="text-warning fs-5">{{ featured_review.rating }} ★</span>
-                        </div>
-                        <h5 class="fw-bold">"{{ featured_review.title }}"</h5>
-                        <p class="text-muted lead" style="font-size: 1.1rem;">{{ featured_review.content|truncatewords:45 }}</p>
-                        <a href="{% url 'item_detail' featured_review.item.slug %}" class="btn btn-outline-primary fw-bold px-4 transform-hover">PROMOTE</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
-        <h2 class="fw-bold" style="color: #002060;">Top Rated Picks</h2>
-        <a href="{% url 'category_list' %}" class="btn btn-outline-primary btn-sm">View All Categories</a>
+        <a href="{% url 'category_list' %}" class="btn btn-dark rounded-pill px-4 fw-800 btn-sm mb-3">View Categories</a>
     </div>
 
-    <div class="row mb-5">
+    <div class="row g-4">
         {% for item in top_rated %}
-        <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card h-100 shadow-sm border-0 hover-card">
-                {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
-                {% else %}
-                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">No Image</div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title text-truncate mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
-                    <div class="mb-2 text-warning">
-                        {% if item.avg_rating %}
-                            <span class="fw-bold">{{ item.avg_rating|floatformat:1 }}</span> ★
-                        {% else %}
-                            <span class="text-muted small">No ratings yet</span>
-                        {% endif %}
-                    </div>
-                    <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-primary btn-sm w-100 stretched-link">PROMOTE</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div class="text-center mb-5 mt-5">
-        <h2 class="fw-bold" style="color: #002060;">Top Contributors</h2>
-        <p class="text-muted">Meet the experts helping our community make better choices.</p>
-    </div>
-
-    <div class="row g-4 mb-5">
-        {% for reviewer in featured_reviewers %}
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3 h-100">
-                <div class="card-body">
-                    <img src="{{ reviewer.profile.image.url }}" class="rounded-circle mb-3 border border-3 border-primary" width="80" height="80" style="object-fit: cover;">
-                    <h5 class="fw-bold mb-1">{{ reviewer.username }}</h5>
-                    <p class="text-muted small mb-3">Member since {{ reviewer.date_joined|date:"Y" }}</p>
-                    <div class="badge bg-primary rounded-pill px-3">{{ reviewer.num_reviews }} Reviews Written</div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <hr class="my-5">
-
-    <h3 class="mb-4">Just Added</h3>
-    <div class="row mb-5">
-        {% for item in latest_items %}
-        <div class="col-md-6 mb-3">
-            <div class="card mb-3 border-0 shadow-sm">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        {% if item.image %}
-                        <img src="{{ item.image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ item.name }}">
-                        {% endif %}
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
-                            <p class="card-text small text-muted">{{ item.description|truncatewords:15 }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div class="cta-gradient-bg rounded-4 shadow-lg mb-5 p-5 text-center text-white">
-        <div class="position-relative z-index-1">
-            <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-bold text-uppercase">Join the Elite</span>
-            <h2 class="display-5 fw-bold mb-3">Ready to Turn Your Influence into Income?</h2>
-            <p class="lead mb-4 mx-auto opacity-75" style="max-width: 700px;">
-                Don't just shop—partner with us. Become a <strong>Vouchly Creator</strong> today and start earning commissions for every product you recommend.
-            </p>
-            {% if not user.is_authenticated %}
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-bold px-5 py-3 text-dark shadow transform-hover">
-                        Start Earning Now <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
-                </div>
-            {% else %}
-                <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg fw-bold px-5 py-3 shadow transform-hover">
-                    Go to My Creator Dashboard
+        <div class="col-sm-6 col-lg-3">
+            <div class="premium-item-card shadow-sm">
+                <a href="{% url 'item_detail' item.slug %}">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
+                    {% else %}
+                    <div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height: 230px;">NO IMAGE</div>
+                    {% endif %}
                 </a>
+                <div class="p-4">
+                    <h5 class="fw-800 text-truncate mb-2">
+                        <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase" style="font-size: 1.1rem;">{{ item.name }}</a>
+                    </h5>
+                    <div class="mb-4 text-warning fw-800">
+                        {% if item.avg_rating %}{{ item.avg_rating|floatformat:1 }} ★{% else %}<span class="text-muted small">NEW ENTRY</span>{% endif %}
+                    </div>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium">PROMOTE</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="bg-dark rounded-5 p-5 text-center text-white shadow-lg" style="border: 2px solid var(--accent); position: relative; overflow: hidden;">
+        <div style="position: relative; z-index: 2;">
+            <h2 class="display-5 fw-800 mb-3">Claim Your Seat</h2>
+            <p class="lead mb-5 opacity-75 fw-500">Your journey to earning through authentic community recommendations starts now.</p>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-800 px-5 py-3 rounded-pill text-dark shadow-lg">
+                JOIN NOW <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+            {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg fw-800 px-5 py-3 rounded-pill">
+                BACK TO DASHBOARD
+            </a>
             {% endif %}
         </div>
     </div>
 </div>
-
 {% endblock %}

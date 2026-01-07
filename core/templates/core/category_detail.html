@@ -1,36 +1,225 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'category_list' %}">Categories</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
-        </ol>
-    </nav>
+<style>
+    :root {
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
+    }
 
-    <h2>{{ category.name }}</h2>
-    <p class="text-muted mb-4">Found {{ items.count }} items in this category.</p>
+    /* Header Section */
+    .category-header {
+        background: white;
+        padding: 60px 0 40px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+    }
 
-    <div class="row">
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 15px;
+    }
+
+    .breadcrumb-item a {
+        color: var(--midnight);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .cat-title {
+        font-weight: 800;
+        color: var(--midnight);
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+        margin-bottom: 5px;
+    }
+
+    .item-count-badge {
+        display: inline-block;
+        background: var(--soft-bg);
+        color: var(--midnight);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Grid & Cards */
+    .item-card {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+        border-color: var(--accent);
+    }
+
+    .img-wrapper {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .item-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .item-card:hover .item-img {
+        transform: scale(1.1);
+    }
+
+    .no-img-placeholder {
+        background: var(--midnight);
+        color: white;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+    }
+
+    .card-content {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-name-link {
+        color: var(--midnight);
+        font-weight: 700;
+        font-size: 1.25rem;
+        text-decoration: none;
+        transition: 0.2s;
+        line-height: 1.3;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .item-name-link:hover {
+        color: var(--accent);
+    }
+
+    .item-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-weight: 400;
+    }
+
+    .view-btn {
+        margin-top: auto;
+        color: var(--midnight);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+
+    .view-btn i {
+        font-size: 1.1rem;
+        transition: 0.2s;
+    }
+
+    .item-card:hover .view-btn {
+        color: var(--accent);
+    }
+
+    .item-card:hover .view-btn i {
+        transform: translateX(5px);
+    }
+
+    /* Empty State */
+    .empty-container {
+        padding: 100px 20px;
+        background: white;
+        border-radius: 30px;
+        border: 2px dashed #e2e8f0;
+        text-align: center;
+    }
+</style>
+
+<div class="category-header shadow-sm">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'category_list' %}">Explore</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="cat-title">{{ category.name }}</h1>
+        <span class="item-count-badge">{{ items.count }} Items Available</span>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
         {% for item in items %}
-        <div class="col-md-3 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ item.name }}">
-                {% else %}
-                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">No Image</div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-dark">{{ item.name }}</a></h5>
-                    <p class="card-text small">{{ item.description|truncatewords:10 }}</p>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="item-card">
+                <div class="img-wrapper">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" class="item-img" alt="{{ item.name }}">
+                    {% else %}
+                    <div class="no-img-placeholder">
+                        <i class="bi bi-image me-2"></i> Preview Unavailable
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-content">
+                    <a href="{% url 'item_detail' item.slug %}" class="item-name-link">
+                        {{ item.name }}
+                    </a>
+                    <p class="item-desc">
+                        {{ item.description|truncatewords:12 }}
+                    </p>
+                    <a href="{% url 'item_detail' item.slug %}" class="view-btn">
+                        View Details <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 py-5 text-center">
-            <h4>No items here yet!</h4>
-            <a href="{% url 'category_list' %}" class="btn btn-outline-primary mt-3">Browse other categories</a>
+        <div class="col-12">
+            <div class="empty-container">
+                <i class="bi bi-box-seam display-1 text-light mb-4 d-block"></i>
+                <h3 class="fw-bold text-midnight">No items found</h3>
+                <p class="text-muted">We haven't added any products to this category yet.</p>
+                <a href="{% url 'category_list' %}" class="btn btn-warning fw-bold px-4 py-2 rounded-pill mt-3">
+                    Explore Other Categories
+                </a>
+            </div>
         </div>
         {% endfor %}
     </div>

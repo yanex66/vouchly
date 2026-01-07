@@ -1,36 +1,215 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+    :root {
+        --midnight: #0f172a;
+        --midnight-dark: #020617;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --text-muted: #64748b;
+        --wa-green: #25D366;
+    }
+
+    body { background-color: var(--soft-bg); }
+
+    /* Premium Contact Card */
+    .contact-card {
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 40px;
+        background: white;
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+    }
+
+    .contact-header {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        padding: 70px 40px;
+        color: white;
+        text-align: center;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .contact-header h2 {
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+    }
+
+    /* Form & Input Styling */
+    .form-label-custom {
+        font-weight: 800;
+        color: var(--midnight);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .input-custom {
+        border-radius: 15px !important;
+        padding: 14px 18px;
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: var(--midnight);
+    }
+
+    .input-custom:focus {
+        background-color: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.15);
+        outline: none;
+    }
+
+    /* Support Boxes */
+    .support-box {
+        padding: 30px;
+        background: var(--soft-bg);
+        border-radius: 25px;
+        border: 1px solid rgba(0,0,0,0.05);
+        height: 100%;
+    }
+
+    .icon-box-small {
+        width: 50px;
+        height: 50px;
+        background: var(--midnight);
+        color: var(--accent);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .btn-send-email {
+        background: var(--midnight);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+
+    .btn-send-email:hover {
+        background: var(--midnight-dark);
+        color: var(--accent);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-whatsapp-direct {
+        background: var(--wa-green);
+        color: white;
+        border-radius: 15px;
+        padding: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .btn-whatsapp-direct:hover {
+        background: #128C7E;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .contact-header { padding: 50px 20px; }
+        .contact-card { border-radius: 30px; }
+    }
+</style>
+
+<div class="container py-5 mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center p-5">
-                    <h2 class="mb-4 fw-bold" style="color: #002060;">Contact Vouchly</h2>
-                    <p class="text-muted mb-4">Have questions about your earnings or how to vouch for products? Reach out!</p>
-                    
-                    <div class="d-grid gap-3">
-                        <a href="mailto:help.hoxobil@gmail.com" class="btn btn-primary btn-lg">
-                            <i class="bi bi-envelope me-2"></i> help.hoxobil@gmail.com
-                        </a>
-                        
-                        <a href="https://wa.me/2349130273282" target="_blank" class="btn btn-success btn-lg">
-                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
-                        </a>
-                    </div>
-                    
-                    <hr class="my-5">
-                    
-                    <div class="text-start">
-                        <h5 class="fw-bold">Operating Hours</h5>
-                        <p class="text-muted mb-0">
-                            <strong>Everyday:</strong> 9:00 AM - 9:00 PM (WAT)<br>
-                            <span class="small">Our team typically responds within 24 hours.</span>
-                        </p>
+        <div class="col-lg-10">
+            <div class="contact-card">
+                <div class="contact-header">
+                    <h2 class="display-5 mb-2">Connect with us</h2>
+                    <p class="opacity-75 mb-0 fw-500">Need help with your VOCOIN or Payouts? Our support team is ready.</p>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <div class="row g-5">
+                        <div class="col-md-5 order-md-2">
+                            <div class="support-box">
+                                <div class="icon-box-small">
+                                    <i class="bi bi-chat-heart-fill"></i>
+                                </div>
+                                <h4 class="fw-800 mb-3" style="color: var(--midnight); letter-spacing: -0.5px;">Live Support</h4>
+                                <p class="text-muted small fw-500 mb-4">Chat directly with support for the fastest response regarding your account.</p>
+                                
+                                <a href="https://wa.me/2349130273282" target="_blank" class="btn-whatsapp-direct shadow-sm mb-4">
+                                    <i class="bi bi-whatsapp fs-4 me-2"></i> Open WhatsApp
+                                </a>
+
+                                <hr class="my-4 opacity-25">
+
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-clock-history text-warning fs-4"></i>
+                                    <div>
+                                        <h6 class="fw-800 mb-1" style="color: var(--midnight); font-size: 0.85rem;">SUPPORT HOURS</h6>
+                                        <p class="small text-muted fw-500 mb-0">
+                                            9:00 AM - 9:00 PM (WAT)<br>
+                                            <span class="opacity-75">Available Every Single Day.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <h4 class="fw-800 mb-4" style="color: var(--midnight); letter-spacing: -0.5px;">Send an Inquiry</h4>
+                            <form action="mailto:help.hoxobil@gmail.com" method="post" enctype="text/plain">
+                                <div class="mb-4">
+                                    <label class="form-label-custom">Full Name</label>
+                                    <input type="text" name="name" class="form-control input-custom" placeholder="What is your name?" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label-custom">Matter of Discussion</label>
+                                    <select name="subject" class="form-select input-custom" required style="appearance: auto;">
+                                        <option value="General Inquiry">General Inquiry</option>
+                                        <option value="Payout Assistance">Payout Assistance</option>
+                                        <option value="Account Access Issue">Account/Access Issue</option>
+                                        <option value="Feedback">Platform Feedback</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label-custom">Message Details</label>
+                                    <textarea name="message" class="form-control input-custom" rows="5" placeholder="Tell us how we can help you today..." required></textarea>
+                                </div>
+
+                                <button type="submit" class="btn-send-email w-100 shadow-sm">
+                                    <i class="bi bi-envelope-paper-fill me-2"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Ensure the select dropdown is properly styled
+    document.querySelector('select').classList.add('input-custom');
+</script>
 {% endblock %}

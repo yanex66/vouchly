@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -31,17 +31,22 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     
-    # --- Authentication URLs ---
+    # --- Google & Allauth Authentication URLs ---
+    # This include provides the callback and login logic for Google
+    path('accounts/', include('allauth.urls')),
+    
+    # --- Custom Authentication URLs ---
     path('register/', register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='core/logout.html'), name='logout'),
     
-    # --- Password Change (Forget Password for logged-in users) ---
+    # --- Password Change ---
     path('settings/password/', auth_views.PasswordChangeView.as_view(
         template_name='core/change_password.html',
         success_url='/dashboard/'
     ), name='password_change'),
     
+    # Redirects any default allauth profile hits to your custom dashboard
     path('accounts/profile/', lambda request: redirect('dashboard')),
 
     # --- Feature URLs ---
@@ -57,7 +62,7 @@ urlpatterns = [
     path('profile/edit/', edit_profile, name='edit_profile'),
     path('payout/request/', request_payout, name='request_payout'), 
     path('buy/<slug:slug>/', buy_item, name='buy_item'),
-
+    
     # --- Static Pages ---
     path('about/', about, name='about'),
     path('contact/', contact, name='contact'),
