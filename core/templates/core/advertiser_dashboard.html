@@ -1,0 +1,212 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --vocoin-gold: #fbbf24;
+        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    
+    body { background-color: var(--soft-bg); }
+
+    /* Main Vocoin Card Styling */
+    .vocoin-main-card {
+        background: var(--midnight);
+        border-radius: 35px;
+        padding: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 8px solid var(--accent);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    }
+
+    .vocoin-badge {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--vocoin-gold);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    /* Stats Grid */
+    .stat-card {
+        background: white;
+        border-radius: 28px;
+        padding: 25px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--card-shadow);
+        height: 100%;
+        transition: 0.3s;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    /* Modern Tables */
+    .table-card {
+        background: white;
+        border-radius: 28px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .badge-live {
+        background: #f0fdf4;
+        color: #16a34a;
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+    }
+
+    /* Alert Styling */
+    .alert-custom {
+        border-radius: 24px;
+        border: none;
+        box-shadow: var(--card-shadow);
+    }
+</style>
+
+<div class="container py-5 mt-3">
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'core/includes/_sidebar.html' %}
+        </div>
+
+        <div class="col-lg-9">
+            
+            {% if profile.verification_status == 'UNVERIFIED' %}
+                <div class="alert alert-warning alert-custom p-4 mb-4 d-flex align-items-center">
+                    <i class="bi bi-shield-lock-fill fs-1 me-4 text-warning"></i>
+                    <div>
+                        <h5 class="fw-900 mb-1">Verify Your Identity</h5>
+                        <p class="mb-3 opacity-75">You must verify your identity to list products and access premium features.</p>
+                        <a href="{% url 'verify_identity' %}" class="btn btn-warning btn-sm fw-800 rounded-pill px-4">VERIFY NOW</a>
+                    </div>
+                </div>
+            {% elif profile.verification_status == 'PENDING' %}
+                <div class="alert alert-info alert-custom p-4 mb-4 d-flex align-items-center" style="background-color: #f0f9ff;">
+                    <i class="bi bi-hourglass-split fs-1 me-4 text-primary"></i>
+                    <div>
+                        <h5 class="fw-900 mb-1 text-primary">Verification Pending</h5>
+                        <p class="mb-0 text-muted small fw-bold">🔒 We are reviewing your documents. This usually takes 24-48 hours.</p>
+                    </div>
+                </div>
+            {% elif profile.verification_status == 'REJECTED' %}
+                <div class="alert alert-danger alert-custom p-4 mb-4 d-flex align-items-center">
+                    <i class="bi bi-x-circle-fill fs-1 me-4 text-danger"></i>
+                    <div>
+                        <h5 class="fw-900 mb-1">Verification Rejected</h5>
+                        <p class="mb-3 opacity-75">There was an issue with your documents. Please re-submit clear documents.</p>
+                        <a href="{% url 'verify_identity' %}" class="btn btn-danger btn-sm fw-800 rounded-pill px-4 text-white">RE-SUBMIT DOCS</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="vocoin-main-card mb-5">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="vocoin-badge me-3"><i class="bi bi-star-fill me-1"></i> STEWARD REWARDS</span>
+                        </div>
+                        <h6 class="opacity-75 fw-bold small text-uppercase mb-1">{{ balance_label }}</h6>
+                        <h1 class="fw-900 display-4 mb-3">₦{{ available_balance|floatformat:2 }}</h1>
+                        <p class="small opacity-50 fw-bold mb-4">Total tokens earned from community referrals and loyalty.</p>
+                        
+                        <a href="{% url 'request_payout' %}" class="btn btn-warning fw-900 rounded-pill px-4 py-2 shadow-lg">
+                            WITHDRAW REWARDS <i class="bi bi-arrow-right-short ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="col-md-5 d-none d-md-block text-end">
+                        <i class="bi bi-coin text-warning opacity-25" style="font-size: 12rem;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-box-seam"></i></div>
+                        <h6 class="text-muted fw-bold small text-uppercase">Listed Items</h6>
+                        <h3 class="fw-900 mb-0">{{ my_products.count }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-cursor-fill"></i></div>
+                        <h6 class="text-muted fw-bold small text-uppercase">Total Ad Clicks</h6>
+                        <h3 class="fw-900 mb-0">{% if my_products %}{{ my_products.0.total_clicks|default:0 }}{% else %}0{% endif %}</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-lightning-fill"></i></div>
+                        <h6 class="text-muted fw-bold small text-uppercase">Active Status</h6>
+                        <h3 class="fw-900 mb-0 text-info">{% if active_sub %}PREMIUM{% else %}BASIC{% endif %}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card mb-5">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-800 mb-0">Live Ad Campaigns</h5>
+                    {% if profile.verification_status == 'VERIFIED' %}
+                    <a href="{% url 'promote_request' %}" class="btn btn-dark btn-sm fw-800 rounded-pill px-3">Add Listing</a>
+                    {% else %}
+                    <button class="btn btn-secondary btn-sm fw-800 rounded-pill px-3" disabled>Verify to Add Listing</button>
+                    {% endif %}
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3">Product</th>
+                                <th class="text-center">Commission</th>
+                                <th class="text-center">Clicks</th>
+                                <th class="text-end pe-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in my_products %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-midnight">{{ item.name }}</div>
+                                    <div class="text-muted small">₦{{ item.price|floatformat:0 }}</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold">₦{{ item.commission_naira|floatformat:0 }}</span>
+                                </td>
+                                <td class="text-center fw-900">{{ item.total_clicks|default:0 }}</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge-live">LIVE</span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center py-5 text-muted">No products found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

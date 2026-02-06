@@ -1,0 +1,119 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+    }
+
+    body { background-color: var(--soft-bg); }
+
+    .verify-card {
+        border-radius: 32px;
+        background: white;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .verify-header {
+        background: var(--midnight);
+        padding: 40px;
+        text-align: center;
+        color: white;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .verify-body { padding: 40px; }
+
+    .doc-upload-box {
+        background: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        border-radius: 20px;
+        padding: 25px;
+        transition: 0.3s;
+    }
+
+    .doc-upload-box:hover {
+        border-color: var(--accent);
+        background: #fffbeb;
+    }
+
+    .security-note {
+        background: #ecfdf5;
+        border-left: 5px solid #10b981;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        color: #065f46;
+    }
+</style>
+
+<div class="container py-5 mt-3">
+    <div class="verify-card">
+        <div class="verify-header">
+            <h2 class="fw-900 mb-1">🔒 Identity Verification</h2>
+            <p class="small opacity-75 fw-500 mb-0">Secure your business account to start listing products</p>
+        </div>
+
+        <div class="verify-body">
+            <div class="security-note mb-5 d-flex align-items-center">
+                <i class="bi bi-shield-lock-fill fs-3 me-3"></i>
+                <div>
+                    <strong class="d-block">Your Privacy is Our Priority</strong>
+                    Your documents are encrypted and used strictly for verification. They are never shared with third parties or marketers.
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="fw-800 small text-uppercase mb-2 d-block">Business Name</label>
+                        {{ form.business_name }}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="fw-800 small text-uppercase mb-2 d-block">Advertiser Full Name</label>
+                        {{ form.full_name }}
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <label class="fw-800 small text-uppercase mb-2 d-block">WhatsApp Contact Number</label>
+                        {{ form.contact_number }}
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <label class="fw-800 small text-uppercase mb-2 d-block">Residential / Office Address</label>
+                        {{ form.residential_address }}
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="doc-upload-box">
+                            <label class="fw-800 small text-uppercase mb-2 d-block">Proof of Identity (NIN)</label>
+                            {{ form.proof_of_identity }}
+                            <small class="text-muted d-block mt-2">Upload a clear photo or PDF of your NIN card.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="doc-upload-box">
+                            <label class="fw-800 small text-uppercase mb-2 d-block">Proof of Address</label>
+                            {{ form.proof_of_address }}
+                            <small class="text-muted d-block mt-2">Upload a recent bank statement (last 3 months).</small>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill fw-800 fs-5 shadow-lg mt-3">
+                    🛡️ Verify My Identity
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

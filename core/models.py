@@ -3,9 +3,18 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
+from datetime import timedelta
+import os
+import uuid
 
-# --- EXISTING MODELS ---
+# Helper function for secure file naming
+def secure_verification_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    return os.path.join(f'secure_vault/user_{instance.user.id}/verification/', filename)
 
+# --- 1. CATEGORIES & ITEMS ---
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -30,12 +39,12 @@ class Item(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    discount_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    commission_naira = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    affiliate_link = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='item_images/', blank=True, null=True)
-    specifications = models.JSONField(default=dict, blank=True) 
     created_at = models.DateTimeField(auto_now_add=True)
+    expiry_date = models.DateTimeField(null=True, blank=True)
     is_featured = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -46,6 +55,32 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+# --- 2. SUBSCRIPTIONS ---
+class PromotionPlan(models.Model):
+    seller = models.ForeignKey(User, related_name='promotions', on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=200)
+    description = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    product_image = models.ImageField(upload_to='promotion_requests/')
+    whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
+    destination_type = models.CharField(max_length=10, choices=[('whatsapp', 'WhatsApp'), ('website', 'Website')], default='whatsapp')
+    website_url = models.URLField(blank=True, null=True)
+    
+    agree_to_commissions = models.BooleanField(default=False)
+    
+    product_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    # FIXED: Changed default from 10 to 0
+    commission_percentage = models.PositiveIntegerField(default=0)
+    
+    duration_days = models.IntegerField() 
+    
+    is_paid = models.BooleanField(default=False)
+    payment_reference = models.CharField(max_length=100, blank=True, null=True)
+    subscription_expiry = models.DateTimeField(null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+# --- 3. REVIEWS & REFERRALS ---
 class Review(models.Model):
     item = models.ForeignKey(Item, related_name='reviews', on_delete=models.CASCADE)
     author = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
@@ -58,70 +93,75 @@ class Review(models.Model):
     class Meta:
         unique_together = ('item', 'author')
 
-    def __str__(self):
-        return f"{self.item.name} - {self.rating} stars"
+class ProductReferral(models.Model):
+    referrer = models.ForeignKey(User, related_name='product_referrals', on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, related_name='referral_clicks', on_delete=models.CASCADE)
+    clicks = models.PositiveIntegerField(default=0)
+    last_click = models.DateTimeField(auto_now=True)
 
+# --- 4. USER PROFILES, WALLET & VERIFICATION ---
 class Profile(models.Model):
+    USER_TYPES = [('MARKETER', 'Marketer'), ('ADVERTISER', 'Advertiser')]
+    VERIFICATION_STATUS = [
+        ('UNVERIFIED', 'Unverified'),
+        ('PENDING', 'Pending Review'),
+        ('VERIFIED', 'Verified'),
+        ('REJECTED', 'Rejected'),
+    ]
+    BANK_CHOICES = [('', 'Select Bank'), ('gtbank', 'GTBank'), ('zenith', 'Zenith Bank'), ('opay', 'Opay'), ('kuda', 'Kuda')]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_type = models.CharField(max_length=20, choices=USER_TYPES, default='MARKETER')
+    verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='UNVERIFIED')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    token_rewards = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    token_rewards = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    bank_name = models.CharField(max_length=100, choices=BANK_CHOICES, null=True, blank=True)
+    account_number = models.CharField(max_length=10, null=True, blank=True)
+    account_name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f"{self.user.username} ({self.verification_status})"
 
+class AdvertiserVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='verification_docs')
+    business_name = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255)
+    contact_number = models.CharField(max_length=20)
+    residential_address = models.TextField()
+    proof_of_identity = models.FileField(upload_to=secure_verification_path)
+    proof_of_address = models.FileField(upload_to=secure_verification_path)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+# --- 5. SYSTEM SETTINGS (DYNAMIC PRICING) ---
+class SubscriptionPrice(models.Model):
+    plan_name = models.CharField(max_length=50, help_text="e.g., Weekly Plan")
+    duration_days = models.IntegerField(unique=True, help_text="Must match 7, 30, 180, or 365")
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.plan_name} ({self.duration_days} Days) - ₦{self.price:,.2f}"
+
+    class Meta:
+        verbose_name = "Plan Price Setting"
+        verbose_name_plural = "Plan Price Settings"
+
+# --- 6. OTHERS & SIGNALS ---
 class Referral(models.Model):
     referrer = models.ForeignKey(User, related_name='referrals_made', on_delete=models.CASCADE)
     referred_user = models.OneToOneField(User, related_name='referred_by', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.referrer.username} invited {self.referred_user.username}"
-
 class PayoutRequest(models.Model):
-    STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('PROCESSING', 'Processing'),
-        ('PAID', 'Paid'),
-        ('CANCELLED', 'Cancelled'),
-    ]
-
-    BANK_CHOICES = [
-        ('', 'Select Bank'),
-        ('access', 'Access Bank'),
-        ('ecobank', 'Ecobank Nigeria'),
-        ('fidelity', 'Fidelity Bank'),
-        ('firstbank', 'First Bank of Nigeria'),
-        ('gtbank', 'Guaranty Trust Bank (GTBank)'),
-        ('kuda', 'Kuda Bank'),
-        ('moniepoint', 'Moniepoint MFB'),
-        ('opay', 'Opay'),
-        ('palmpay', 'Palmpay'),
-        ('uba', 'United Bank for Africa (UBA)'),
-        ('zenith', 'Zenith Bank'),
-    ]
-
     user = models.ForeignKey(User, related_name='payouts', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2) 
-    bank_name = models.CharField(max_length=100, choices=BANK_CHOICES, null=True, blank=True)
+    bank_name = models.CharField(max_length=100, null=True, blank=True)
     account_number = models.CharField(max_length=10, null=True, blank=True)
     account_name = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=20, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        if self.pk:
-            old_status = PayoutRequest.objects.get(pk=self.pk).status
-            if self.status == 'CANCELLED' and old_status != 'CANCELLED':
-                profile = self.user.profile
-                profile.balance += self.amount
-                profile.save()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.amount} ({self.status})"
-
-# --- NEW CHAT MODEL ---
 
 class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -129,17 +169,9 @@ class ChatMessage(models.Model):
     is_from_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        sender = self.user.username if self.user else "Guest User"
-        return f"Chat from {sender} at {self.created_at.strftime('%Y-%m-%d %H:%M')}"
-
-# --- SIGNALS ---
-
 @receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
+def manage_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+        Profile.objects.get_or_create(user=instance)
+    if hasattr(instance, 'profile'):
+        instance.profile.save()

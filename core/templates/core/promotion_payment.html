@@ -1,0 +1,130 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .auth-card {
+        background: #0f172a !important; 
+        border-radius: 35px;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .invoice-details-box {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+    }
+    .text-light-muted { color: #94a3b8; }
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .fw-700 { font-weight: 700 !important; }
+</style>
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="auth-card p-5">
+                
+                <div class="text-center mb-4">
+                    <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly Logo" style="height: 60px; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+                    <h2 class="fw-900 mt-2 text-white" id="logo-text" style="display: none; letter-spacing: -1.5px;">VOUCHLY</h2>
+                </div>
+
+                <div class="text-center mb-5">
+                    <h2 class="fw-900 text-white" style="letter-spacing: -1.5px;">SUBSCRIPTION INVOICE</h2>
+                    <p class="text-light-muted fw-bold">Select a method to activate your ad plan.</p>
+                </div>
+
+                <div class="invoice-details-box p-4 mb-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-700 text-light-muted small text-uppercase">Ad Product:</span>
+                        <span class="fw-800 text-white text-end">{{ promotion.product_name }}</span>
+                    </div>
+                    <hr class="border-white opacity-25">
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="fw-900 h5 mb-0 text-white">TOTAL PAYABLE:</span>
+                        <span class="fw-900 h3 mb-0 text-success">₦{{ amount|floatformat:2 }}</span>
+                    </div>
+                </div>
+
+                <div class="payment-action">
+                    <button type="button" class="btn btn-light w-100 py-3 fw-900 rounded-pill shadow-lg border-0 mb-3" onclick="payWithPaystack()">
+                        <i class="bi bi-credit-card-fill me-2"></i> PAY WITH PAYSTACK
+                    </button>
+
+                    <button type="button" class="btn w-100 py-3 fw-900 rounded-pill shadow-lg border-0 mb-3" style="background: #f5a623; color: white;" onclick="makePayment()">
+                        <i class="bi bi-shield-lock-fill me-2"></i> PAY WITH FLUTTERWAVE
+                    </button>
+                    
+                    <a href="{% url 'promote_request' %}" class="btn btn-link w-100 text-light-muted fw-bold text-decoration-none small">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel Checkout
+                    </a>
+                </div>
+
+                <div class="text-center mt-4 opacity-50">
+                    <p class="text-white small fw-bold mb-0">SECURED BY PAYSTACK & FLUTTERWAVE</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
+<script>
+    const userEmail = "{{ request.user.email }}";
+    const userName = "{{ request.user.username }}";
+    const totalAmount = parseFloat("{{ amount }}");
+    const flwKey = "{{ flw_public_key }}"; 
+    const paystackKey = "{{ paystack_public_key }}";
+    const txRef = 'VOUCH_' + Math.floor((Math.random() * 1000000000) + 1);
+
+    function payWithPaystack() {
+        if (!paystackKey || paystackKey === "" || paystackKey === "None") {
+            alert("Paystack Configuration Missing"); return;
+        }
+        let handler = PaystackPop.setup({
+            key: paystackKey, 
+            email: userEmail,
+            amount: Math.round(totalAmount * 100),
+            currency: 'NGN',
+            ref: txRef,
+            callback: function(response) {
+                window.location.href = "{% url 'verify_promotion_payment' %}?reference=" + response.reference + "&gateway=paystack";
+            }
+        });
+        handler.openIframe();
+    }
+
+    function makePayment() {
+        if (!flwKey || flwKey === "" || flwKey === "None") {
+            alert("Flutterwave Configuration Missing"); return;
+        }
+
+        FlutterwaveCheckout({
+            public_key: flwKey,
+            tx_ref: txRef,
+            amount: totalAmount,
+            currency: "NGN",
+            payment_options: "card, banktransfer, ussd",
+            customer: {
+                email: userEmail,
+                name: userName,
+            },
+            customizations: {
+                title: "Vouchly Ad Plan",
+                description: "Subscription for {{ promotion.product_name }}",
+                logo: "https://ui-avatars.com/api/?name=V&background=0f172a&color=ffc107",
+            },
+            callback: function (data) {
+                window.location.href = "{% url 'verify_promotion_payment' %}?transaction_id=" + data.transaction_id + "&gateway=flutterwave&status=" + data.status;
+            },
+            onclose: function() {
+                console.log("Payment modal closed.");
+            }
+        });
+    }
+</script>
+{% endblock %}

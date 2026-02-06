@@ -1,0 +1,94 @@
+{% load static %}
+<style>
+    /* High-Contrast Sidebar Overrides */
+    .dash-sidebar {
+        background: #ffffff !important;
+        border: 1px solid rgba(15, 23, 42, 0.1) !important;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    .dash-nav .nav-link {
+        color: #334155 !important; /* Dark Slate - Much clearer than the previous grey */
+        font-weight: 700 !important;
+        opacity: 1 !important;
+        padding: 12px 18px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .dash-nav .nav-link i {
+        color: #64748b !important; /* Visible Slate-Blue for icons */
+        margin-right: 12px !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* Active State Override */
+    .dash-nav .nav-link.active {
+        background-color: #0f172a !important; /* Deep Midnight */
+        color: #ffffff !important;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.3) !important;
+    }
+
+    .dash-nav .nav-link.active i {
+        color: #ffc107 !important; /* Gold icons on active state */
+    }
+
+    .dash-nav .nav-link:hover:not(.active) {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+</style>
+
+<div class="dash-sidebar mb-4 text-center">
+    <div class="mb-4">
+        <div class="position-relative d-inline-block">
+             {% if user.profile.image %}
+                <img src="{{ user.profile.image.url }}" class="rounded-circle border border-4 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+             {% else %}
+                <div class="rounded-circle border border-4 border-white shadow-sm bg-light d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                    <i class="bi bi-person-fill text-muted fs-1"></i>
+                </div>
+             {% endif %}
+        </div>
+        
+        <h5 class="fw-800 mt-3 mb-0" style="color: #0f172a;">{{ user.username|upper }}</h5>
+        
+        <span class="badge {% if user.profile.user_type == 'ADVERTISER' %}bg-dark text-warning{% else %}bg-primary{% endif %} small fw-bold mt-1">
+            {{ user.profile.user_type }}
+        </span>
+    </div>
+    
+    <nav class="nav flex-column dash-nav text-start">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="bi {% if user.profile.user_type == 'ADVERTISER' %}bi-grid-fill{% else %}bi-wallet2{% endif %}"></i> 
+            {% if user.profile.user_type == 'ADVERTISER' %}OVERVIEW{% else %}MY EARNINGS{% endif %}
+        </a>
+
+        {% if user.profile.user_type == 'ADVERTISER' %}
+            <a class="nav-link {% if request.resolver_match.url_name == 'ad_analytics' %}active{% endif %}" href="{% url 'ad_analytics' %}">
+                <i class="bi bi-graph-up-arrow"></i> AD ANALYTICS
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'promote_request' %}active{% endif %}" href="{% url 'promote_request' %}">
+                <i class="bi bi-megaphone-fill"></i> LIST PRODUCT
+            </a>
+        {% else %}
+            <a class="nav-link {% if request.resolver_match.url_name == 'referrals_page' %}active{% endif %}" href="{% url 'referrals_page' %}">
+                <i class="bi bi-people-fill"></i> ACCOUNT REFERRALS
+            </a>
+            <a class="nav-link" href="{% url 'home' %}">
+                <i class="bi bi-shop"></i> BROWSE PRODUCTS
+            </a>
+        {% endif %}
+
+        <a class="nav-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">
+            <i class="bi bi-person-gear"></i> SETTINGS
+        </a>
+        
+        <hr class="opacity-10 my-3">
+        <form action="{% url 'logout' %}" method="post" id="logout-form" style="display: none;">
+            {% csrf_token %}
+        </form>
+        <a class="nav-link text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="bi bi-power"></i> LOGOUT
+        </a>
+    </nav>
+</div>

@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="auth-card p-5 shadow-lg bg-white border" style="border-radius: 35px;">
+                <div class="mb-4">
+                    <div class="bg-success d-inline-block p-4 rounded-circle shadow-sm">
+                        <i class="bi bi-check-lg h1 text-white"></i>
+                    </div>
+                </div>
+
+                <h2 class="fw-900 mb-2" style="color: #0f172a; letter-spacing: -1.5px;">PAYMENT SUCCESSFUL!</h2>
+                <p class="text-muted fw-bold mb-5">Your subscription is now active and your product is live on Vouchly.</p>
+
+                <div class="bg-light p-4 rounded-4 mb-4 text-start">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-700 text-muted small">PRODUCT:</span>
+                        <span class="fw-800 text-midnight">{{ item.name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-700 text-muted small">EXPIRY DATE:</span>
+                        <span class="fw-800 text-midnight">{{ item.expiry_date|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-700 text-muted small">STATUS:</span>
+                        <span class="badge bg-success rounded-pill fw-bold">LIVE & ACTIVE</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <a href="{% url 'ad_analytics' %}" class="btn btn-dark py-3 fw-900 rounded-pill shadow">
+                        <i class="bi bi-graph-up-arrow me-2"></i> VIEW AD ANALYTICS
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary py-3 fw-800 rounded-pill">
+                        BACK TO DASHBOARD
+                    </a>
+                </div>
+
+                <p class="mt-4 small text-muted fw-bold">
+                    Need help? <a href="{% url 'contact' %}" class="text-midnight">Contact Support</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block content %}
 <style>
@@ -6,60 +7,12 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        /* CONTRAST FIX: Clearly visible inactive colors */
-        --nav-inactive-text: #475569; 
-        --nav-inactive-icon: #64748b;
         --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
     
     body { background-color: var(--soft-bg); }
 
-    /* Glass Sidebar - High Contrast Fix */
-    .dash-sidebar {
-        background: white;
-        border: 1px solid rgba(0,0,0,0.05);
-        border-radius: 32px;
-        padding: 24px;
-        box-shadow: var(--card-shadow);
-    }
-
-    .dash-nav .nav-link {
-        color: var(--nav-inactive-text) !important; 
-        font-weight: 700;
-        padding: 14px 20px;
-        border-radius: 16px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-        text-decoration: none;
-    }
-
-    .dash-nav .nav-link i { 
-        margin-right: 14px; 
-        font-size: 1.25rem; 
-        color: var(--nav-inactive-icon);
-    }
-
-    /* Active State for Payouts */
-    .dash-nav .nav-link.active {
-        background-color: var(--midnight) !important;
-        color: white !important;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
-    }
-
-    .dash-nav .nav-link.active i { color: white !important; }
-
-    .dash-nav .nav-link:not(.active):hover {
-        background-color: #f1f5f9;
-        color: var(--midnight) !important;
-        transform: translateX(5px);
-    }
-
-    /* Payout Card Styling */
     .payout-card {
-        border: 1px solid rgba(0,0,0,0.04);
         border-radius: 32px;
         background: white;
         box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
@@ -74,15 +27,8 @@
         border-bottom: 5px solid var(--accent);
     }
 
-    .payout-header h2 {
-        font-weight: 800;
-        letter-spacing: -1.5px;
-        text-transform: uppercase;
-    }
-
     .payout-body { padding: 40px; }
 
-    /* Balance Banner */
     .balance-banner {
         background: var(--soft-bg);
         border-radius: 20px;
@@ -92,16 +38,6 @@
         border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .balance-label {
-        font-weight: 800;
-        color: var(--nav-inactive-icon);
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        display: block;
-        margin-bottom: 5px;
-    }
-
     .balance-amount {
         font-size: 2.2rem;
         font-weight: 800;
@@ -109,16 +45,17 @@
         letter-spacing: -1px;
     }
 
-    /* Form Elements */
-    .form-label-custom {
-        font-weight: 800;
-        color: var(--midnight);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-        display: block;
+    /* Saved Account Card */
+    .saved-account-card {
+        background: #f0fdf4;
+        border: 2px dashed #16a34a;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        transition: 0.3s;
     }
+    .saved-account-card:hover { background: #dcfce7; transform: translateY(-2px); }
 
     .input-custom {
         border-radius: 15px !important;
@@ -139,120 +76,107 @@
         outline: none;
     }
 
-    .btn-withdraw-premium {
-        background: var(--midnight);
-        color: white;
-        border: none;
-        border-radius: 15px;
-        padding: 16px;
+    #verify-loader {
+        font-size: 0.75rem;
         font-weight: 800;
-        letter-spacing: 1px;
-        width: 100%;
-        text-transform: uppercase;
-        transition: 0.3s;
-        margin-top: 15px;
-    }
-
-    .btn-withdraw-premium:hover {
-        background: var(--midnight-dark);
-        color: var(--accent);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
-    }
-
-    .info-box {
-        background: #fffbeb;
-        border: 1px solid #fef3c7;
-        color: #92400e;
-        border-radius: 15px;
-        padding: 15px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
+        color: #2563eb;
+        margin-top: 8px;
+        display: none;
     }
 </style>
 
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="modal fade show" id="successModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 25px;">
+                    <div class="modal-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="fw-900 text-midnight mb-2">SUCCESS!</h4>
+                        <p class="text-muted fw-bold">{{ message }}</p>
+                        <button type="button" class="btn btn-dark rounded-pill px-5 fw-800 mt-3" onclick="closeModal()">GREAT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function closeModal() {
+                document.getElementById('successModal').style.display = 'none';
+            }
+            // Auto-close after 5 seconds
+            setTimeout(closeModal, 5000);
+        </script>
+    {% endfor %}
+{% endif %}
 <div class="container py-5 mt-3">
     <div class="row g-4">
         <div class="col-lg-3">
-            <div class="dash-sidebar mb-4">
-                <nav class="nav flex-column dash-nav">
-                    <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid-fill"></i> Overview</a>
-                    <a class="nav-link" href="{% url 'referrals' %}"><i class="bi bi-people-fill"></i> Refer & Earn</a>
-                    <a class="nav-link" href="{% url 'edit_profile' %}"><i class="bi bi-person-fill-gear"></i> Settings</a>
-                    <a class="nav-link active" href="{% url 'request_payout' %}"><i class="bi bi-bank2"></i> Payouts</a>
-                    <hr class="opacity-10 my-4">
-                    <a class="nav-link text-danger" href="#" onclick="confirmLogout(event)">
-                        <i class="bi bi-power"></i> Logout
-                    </a>
-                </nav>
-            </div>
+            {% include 'core/includes/_sidebar.html' %}
         </div>
 
         <div class="col-lg-9">
             <div class="payout-card">
                 <div class="payout-header">
-                    <h2 class="mb-1">Request Payout</h2>
-                    <p class="small opacity-75 fw-500 mb-0">Withdraw your earnings to your bank account</p>
+                    <h2 class="mb-1 fw-800">Request Payout</h2>
+                    <p class="small opacity-75 fw-500 mb-0">Withdraw your community earnings instantly</p>
                 </div>
 
                 <div class="payout-body">
                     <div class="balance-banner shadow-sm">
-                        <span class="balance-label">Current Wallet Balance</span>
-                        <div class="balance-amount">₦{{ user.profile.balance|floatformat:2 }}</div>
+                        <span class="fw-800 small text-muted text-uppercase" style="letter-spacing: 1.5px;">{{ balance_label }}</span>
+                        <div class="balance-amount">₦{{ available_balance|floatformat:2 }}</div>
                     </div>
 
-                    <form method="POST">
+                    {% if user.profile.bank_name and user.profile.account_number %}
+                    <div class="saved-account-card d-flex align-items-center justify-content-between shadow-sm" onclick="useSavedDetails()">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-bank text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-900 mb-0 text-success">USE SAVED DESTINATION</h6>
+                                <p class="small mb-0 text-muted fw-bold">{{ user.profile.get_bank_name_display }} • {{ user.profile.account_number|slice:":4" }}****</p>
+                            </div>
+                        </div>
+                        <i class="bi bi-arrow-right-circle-fill text-success fs-3"></i>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" id="payoutForm">
                         {% csrf_token %}
                         
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger rounded-3 fw-bold small mb-4">{{ form.non_field_errors }}</div>
-                        {% endif %}
-
                         <div class="mb-4">
-                            <label class="form-label-custom">Withdrawal Amount (₦)</label>
+                            <label class="fw-800 small text-uppercase mb-2 d-block text-midnight">Withdrawal Amount (₦)</label>
                             {{ form.amount }}
-                            <div class="small fw-700 text-muted mt-2"><i class="bi bi-info-circle me-1 text-accent"></i> Minimum payout: ₦1,000.00</div>
-                            {% if form.amount.errors %}
-                                <div class="text-danger small mt-2 fw-800">{{ form.amount.errors }}</div>
-                            {% endif %}
                         </div>
 
-                        <hr class="my-4 opacity-10">
-
-                        <div class="mb-4">
-                            <label class="form-label-custom">Bank Institution</label>
-                            {{ form.bank_name }}
-                            {% if form.bank_name.errors %}
-                                <div class="text-danger small mt-2 fw-800">{{ form.bank_name.errors }}</div>
-                            {% endif %}
-                        </div>
+                        <hr class="my-5 opacity-10">
 
                         <div class="row g-4">
                             <div class="col-md-6 mb-4">
-                                <label class="form-label-custom">Account Number</label>
-                                {{ form.account_number }}
-                                {% if form.account_number.errors %}
-                                    <div class="text-danger small mt-2 fw-800">{{ form.account_number.errors }}</div>
-                                {% endif %}
+                                <label class="fw-800 small text-uppercase mb-2 d-block text-midnight">Bank Institution</label>
+                                {{ form.bank_name }}
                             </div>
+
                             <div class="col-md-6 mb-4">
-                                <label class="form-label-custom">Account Holder Name</label>
+                                <label class="fw-800 small text-uppercase mb-2 d-block text-midnight">Account Number</label>
+                                {{ form.account_number }}
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <label class="fw-800 small text-uppercase mb-2 d-block text-midnight">Account Holder Name</label>
                                 {{ form.account_name }}
-                                {% if form.account_name.errors %}
-                                    <div class="text-danger small mt-2 fw-800">{{ form.account_name.errors }}</div>
-                                {% endif %}
+                                <div id="verify-loader">
+                                    <span class="spinner-border spinner-border-sm me-2"></span> VERIFYING STEWARD IDENTITY...
+                                </div>
                             </div>
                         </div>
 
-                        <div class="info-box mb-4">
-                            <i class="bi bi-shield-check fs-4 me-3"></i>
-                            <span>Verification Required: Payouts are reviewed and processed within 24-48 business hours.</span>
-                        </div>
-
-                        <button type="submit" class="btn btn-withdraw-premium shadow-sm">
-                            Submit Request
+                        <button type="submit" class="btn btn-withdraw-premium w-100 shadow-sm mt-4">
+                            Submit Withdrawal Request
                         </button>
                     </form>
                 </div>
@@ -261,10 +185,122 @@
     </div>
 </div>
 
+
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="modal fade show" id="successModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 25px;">
+                    <div class="modal-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="fw-900 text-midnight mb-2">SUCCESS!</h4>
+                        <p class="text-muted fw-bold">{{ message }}</p>
+                        <button type="button" class="btn btn-dark rounded-pill px-5 fw-800 mt-3" onclick="closeModal()">GREAT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function closeModal() {
+                document.getElementById('successModal').style.display = 'none';
+            }
+            // Auto-close after 5 seconds
+            setTimeout(closeModal, 5000);
+        </script>
+    {% endfor %}
+{% endif %}
+
 <script>
-    // Injects premium styles into Django-generated form inputs
-    document.querySelectorAll('input, select').forEach(el => {
-        el.classList.add('input-custom');
+    // 1. IMPROVED: Use Saved Details with robust field selection
+    function useSavedDetails() {
+        const savedBank = "{{ user.profile.bank_name|default:'' }}";
+        const savedNumber = "{{ user.profile.account_number|default:'' }}";
+        const savedName = "{{ user.profile.account_name|default:'' }}";
+
+        // Selection logic: Try ID first (Django default), fallback to Name
+        const bankField = document.getElementById('id_bank_name') || document.querySelector('select[name="bank_name"]');
+        const accNumField = document.getElementById('id_account_number') || document.querySelector('input[name="account_number"]');
+        const accNameField = document.getElementById('id_account_name') || document.querySelector('input[name="account_name"]');
+
+        if (bankField) bankField.value = savedBank;
+        if (accNumField) accNumField.value = savedNumber;
+        
+        // Trigger the verification engine if we have the minimum requirements
+        if (savedNumber.length === 10 && savedBank) {
+            performVerification(); 
+        } else if (accNameField && savedName) {
+            accNameField.value = savedName;
+        }
+        
+        // Visual feedback (Green flash)
+        const inputs = [bankField, accNumField, accNameField];
+        inputs.forEach(el => {
+            if(el) {
+                el.style.borderColor = "#16a34a";
+                el.style.backgroundColor = "#f0fdf4";
+            }
+        });
+        
+        setTimeout(() => {
+            inputs.forEach(el => {
+                if(el) {
+                    el.style.borderColor = "#f1f5f9";
+                    el.style.backgroundColor = "#f8fafc";
+                }
+            });
+        }, 1500);
+    }
+
+    // 2. The Verification Engine (Paystack Resolve)
+    function performVerification() {
+        const accNumField = document.getElementById('id_account_number') || document.querySelector('input[name="account_number"]');
+        const bankSelect = document.getElementById('id_bank_name') || document.querySelector('select[name="bank_name"]');
+        const accNameField = document.getElementById('id_account_name') || document.querySelector('input[name="account_name"]');
+        const verifyLoader = document.getElementById('verify-loader');
+
+        const accNum = accNumField.value.trim();
+        const bankSlug = bankSelect.value;
+
+        if (accNum.length === 10 && bankSlug) {
+            verifyLoader.style.display = 'block';
+            accNameField.placeholder = "Verifying Steward...";
+            
+            fetch(`/verify-bank/?account_number=${accNum}&bank_slug=${bankSlug}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        accNameField.value = data.account_name;
+                        accNameField.style.color = "#16a34a"; 
+                    } else {
+                        accNameField.placeholder = "Verification Failed. Check Details.";
+                        accNameField.value = "";
+                    }
+                    verifyLoader.style.display = 'none';
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                    verifyLoader.style.display = 'none';
+                });
+        }
+    }
+
+    // Event Listeners for manual typing
+    document.addEventListener('DOMContentLoaded', function() {
+        const accNumInput = document.getElementById('id_account_number') || document.querySelector('input[name="account_number"]');
+        const bankDropdown = document.getElementById('id_bank_name') || document.querySelector('select[name="bank_name"]');
+
+        if(accNumInput) accNumInput.addEventListener('input', performVerification);
+        if(bankDropdown) bankDropdown.addEventListener('change', performVerification);
+
+        // Standardize styling
+        document.querySelectorAll('input, select').forEach(el => {
+            if (!el.classList.contains('form-check-input')) {
+                el.classList.add('input-custom');
+            }
+        });
     });
 </script>
 {% endblock %}

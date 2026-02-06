@@ -125,10 +125,14 @@
         </div>
 
         <div class="auth-body">
-            <a href="{% provider_login_url 'google' %}" class="btn-google-premium">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" style="height: 18px; margin-right: 12px;">
-                Sign in with Google
-            </a>
+           {% load static %}
+
+<a href="{% provider_login_url 'google' %}" class="btn-google-premium">
+    <img src="{% static 'core/images/google-logo.png' %}" 
+         alt="Google Logo" 
+         style="height: 18px; margin-right: 12px;">
+    SIGN IN WITH GOOGLE
+</a>
 
             <div class="auth-divider">Or use email</div>
 

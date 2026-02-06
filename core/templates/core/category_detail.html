@@ -7,6 +7,7 @@
         --accent: #ffc107;
         --soft-bg: #f8fafc;
         --text-muted: #64748b;
+        --success-green: #22c55e;
     }
 
     /* Header Section */
@@ -65,12 +66,44 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+        position: relative; /* REQUIRED FOR STRETCHED LINK */
+        cursor: pointer;
     }
 
     .item-card:hover {
         transform: translateY(-12px);
         box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
         border-color: var(--accent);
+    }
+
+    /* Active "Press" effect */
+    .item-card:active {
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    /* THE MAGIC: STRETCHED LINK */
+    .stretched-link::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        content: "";
+    }
+
+    .reward-tag-compact {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--accent);
+        color: var(--midnight);
+        padding: 4px 12px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.7rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        z-index: 5;
     }
 
     .img-wrapper {
@@ -113,22 +146,31 @@
     .item-name-link {
         color: var(--midnight);
         font-weight: 700;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         text-decoration: none;
         transition: 0.2s;
         line-height: 1.3;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         display: block;
     }
 
-    .item-name-link:hover {
-        color: var(--accent);
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .unit-price {
+        font-weight: 800;
+        color: var(--success-green);
+        font-size: 1rem;
     }
 
     .item-desc {
         color: var(--text-muted);
-        font-size: 0.95rem;
-        line-height: 1.6;
+        font-size: 0.9rem;
+        line-height: 1.5;
         margin-bottom: 20px;
         font-weight: 400;
     }
@@ -136,8 +178,8 @@
     .view-btn {
         margin-top: auto;
         color: var(--midnight);
-        font-weight: 700;
-        font-size: 0.85rem;
+        font-weight: 800;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         text-decoration: none;
@@ -148,7 +190,7 @@
     }
 
     .view-btn i {
-        font-size: 1.1rem;
+        font-size: 1rem;
         transition: 0.2s;
     }
 
@@ -160,7 +202,6 @@
         transform: translateX(5px);
     }
 
-    /* Empty State */
     .empty-container {
         padding: 100px 20px;
         background: white;
@@ -179,7 +220,7 @@
             </ol>
         </nav>
         <h1 class="cat-title">{{ category.name }}</h1>
-        <span class="item-count-badge">{{ items.count }} Items Available</span>
+        <span class="item-count-badge">{{ items.count }} Products Found</span>
     </div>
 </div>
 
@@ -188,24 +229,36 @@
         {% for item in items %}
         <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="item-card">
+                <div class="reward-tag-compact">₦{{ item.commission_naira|floatformat:0 }} REWARD</div>
+
                 <div class="img-wrapper">
                     {% if item.image %}
                     <img src="{{ item.image.url }}" class="item-img" alt="{{ item.name }}">
                     {% else %}
                     <div class="no-img-placeholder">
-                        <i class="bi bi-image me-2"></i> Preview Unavailable
+                        <i class="bi bi-image me-2"></i> No Preview
                     </div>
                     {% endif %}
                 </div>
+
                 <div class="card-content">
-                    <a href="{% url 'item_detail' item.slug %}" class="item-name-link">
+                    <h3 class="item-name-link text-uppercase">
                         {{ item.name }}
-                    </a>
+                    </h3>
+
+                    <div class="price-row">
+                        <span class="unit-price">₦{{ item.price|floatformat:0 }}</span>
+                        <div class="text-warning small fw-bold">
+                            <i class="bi bi-star-fill"></i> {{ item.avg_rating|default:"5.0"|floatformat:1 }}
+                        </div>
+                    </div>
+
                     <p class="item-desc">
-                        {{ item.description|truncatewords:12 }}
+                        {{ item.description|truncatewords:10 }}
                     </p>
-                    <a href="{% url 'item_detail' item.slug %}" class="view-btn">
-                        View Details <i class="bi bi-arrow-right"></i>
+
+                    <a href="{% url 'item_detail' item.slug %}" class="view-btn stretched-link">
+                        PROMOTE & EARN <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -214,10 +267,10 @@
         <div class="col-12">
             <div class="empty-container">
                 <i class="bi bi-box-seam display-1 text-light mb-4 d-block"></i>
-                <h3 class="fw-bold text-midnight">No items found</h3>
+                <h3 class="fw-bold text-midnight">No products available</h3>
                 <p class="text-muted">We haven't added any products to this category yet.</p>
                 <a href="{% url 'category_list' %}" class="btn btn-warning fw-bold px-4 py-2 rounded-pill mt-3">
-                    Explore Other Categories
+                    Try Another Category
                 </a>
             </div>
         </div>

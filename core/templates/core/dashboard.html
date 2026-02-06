@@ -150,6 +150,7 @@
 
     .table tbody td { padding: 22px 25px; border-bottom: 1px solid #f1f5f9; font-weight: 500; }
     .badge-vocoin { background: #fef9c3; color: #854d0e; font-weight: 800; border-radius: 50px; padding: 6px 16px; }
+    .countdown-box { font-family: monospace; font-weight: 800; color: var(--midnight); }
 
 </style>
 
@@ -163,7 +164,7 @@
                     <a class="nav-link" href="{% url 'edit_profile' %}"><i class="bi bi-person-fill-gear"></i> Settings</a>
                     <a class="nav-link" href="{% url 'request_payout' %}"><i class="bi bi-bank2"></i> Payouts</a>
                     <hr class="opacity-10 my-4">
-                    <a class="nav-link text-danger" href="#" onclick="confirmLogout(event)">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">
                         <i class="bi bi-power"></i> Logout
                     </a>
                 </nav>
@@ -220,6 +221,46 @@
             </div>
 
             <div class="table-card mb-5">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-light">
+                    <h5 class="fw-800 mb-0">Your Active Promotions</h5>
+                    <a href="{% url 'promote_request' %}" class="btn btn-midnight btn-sm fw-800 rounded-pill px-3">+ NEW</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Rate</th>
+                                <th class="text-end">Time Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for promo in user.promotions.all %}
+                            {% if promo.is_paid %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-midnight">{{ promo.product_name }}</div>
+                                    <div class="text-muted small">{{ promo.duration_days }} Day Ad</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge-vocoin text-dark">₦{{ promo.commission_per_click|floatformat:0 }}/click</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="countdown-timer fw-800" data-expiry="{{ promo.created_at|date:'c' }}" data-days="{{ promo.duration_days }}">
+                                        ...
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center py-5 text-muted">No active paid promotions found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-card mb-5">
                 <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="fw-800 mb-0">Recent Referrals</h5>
                     <i class="bi bi-people text-muted fs-4"></i>
@@ -266,7 +307,7 @@
                             {% for payout in my_payouts %}
                             <tr>
                                 <td>
-                                    <div class="fw-bold" style="color: var(--midnight);">{{ payout.created_at|date:"M d, Y" }}</div>
+                                    <div class="fw-bold text-midnight">{{ payout.created_at|date:"M d, Y" }}</div>
                                     <div class="text-muted small">Electronic Transfer</div>
                                 </td>
                                 <td class="text-center fw-800 text-dark">₦{{ payout.amount|floatformat:2 }}</td>
@@ -292,6 +333,7 @@
 </div>
 
 <script>
+    // Copy Link Logic
     function copyToClipboard(id) {
         const el = document.getElementById(id);
         el.select();
@@ -302,5 +344,37 @@
             setTimeout(() => { btn.innerText = oldText; }, 2000);
         });
     }
+
+    // Real-time Countdown Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        function updateCountdowns() {
+            const timers = document.querySelectorAll('.countdown-timer');
+            
+            timers.forEach(timer => {
+                const startDate = new Date(timer.getAttribute('data-expiry'));
+                const durationDays = parseInt(timer.getAttribute('data-days'));
+                
+                // Expiry = Payment Time + (Days * Hours * Minutes * Seconds * Milliseconds)
+                const expiryDate = new Date(startDate.getTime() + (durationDays * 24 * 60 * 60 * 1000));
+                const now = new Date();
+                const timeLeft = expiryDate - now;
+
+                if (timeLeft <= 0) {
+                    timer.innerHTML = '<span class="text-danger">EXPIRED</span>';
+                    return;
+                }
+
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                timer.innerText = `${days}d ${hours}h ${minutes}m left`;
+            });
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 60000); // Update every minute
+    });
 </script>
+
 {% endblock %}

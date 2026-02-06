@@ -1,15 +1,15 @@
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from django.db.models import Q
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
         try:
-            # Check if the "username" entered is actually an email
-            user = UserModel.objects.get(email=username)
-        except UserModel.DoesNotExist:
+            # We use filter().first() instead of get() to prevent the MultipleObjectsReturned error
+            user = User.objects.filter(Q(username=username) | Q(email=username)).first()
+        except User.DoesNotExist:
             return None
-        else:
-            if user.check_password(password):
-                return user
+
+        if user and user.check_password(password):
+            return user
         return None

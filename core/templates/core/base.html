@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vouchly - Real People. Real Rewards.</title>
+    <title>Vouchly - Vouch for Quality. Earn through Community.</title>
     
     <link rel="icon" type="image/png" href="{% static 'core/images/vlogo.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -52,6 +52,10 @@
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.5px;
+        }
+
+        .nav-link:hover {
+            color: var(--accent) !important;
         }
 
         .btn-auth {
@@ -147,7 +151,7 @@
 
         @media (max-width: 991px) {
             .navbar-brand img { height: 40px; }
-            .navbar-collapse { background: var(--midnight); padding: 15px; border-radius: 15px; }
+            .navbar-collapse { background: var(--midnight); padding: 15px; border-radius: 15px; margin-top: 10px; }
         }
     </style>
 </head>
@@ -174,24 +178,40 @@
             <div class="collapse navbar-collapse" id="navContent">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Explore</a></li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}" style="color: var(--accent) !important;">Dashboard</a></li>
+
+                        {% if user.profile.user_type == 'ADVERTISER' %}
+                            <li class="nav-item"><a class="nav-link text-info" href="{% url 'promote_request' %}"><i class="bi bi-plus-circle me-1"></i> Promote</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Browse & Earn</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}">Explore</a></li>
+                    {% endif %}
+
                     <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Support</a></li>
                     
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown ms-lg-2">
                             <a href="#" class="nav-link p-0 d-flex align-items-center dropdown-toggle no-caret" data-bs-toggle="dropdown">
-                                {% if user.socialaccount_set.all.0.get_avatar_url %}
-                                    <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" class="profile-nav-icon" alt="Profile">
+                                {% if user.profile.image %}
+                                    <img src="{{ user.profile.image.url }}" class="profile-nav-icon" alt="Profile">
                                 {% else %}
                                     <i class="bi bi-person-circle fs-3 text-accent"></i>
                                 {% endif %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li><a class="dropdown-item fw-bold" href="{% url 'dashboard' %}">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Settings</a></li>
+                                <li class="px-3 py-2 small fw-bold text-muted border-bottom mb-1 text-center">
+                                    {{ user.username|upper }}<br>
+                                    <span class="badge {% if user.profile.user_type == 'ADVERTISER' %}bg-dark text-warning{% else %}bg-primary{% endif %} mt-1" style="font-size: 0.6rem;">{{ user.profile.user_type }}</span>
+                                </li>
+                                <li><a class="dropdown-item fw-bold" href="{% url 'dashboard' %}"><i class="bi bi-grid-fill me-2"></i> My Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}"><i class="bi bi-gear-fill me-2"></i> Account Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">Sign Out</a></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)"><i class="bi bi-power me-2"></i> Sign Out</a></li>
                             </ul>
                         </li>
                     {% else %}
@@ -205,7 +225,20 @@
         </div>
     </nav>
 
-    <main>{% block content %}{% endblock %}</main>
+    <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
 
     <button id="backToTop"><i class="bi bi-arrow-up-short fs-4"></i></button>
 
@@ -214,17 +247,21 @@
             <div class="row g-4">
                 <div class="col-lg-4">
                     <img src="{% static 'core/images/vlogo.png' %}" class="footer-logo" alt="Vouchly Logo">
-                    <p class="small">Real people. Real rewards. Authentic community feedback and verified growth.</p>
+                    <p class="small">Vouch for Quality, Earn through Community.</p>
                 </div>
                 <div class="col-6 col-lg-2 ms-auto">
                     <h6 class="footer-head">Nav</h6>
                     <a href="{% url 'home' %}" class="footer-link">Home</a>
                     <a href="{% url 'category_list' %}" class="footer-link">Explore</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="footer-link">Dashboard</a>
+                    {% endif %}
                 </div>
                 <div class="col-6 col-lg-3">
                     <h6 class="footer-head">Legal</h6>
                     <a href="{% url 'terms' %}" class="footer-link">Terms</a>
                     <a href="{% url 'privacy' %}" class="footer-link">Privacy</a>
+                    <a href="{% url 'contact' %}" class="footer-link">Support</a>
                 </div>
             </div>
             <div class="text-center pt-4 mt-4 border-top border-secondary border-opacity-25">
@@ -241,7 +278,7 @@
 
         function confirmLogout(event) {
             event.preventDefault();
-            if (confirm("Sign out?")) {
+            if (confirm("Sign out of your account?")) {
                 document.getElementById('logout-form').submit();
             }
         }

@@ -8,21 +8,22 @@
         --accent: #ffc107;
         --soft-bg: #f8fafc;
         --text-muted: #64748b;
+        --success-green: #22c55e;
     }
 
     /* 1. COMPACT Top Search Bar */
     .top-search-section {
         background: white;
-        padding: 15px 0; /* Reduced vertical spacing */
+        padding: 15px 0;
         border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
     .search-pill {
-        max-width: 550px; /* Reduced width from 800px */
+        max-width: 550px;
         margin: 0 auto;
         background: var(--soft-bg);
         border-radius: 50px;
-        padding: 3px; /* Reduced inner spacing */
+        padding: 3px;
         border: 2px solid #f1f5f9;
         transition: 0.3s;
     }
@@ -36,9 +37,9 @@
     .search-input-premium {
         background: transparent !important;
         border: none !important;
-        padding: 8px 20px !important; /* Reduced padding/height */
+        padding: 8px 20px !important;
         font-weight: 600;
-        font-size: 0.9rem; /* Smaller font */
+        font-size: 0.9rem;
         color: var(--midnight);
     }
 
@@ -46,10 +47,10 @@
         background: var(--midnight);
         color: var(--accent);
         border-radius: 50px !important;
-        padding: 8px 25px !important; /* Reduced size */
+        padding: 8px 25px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
-        font-size: 0.75rem; /* Smaller text */
+        font-size: 0.75rem;
         letter-spacing: 1px;
     }
 
@@ -73,6 +74,20 @@
     }
 
     .hero-img-premium:hover { transform: scale(1.02); }
+
+    /* REWARD BADGE ON HERO */
+    .hero-reward-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid var(--success-green);
+        color: #4ade80;
+        padding: 8px 15px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
 
     /* 3. "How it Works" Value Cards */
     .step-card {
@@ -112,6 +127,7 @@
         overflow: hidden;
         transition: all 0.4s ease;
         height: 100%;
+        position: relative;
     }
 
     .premium-item-card:hover {
@@ -126,6 +142,21 @@
         object-fit: cover;
     }
 
+    /* CARD REWARD TAG */
+    .card-reward-tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--accent);
+        color: var(--midnight);
+        padding: 5px 12px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        z-index: 2;
+    }
+
     .btn-promote-premium {
         background: transparent;
         border: 2px solid var(--midnight);
@@ -138,6 +169,9 @@
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 1px;
+        text-align: center;
+        display: block;
+        text-decoration: none;
     }
 
     .btn-promote-premium:hover {
@@ -173,7 +207,7 @@
 <div class="top-search-section">
     <div class="container">
         <form action="{% url 'search' %}" method="GET" class="search-pill d-flex shadow-sm">
-            <input type="text" name="query" class="form-control search-input-premium" placeholder="Find services..." required>
+            <input type="text" name="query" class="form-control search-input-premium" placeholder="Search products or services..." required>
             <button class="btn btn-search-premium" type="submit">
                 <i class="bi bi-search me-1"></i> Search
             </button>
@@ -189,15 +223,15 @@
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0">
-                            <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-800 text-uppercase">Featured Premium Choice</span>
+                            <div class="hero-reward-badge">
+                                <i class="bi bi-lightning-charge-fill me-2"></i> EARN ₦{{ item.commission_naira|floatformat:2 }} PER INTERACTION
+                            </div>
                             <h1 class="display-4 mb-3">{{ item.name }}</h1>
                             <p class="lead mb-5 opacity-75 fw-500">{{ item.description|truncatewords:20 }}</p>
                             
                             <div class="d-flex justify-content-center justify-content-lg-start gap-3">
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg">PROMOTE</a>
-                                {% if item.affiliate_link %}
-                                <a href="{{ item.affiliate_link }}" target="_blank" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600">PURCHASE</a>
-                                {% endif %}
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600">VIEW DETAILS</a>
                             </div>
                         </div>
                         <div class="col-lg-6 text-center">
@@ -217,7 +251,7 @@
     <div class="text-center mb-5">
         <h2 class="section-head">The Kingdom Path</h2>
         <div class="section-divider"></div>
-        <p class="text-muted fw-800 text-uppercase small">Start earning in three simple steps</p>
+        <p class="text-muted fw-800 text-uppercase small">Earn rewards in three simple steps</p>
     </div>
 
     <div class="row g-4 text-center">
@@ -239,7 +273,7 @@
             <div class="step-card">
                 <div class="step-icon-box"><i class="bi bi-gem"></i></div>
                 <h4 class="fw-800 mb-3">3. EARN</h4>
-                <p class="text-muted small fw-600">Collect VOCOIN for every successful verified community recommendation you provide.</p>
+                <p class="text-muted small fw-600">Collect VOCOIN for every successful verified recommendation you provide.</p>
             </div>
         </div>
     </div>
@@ -258,6 +292,8 @@
         {% for item in top_rated %}
         <div class="col-sm-6 col-lg-3">
             <div class="premium-item-card shadow-sm">
+                <div class="card-reward-tag">₦{{ item.commission_naira|floatformat:0 }} REWARD</div>
+                
                 <a href="{% url 'item_detail' item.slug %}">
                     {% if item.image %}
                     <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
@@ -269,10 +305,13 @@
                     <h5 class="fw-800 text-truncate mb-2">
                         <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase" style="font-size: 1.1rem;">{{ item.name }}</a>
                     </h5>
-                    <div class="mb-4 text-warning fw-800">
-                        {% if item.avg_rating %}{{ item.avg_rating|floatformat:1 }} ★{% else %}<span class="text-muted small">NEW ENTRY</span>{% endif %}
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="text-warning fw-800">
+                            {% if item.avg_rating %}{{ item.avg_rating|floatformat:1 }} ★{% else %}<span class="text-muted small">NEW</span>{% endif %}
+                        </div>
+                        <div class="fw-900 text-success small">₦{{ item.price|floatformat:0 }}</div>
                     </div>
-                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium">PROMOTE</a>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium">PROMOTE & EARN</a>
                 </div>
             </div>
         </div>

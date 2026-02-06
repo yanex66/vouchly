@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .email-card { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; }
+        .header { background: #0f172a; padding: 40px; text-align: center; color: white; border-bottom: 5px solid #ffc107; }
+        .body { padding: 40px; color: #1e293b; line-height: 1.6; }
+        .milestone-badge { background: #fef9c3; color: #854d0e; padding: 10px 20px; border-radius: 50px; font-weight: 800; display: inline-block; margin-bottom: 20px; }
+        .footer { background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; }
+        .btn { background: #0f172a; color: #ffc107 !important; padding: 12px 25px; text-decoration: none; border-radius: 10px; font-weight: bold; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="email-card">
+        <div class="header">
+            <h1>VOUCHLY ADS</h1>
+        </div>
+        <div class="body">
+            <div class="milestone-badge">🏆 NEW MILESTONE REACHED</div>
+            <h2>Great news, {{ owner_name }}!</h2>
+            <p>Your product <strong>{{ product_name }}</strong> just reached <strong>{{ click_count }} verified clicks</strong>.</p>
+            <p>Your marketers are actively driving traffic to your business. Check your dashboard for detailed influencer breakdown and traffic sources.</p>
+            <a href="{{ dashboard_url }}" class="btn">VIEW ANALYTICS</a>
+        </div>
+        <div class="footer">
+            © 2026 Vouchly. Real People. Real Rewards.
+        </div>
+    </div>
+</body>
+</html>
