@@ -1,19 +1,34 @@
 import os
 from pathlib import Path
 import environ
+import dj_database_url
 
 # --- 1. INITIALIZATION & ENV LOAD ---
 env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Read .env file
+# Read .env file locally, but Railway will use its dashboard variables
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=True)
+DEBUG = env.bool('DEBUG', default=False)  # Default to False for safety
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'yanex.pythonanywhere.com', 'yanex66.pythonanywhere.com', '.onrender.com']
+# Update these to match your new domain and Railway subdomains
+ALLOWED_HOSTS = [
+    'www.vouchly.store', 
+    'vouchly.store', 
+    '.railway.app', 
+    'localhost', 
+    '127.0.0.1'
+]
+
+# Essential for login/forms to work on custom domains
+CSRF_TRUSTED_ORIGINS = [
+    'https://www.vouchly.store',
+    'https://vouchly.store',
+    'https://*.railway.app'
+]
 
 # --- 2. APPS ---
 INSTALLED_APPS = [
@@ -23,14 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Required for Google Auth
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    
     'core',
 ]
 
@@ -39,7 +51,7 @@ SITE_ID = 1
 # --- 3. MIDDLEWARE ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # For static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Keep this for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,7 +75,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # ADD THIS LINE BELOW:
                 'core.context_processors.pending_orders_count',
             ],
         },
@@ -73,11 +84,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- 5. DATABASE ---
+# This looks for DATABASE_URL (Railway) and falls back to sqlite (Local)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # --- 6. STATIC & MEDIA ---
@@ -85,7 +98,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# WhiteNoise storage compresses and hashes files for caching
+# Enable WhiteNoise compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -107,12 +120,10 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# UPDATED: Replaced deprecated settings for Django 6.0/Allauth
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True 
 ACCOUNT_EMAIL_VERIFICATION = 'none' 
-# SIGNUP_FIELDS is handled within your custom registration form logic
 SOCIALACCOUNT_ADAPTER = 'core.adapters.MySocialAccountAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -127,18 +138,23 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-# --- 9. DIRECTORIES & SECURITY ---
+# --- 9. SECURITY & VAULT ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_VAULT_ROOT = os.path.join(BASE_DIR, 'secure_vault')
 
 if not os.path.exists(SECURE_VAULT_ROOT):
     os.makedirs(SECURE_VAULT_ROOT)
 
-# --- 10. PAYMENT GATEWAY CONFIGURATION ---
+# In production, redirect all HTTP traffic to HTTPS
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+# --- 10. PAYMENT GATEWAY ---
 PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
 PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
-
-# Flutterwave configuration - Mapped precisely to your clean .env keys
 FLUTTERWAVE_PUBLIC_KEY = env('FLWPUBK_TEST', default='') 
 FLUTTERWAVE_SECRET_KEY = env('FLWSECK_TEST', default='')
 FLUTTERWAVE_ENCRYPTION_KEY = env('FLUTTERWAVE_ENCRYPTION_KEY', default='')
