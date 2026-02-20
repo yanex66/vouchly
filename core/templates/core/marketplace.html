@@ -1,0 +1,194 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --v-midnight: #0f172a;
+        --v-accent: #ffc107;
+        --v-bg: #f8fafc;
+        --v-radius: 24px;
+        --v-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    body { background-color: var(--v-bg); }
+
+    /* --- GLOBAL CURVES --- */
+    .btn, .card, .form-control, .badge, .m-card, .search-wrap, .offcanvas {
+        border-radius: var(--v-radius) !important;
+    }
+
+    /* HEADER SECTION */
+    .market-header-wrap {
+        padding: 40px 0;
+        background: white;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .market-title { font-weight: 800; color: var(--v-midnight); font-size: 2.2rem; }
+    .market-slogan { font-weight: 700; color: var(--v-accent); text-transform: uppercase; font-size: 0.8rem; }
+
+    /* LAYOUT SYSTEM */
+    .market-grid-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+        align-items: flex-start;
+    }
+
+    .market-sidebar-desktop { display: block; position: sticky; top: 100px; background: white; padding: 25px; box-shadow: var(--v-shadow); }
+
+    /* MOBILE FILTER TRIGGER Bar */
+    .mobile-filter-bar { display: none; margin-bottom: 20px; }
+
+    /* SEARCH BAR */
+    .search-wrap { background: white; padding: 6px; display: flex; box-shadow: var(--v-shadow); margin-bottom: 25px; }
+
+    /* PRODUCT GRID: 2 PER ROW ON MOBILE */
+    .marketplace-feed {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px;
+        padding-bottom: 80px;
+    }
+
+    /* PRODUCT CARDS */
+    .m-card {
+        background: white;
+        border: 1px solid rgba(0,0,0,0.03);
+        transition: 0.3s;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .m-img-box {
+        height: 160px;
+        background: #f1f5f9;
+        overflow: hidden;
+        margin: 8px;
+        border-radius: 16px !important;
+    }
+
+    .m-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    .price-tag { font-weight: 900; color: #16a34a; font-size: 1.1rem; }
+
+    /* --- FIXED PROPERTY BLOCK --- */
+    .m-title-sm {
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Support for current browsers */
+        line-clamp: 2;         /* Standard property fixed */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.2;
+        height: 2.4em;
+    }
+
+    /* SIDEBAR LINKS */
+    .sidebar-link {
+        display: flex; align-items: center; padding: 12px 18px; margin-bottom: 6px;
+        font-weight: 700; text-decoration: none; color: var(--v-midnight);
+        background: #f8fafc; font-size: 0.85rem; border-radius: 15px !important;
+    }
+    .sidebar-link.active { background: var(--v-midnight); color: white; }
+
+    /* RESPONSIVE BREAKPOINTS */
+    @media (max-width: 991px) {
+        .market-grid-layout { grid-template-columns: 1fr; }
+        .market-sidebar-desktop { display: none; }
+        .mobile-filter-bar { display: flex; justify-content: space-between; align-items: center; }
+        .market-title { font-size: 1.8rem; }
+    }
+
+    @media (min-width: 992px) {
+        .marketplace-feed { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .m-img-box { height: 200px; }
+        .m-title-sm { font-size: 1rem; }
+    }
+</style>
+
+<header class="market-header-wrap">
+    <div class="container text-center">
+        <div class="market-slogan mb-1">Vouch for Quality, Earn through Community.</div>
+        <h1 class="market-title">The Marketplace</h1>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div class="mobile-filter-bar">
+        <div class="flex-grow-1 me-2">
+            <input type="text" class="form-control rounded-pill border-0 bg-white shadow-sm py-2 px-4" placeholder="Search...">
+        </div>
+        <button class="btn btn-midnight shadow-sm px-3 py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategorySidebar">
+            <i class="bi bi-filter-left fs-5"></i>
+        </button>
+    </div>
+
+    <div class="market-grid-layout">
+        
+        <aside class="market-sidebar-desktop">
+            <div class="small fw-800 text-muted text-uppercase mb-3 opacity-50 ps-2">Categories</div>
+            <a href="{% url 'marketplace' %}" class="sidebar-link {% if not category %}active{% endif %}">
+                <i class="bi bi-grid-fill me-3"></i> All Items
+            </a>
+            {% for cat in categories %}
+            <a href="{% url 'category_detail' cat.slug %}" class="sidebar-link {% if category.slug == cat.slug %}active{% endif %}">
+                <i class="bi bi-tag-fill me-3"></i> {{ cat.name }}
+            </a>
+            {% endfor %}
+        </aside>
+
+        <main>
+            <div class="search-wrap d-none d-lg-flex">
+                <input type="text" class="form-control border-0 bg-transparent px-4 fw-bold" placeholder="Search for items...">
+                <button class="btn btn-dark px-5 py-2 fw-bold rounded-pill">Search</button>
+            </div>
+
+            <div class="marketplace-feed">
+                {% for item in items %}
+                <div class="m-card">
+                    <div class="m-img-box">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="p-3 pt-1 flex-grow-1">
+                        <small class="text-muted fw-bold text-uppercase" style="font-size: 0.6rem;">{{ item.category.name }}</small>
+                        <h6 class="m-title-sm text-midnight my-1">{{ item.name }}</h6>
+                        <div class="price-tag mb-2">₦{{ item.price|floatformat:0 }}</div>
+                        <a href="{% url 'item_detail' item.slug %}" class="btn btn-dark w-100 py-2 fw-bold" style="font-size: 0.75rem;">View Deal</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 w-100" style="grid-column: 1 / -1;">
+                    <h6 class="fw-700 text-muted">No products found.</h6>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileCategorySidebar" style="width: 280px; border-radius: 0 30px 30px 0 !important;">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-800 text-midnight">CATEGORIES</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-4">
+        <a href="{% url 'marketplace' %}" class="sidebar-link mb-3 {% if not category %}active{% endif %} py-3 px-4">
+            <i class="bi bi-grid-fill me-3"></i> All Items
+        </a>
+        {% for cat in categories %}
+        <a href="{% url 'category_detail' cat.slug %}" class="sidebar-link mb-3 {% if category.slug == cat.slug %}active{% endif %} py-3 px-4">
+            <i class="bi bi-tag-fill me-3"></i> {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

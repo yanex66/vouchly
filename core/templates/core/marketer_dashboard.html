@@ -7,211 +7,242 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-        --success-green: #22c55e;
+        --v-green: #16a34a;
     }
     
     body { background-color: var(--soft-bg); }
 
-    /* Commission Wallet Card */
-    .wallet-card {
-        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
-        color: white;
-        border-radius: 35px;
-        padding: 40px;
-        position: relative;
-        overflow: hidden;
-        border-bottom: 8px solid var(--accent);
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    /* --- STRICT SHARP DESIGN --- */
+    .mini-sidebar, .nav-icon-link, .wallet-card, .stat-card, .table-card, .btn-sharp, .badge, .opp-card {
+        border-radius: 0 !important;
     }
 
-    .progress-container {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50px;
-        height: 12px;
-        margin: 20px 0 10px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    /* --- SIDEBAR LAYOUT --- */
+    .dash-flex-wrapper {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        padding: 15px;
     }
 
-    .progress-fill {
-        background: var(--accent);
-        height: 100%;
-        border-radius: 50px;
-        transition: width 1s ease-in-out;
-        width: var(--progress-width, 0%);
-    }
-
-    /* Stats Grid */
-    .stat-box-mini {
+    .mini-sidebar {
+        width: 55px; 
+        flex-shrink: 0;
+        position: sticky;
+        top: 80px;
         background: white;
-        border-radius: 25px;
-        padding: 25px;
-        border: 1px solid rgba(0,0,0,0.04);
-        box-shadow: var(--card-shadow);
-        text-align: center;
-        height: 100%;
-        transition: 0.3s;
+        padding: 15px 5px;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #e2e8f0;
     }
-    .stat-box-mini:hover { transform: translateY(-5px); }
 
-    /* Opportunity Cards */
-    .opp-card {
-        background: white;
-        border-radius: 22px;
-        padding: 20px;
-        border: 1px solid rgba(0,0,0,0.05);
-        transition: 0.3s;
+    .nav-icon-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: var(--midnight);
         text-decoration: none;
-        display: block;
-    }
-    .opp-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-
-    .reward-pill-sm {
-        background: #fef9c3;
-        color: #854d0e;
-        font-weight: 800;
-        font-size: 0.7rem;
-        padding: 6px 12px;
-        border-radius: 50px;
+        margin-bottom: 12px;
     }
 
-    /* Modern Table Styling */
+    .nav-icon-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+    }
+
+    .nav-label { display: none; }
+
+    @media (min-width: 992px) {
+        .mini-sidebar { width: 250px; align-items: stretch; padding: 25px; }
+        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 18px; }
+        .nav-label { display: inline; margin-left: 15px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; }
+    }
+
+    /* --- WALLET SECTION --- */
+    .wallet-card {
+        background: var(--midnight);
+        padding: 30px;
+        color: white;
+        border-bottom: 8px solid var(--accent);
+        margin-bottom: 25px;
+    }
+
+    .vn-merged {
+        font-weight: 900;
+        color: var(--accent);
+        letter-spacing: -3px; 
+        font-style: italic;
+        margin-right: 5px;
+    }
+
+    /* --- TABLES & CARDS --- */
     .table-card {
         background: white;
-        border-radius: 30px;
-        border: 1px solid rgba(0,0,0,0.04);
-        box-shadow: var(--card-shadow);
-        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        padding: 25px;
+        margin-top: 25px;
     }
 
-    .btn-withdraw-premium {
-        background: var(--accent);
-        color: var(--midnight);
-        font-weight: 900;
-        border-radius: 15px;
-        padding: 12px 30px;
-        border: none;
-        transition: 0.3s;
+    .stat-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        text-align: center;
     }
-    .btn-withdraw-premium:hover { background: #fff; transform: scale(1.05); }
+
+    .opp-card {
+        background: #fff;
+        border: 2px solid var(--midnight);
+        padding: 15px;
+        text-decoration: none;
+        display: block;
+        transition: 0.2s;
+    }
+
+    .opp-card:hover {
+        transform: translate(-4px, -4px);
+        box-shadow: 8px 8px 0px var(--accent);
+    }
 </style>
 
-<div class="container py-5 mt-3">
-    <div class="row g-4">
-        <div class="col-lg-3">
-            {% include 'core/includes/_sidebar.html' %}
+<div class="container-fluid">
+    <div class="dash-flex-wrapper">
+        
+        <div class="mini-sidebar">
+            <a href="{% url 'dashboard' %}" class="nav-icon-link active">
+                <i class="bi bi-grid-fill"></i>
+                <span class="nav-label">Overview</span>
+            </a>
+            <a href="{% url 'marketplace' %}" class="nav-icon-link">
+                <i class="bi bi-shop"></i>
+                <span class="nav-label">Marketplace</span>
+            </a>
+            <a href="{% url 'referrals_page' %}" class="nav-icon-link">
+                <i class="bi bi-people-fill"></i>
+                <span class="nav-label">Referrals</span>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="nav-icon-link">
+                <i class="bi bi-gear-fill"></i>
+                <span class="nav-label">Settings</span>
+            </a>
+            <hr class="w-100 border-dark my-3">
+            <a href="{% url 'logout' %}" class="nav-icon-link text-danger">
+                <i class="bi bi-power"></i>
+                <span class="nav-label">Sign Out</span>
+            </a>
         </div>
 
-        <div class="col-lg-9">
-            <div class="wallet-card mb-5">
+        <div class="flex-grow-1">
+            
+            <div class="wallet-card shadow-sm">
                 <div class="row align-items-center">
-                    <div class="col-md-7">
-                        <h6 class="text-uppercase fw-800 opacity-75 small mb-2">{{ balance_label }}</h6>
-                        <h1 class="display-4 fw-900 mb-0">₦{{ available_balance|floatformat:2 }}</h1>
-                        
-                        <div class="progress-container">
-                            <div class="progress-fill" style="--progress-width: {% widthratio available_balance 10000 100 %}%"></div>
-                        </div>
-
-                        <div class="d-flex justify-content-between small fw-bold opacity-75">
-                            <span>Payout Goal: ₦10,000</span>
-                            <span>{% widthratio available_balance 10000 100 %}% Reached</span>
-                        </div>
+                    <div class="col-md-8">
+                        <h6 class="fw-bold opacity-50 small mb-1">TOTAL WITHDRAWABLE BALANCE</h6>
+                        <h1 class="fw-900 mb-0" style="font-size: 3.5rem;">
+                            <span class="vn-merged">VN</span>{{ available_balance|floatformat:2 }}
+                        </h1>
                     </div>
-                    <div class="col-md-5 text-md-end mt-4 mt-md-0">
-                        {% if available_balance >= 10000 %}
-                            <a href="{% url 'request_payout' %}" class="btn btn-withdraw-premium shadow-lg">
-                                <i class="bi bi-cash-stack me-2"></i> WITHDRAW NOW
-                            </a>
-                        {% else %}
-                            <button class="btn btn-outline-light rounded-pill px-4 fw-800 opacity-50" disabled style="cursor: not-allowed;">
-                                LOCKED UNTIL ₦10,000
-                            </button>
-                        {% endif %}
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="{% url 'request_payout' %}" class="btn btn-warning btn-sharp px-5 py-3 fw-900">WITHDRAW FUNDS</a>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4 mb-5">
-                <div class="col-md-6">
-                    <div class="stat-box-mini">
-                        <h2 class="fw-900 mb-0 text-midnight">{{ my_referrals.paginator.count|default:0 }}</h2>
-                        <span class="text-muted fw-bold small text-uppercase">Account Referrals</span>
-                    </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <small class="fw-900 text-muted d-block">CLICKS</small>
+                        <h3 class="fw-900 mb-0">412</h3> </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="stat-box-mini">
-                        <h2 class="fw-900 mb-0 text-midnight">{{ my_click_stats.count|default:0 }}</h2>
-                        <span class="text-muted fw-bold small text-uppercase">Items Promoted</span>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <small class="fw-900 text-muted d-block">PENDING</small>
+                        <h3 class="fw-900 mb-0 text-warning">₦2,400</h3> </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <small class="fw-900 text-muted d-block">SETTLED</small>
+                        <h3 class="fw-900 mb-0 text-success">₦18,950</h3> </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <small class="fw-900 text-muted d-block">NETWORK</small>
+                        <h3 class="fw-900 mb-0">{{ my_referrals.paginator.count|default:0 }}</h3>
                     </div>
                 </div>
             </div>
 
-            <div class="mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-900 mb-0 text-midnight text-uppercase" style="letter-spacing: 1px;">Top Opportunities</h5>
-                    <a href="{% url 'category_list' %}" class="small fw-800 text-decoration-none text-primary">Explore Market →</a>
-                </div>
-                <div class="row g-3">
-                    {% for item in top_opportunities %}
-                    <div class="col-md-4">
-                        <a href="{% url 'item_detail' item.slug %}" class="opp-card shadow-sm">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="reward-pill-sm">₦{{ item.commission_naira|floatformat:0 }} PER LEAD</span>
-                                <i class="bi bi-rocket-takeoff-fill text-success"></i>
-                            </div>
-                            <h6 class="fw-800 text-midnight text-truncate mb-1">{{ item.name }}</h6>
-                            <p class="small text-muted mb-0">Highest reward in category</p>
-                        </a>
-                    </div>
-                    {% empty %}
-                    <div class="col-12 text-center py-4 bg-white rounded-4 border">
-                        <p class="small fw-bold text-muted mb-0">New opportunities are loading. Check back soon!</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="table-card mb-5">
-                <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="fw-800 mb-0">Promotion Analytics</h5>
-                    <span class="badge bg-light text-dark fw-bold border">{{ my_click_stats.count }} Products</span>
-                </div>
+            <div class="table-card shadow-sm mb-4">
+                <h5 class="fw-900 mb-4" style="letter-spacing: -1px;">ESCROW REFERRALS (PENDING)</h5>
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="bg-light text-uppercase small fw-800">
+                    <table class="table align-middle">
+                        <thead class="bg-light">
                             <tr>
-                                <th class="ps-4 py-3">Campaign</th>
-                                <th class="text-center">Commission</th>
-                                <th class="text-center">Total Clicks</th>
-                                <th class="text-end pe-4">Activity</th>
+                                <th class="border-0 small fw-900">ITEM</th>
+                                <th class="border-0 small fw-900">STATUS</th>
+                                <th class="border-0 small fw-900">YOUR COMMISSION</th>
+                                <th class="border-0 small fw-900 text-end">EXPECTED BY</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for stat in my_click_stats %}
+                            {% for order in referred_orders %}
                             <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-midnight">{{ stat.item.name }}</div>
-                                    <div class="text-muted small">ID: {{ stat.item.id }}</div>
+                                <td class="fw-bold">{{ order.item.name|upper }}</td>
+                                <td>
+                                    {% if order.status == 'PAID' %}
+                                        <span class="badge bg-info text-white">ESCROW HELD</span>
+                                    {% elif order.status == 'SHIPPED' %}
+                                        <span class="badge bg-warning text-dark">IN TRANSIT</span>
+                                    {% endif %}
                                 </td>
-                                <td class="text-center">
-                                    <span class="text-success fw-bold">₦{{ stat.item.commission_naira|floatformat:2 }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-dark text-warning rounded-pill px-3">{{ stat.clicks }}</span>
-                                </td>
-                                <td class="text-end pe-4 text-muted small fw-bold">
-                                    {{ stat.last_click|date:"M d, H:i" }}
-                                </td>
+                                <td class="fw-900 text-success">₦{{ order.commission_earned|floatformat:2 }}</td>
+                                <td class="text-end text-muted small fw-bold">Upon PIN Entry</td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="4" class="text-center py-5 text-muted">Share your first link to see stats!</td></tr>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted fw-bold small">No pending escrow commissions.</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <div class="table-card shadow-sm mb-5">
+                <h5 class="fw-900 mb-4" style="letter-spacing: -1px;">AGENCY & DIRECT LEADS</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 small fw-900">PRODUCT</th>
+                                <th class="border-0 small fw-900">CLICKS</th>
+                                <th class="border-0 small fw-900">TOTAL EARNED</th>
+                                <th class="border-0 small fw-900 text-end">LAST ACTIVITY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in my_click_stats %}
+                            <tr>
+                                <td class="fw-bold">{{ stat.item.name|upper }}</td>
+                                <td><span class="badge bg-dark px-3">{{ stat.clicks }}</span></td>
+                                <td class="fw-900 text-success">₦{% widthratio stat.clicks 1 stat.item.commission_naira %}</td>
+                                <td class="text-end text-muted small fw-bold">{{ stat.last_click|date:"M d, H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted fw-bold small">Share a link from the Marketplace to start earning.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

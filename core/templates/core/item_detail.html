@@ -2,225 +2,182 @@
 {% load static %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
 <style>
-    /* 1. Global Font & Boldness Application */
     :root {
-        --vouchly-font: 'Poppins', sans-serif;
-        --deep-blue: #0f172a;
-        --accent-gold: #ffc107;
-        --success-green: #28a745;
-        --whatsapp-green: #25D366;
+        --midnight: #0f172a;
+        --accent: #ffc107;
         --soft-bg: #f8fafc;
+        --v-radius: 24px;
     }
 
-    body, .container, h1, h2, h3, h4, h5, h6, p, a, span, button, input, select, textarea {
-        font-family: var(--vouchly-font) !important;
+    body { background-color: var(--soft-bg); }
+
+    /* --- CURVED GLOBAL DESIGN --- */
+    .btn, .card, .form-control, .badge, img, .promote-card, .detail-img-wrapper, .collapse > div {
+        border-radius: var(--v-radius) !important;
     }
 
-    h1, h2, h3, h4, .fw-bold, .btn, .breadcrumb-item, label, strong {
-        font-weight: 800 !important;
-    }
-
-    .display-5 { font-weight: 900 !important; }
-
-    /* Custom Input Styling */
-    select, .form-select, input, textarea {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        font-weight: 700 !important;
-        color: #212529;
-        background-color: #fff;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        appearance: auto !important;
-    }
-
-    .custom-breadcrumb {
-        background: #f1f5f9;
-        padding: 0.8rem 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-    }
-
-    /* PROMOTE CARD STYLING */
-    .promote-card {
-        border: 2px solid var(--accent-gold);
-        border-radius: 20px;
+    .fw-900 { font-weight: 900; }
+    
+    .detail-img-wrapper {
+        border: 1px solid rgba(0,0,0,0.05);
+        background: white;
+        padding: 12px;
         overflow: hidden;
-        box-shadow: 0 10px 25px rgba(255, 193, 7, 0.15);
-        background: #fff;
+        box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+    }
+
+    .detail-img-wrapper img {
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .detail-img-wrapper:hover img {
+        transform: scale(1.05);
+    }
+
+    .escrow-badge, .agency-badge {
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 8px 20px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 50px !important;
+    }
+
+    .escrow-badge { background: #e0f2fe; color: #0369a1; }
+    .agency-badge { background: #fef3c7; color: #92400e; }
+
+    .btn-buy-now {
+        background-color: var(--midnight);
+        color: var(--accent);
+        font-weight: 800;
+        padding: 18px;
+        font-size: 1.1rem;
+        border: none;
         transition: 0.3s;
+        box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-agency-link {
+        background-color: #2563eb;
+        color: white;
+        font-weight: 800;
+        padding: 18px;
+        font-size: 1.1rem;
+        border: none;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.2);
+    }
+
+    .promote-card {
+        border: 1px solid rgba(0,0,0,0.08);
+        background: white;
+        margin-top: 35px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
     }
 
     .promote-header {
-        background: linear-gradient(45deg, var(--deep-blue), #1e293b);
+        background: var(--midnight);
         color: white;
         padding: 15px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        font-size: 0.75rem;
         font-weight: 800;
-        font-size: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
     }
 
-    .reward-infobox {
-        background: #fff9db;
-        border: 2px dashed #f59f00;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .ref-link-container {
+    .star-rating {
         display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    .star-rating input { display: none; }
+    .star-rating label {
+        font-size: 2.2rem;
+        color: #cbd5e1;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: var(--accent);
+        transform: scale(1.1);
+    }
+
+    .form-control {
+        padding: 14px 20px;
+        border: 2px solid #f1f5f9;
         background: #f8fafc;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        overflow: hidden;
+        font-weight: 600;
     }
-
-    .ref-link-input {
-        border: none !important;
-        background: transparent;
-        flex-grow: 1;
-        padding: 12px 15px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: var(--deep-blue);
-    }
-
-    .copy-btn {
-        border: none;
-        background: var(--deep-blue);
-        color: #fff;
-        padding: 0 25px;
-        font-weight: 800;
-        transition: 0.2s;
-    }
-    .copy-btn:hover { background: #000; }
-
-    /* ACTION BUTTONS */
-    .btn-buy-whatsapp {
-        background-color: var(--whatsapp-green);
-        border: none;
-        color: white;
-        font-weight: 900 !important;
-        padding: 20px;
-        border-radius: 18px;
-        font-size: 1.2rem;
-        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-        transition: 0.3s;
-    }
-    .btn-buy-whatsapp:hover {
-        background-color: #128c7e;
-        color: white;
-        transform: translateY(-3px);
-    }
-
-    .btn-purchase-standard {
-        background-color: var(--accent-gold);
-        border: none;
-        color: var(--deep-blue);
-        font-weight: 900 !important;
-        padding: 20px;
-        border-radius: 18px;
-        font-size: 1.2rem;
-        box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
-        transition: 0.3s;
-    }
-
-    .item-price-tag {
-        font-size: 2.8rem;
-        color: var(--deep-blue);
-        letter-spacing: -2px;
-        font-weight: 900 !important;
-    }
-
-    .review-card {
-        background: #fff;
-        border-radius: 20px;
-        border-left: 6px solid var(--accent-gold);
-        transition: 0.2s;
-    }
-    .review-card:hover { transform: scale(1.01); }
-
-    @keyframes pulse-gold {
-        0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-        70% { box-shadow: 0 0 0 20px rgba(255, 193, 7, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-    }
-    .pulse-active { animation: pulse-gold 1.5s infinite; }
-
-    html { scroll-behavior: smooth; }
-    #promoteSection { scroll-margin-top: 100px; }
 </style>
 
 <div class="container py-5 mt-3">
     <div class="row g-5">
+        
         <div class="col-md-6 mb-4">
-            <div class="position-sticky" style="top: 100px;">
+            <div class="detail-img-wrapper">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="img-fluid rounded-5 shadow-lg border" alt="{{ item.name }}" style="width: 100%; height: 500px; object-fit: cover;">
+                    <img src="{{ item.image.url }}" class="img-fluid w-100" alt="{{ item.name }}" style="height: 550px; object-fit: cover;">
                 {% else %}
-                <div class="rounded-5 bg-light d-flex align-items-center justify-content-center border" style="height: 500px;">
-                    <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
-                </div>
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 550px;">
+                        <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                    </div>
                 {% endif %}
             </div>
         </div>
 
         <div class="col-md-6">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb custom-breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">HOME</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'category_detail' item.category.slug %}" class="text-decoration-none text-muted">{{ item.category.name|upper }}</a></li>
-                    <li class="breadcrumb-item active text-dark">{{ item.name|upper }}</li>
-                </ol>
-            </nav>
+            {% if item.is_escrow_required %}
+                <div class="escrow-badge shadow-sm">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Escrow Protected
+                </div>
+            {% else %}
+                <div class="agency-badge shadow-sm">
+                    <i class="bi bi-patch-check-fill me-2"></i> Official Agency
+                </div>
+            {% endif %}
 
-            <h1 class="display-5 mb-2 text-dark">{{ item.name }}</h1>
+            <h1 class="fw-800 text-midnight mb-2" style="font-size: 2.8rem; letter-spacing: -1px;">{{ item.name }}</h1>
             
             <div class="d-flex align-items-center mb-4">
-                <span class="badge bg-dark text-warning px-3 py-2 fs-6 shadow-sm">
-                    {{ avg_rating|default:"5.0"|floatformat:1 }} ★
+                <span class="fw-900 text-midnight me-2 fs-5">{{ avg_rating|default:"5.0"|floatformat:1 }} ★</span>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">
+                    ({{ item.reviews.count }} Community Vouches)
                 </span>
-                <span class="ms-3 fw-bold text-muted small text-uppercase">({{ reviews.count }} Verified Vouches)</span>
             </div>
 
-            <div class="mb-4">
-                <h2 class="item-price-tag mb-0">₦{{ item.price|floatformat:2 }}</h2>
-            </div>
+            <h2 class="fw-900 mb-4" style="color: #16a34a; font-size: 2.2rem;">₦{{ item.price|floatformat:2 }}</h2>
+            
+            <p class="text-secondary mb-5 fw-500" style="line-height: 1.8; font-size: 1.1rem;">
+                {{ item.description }}
+            </p>
 
-            <p class="lead mb-5 text-secondary" style="font-weight: 500; line-height: 1.8;">{{ item.description }}</p>
-
-            <div class="d-grid gap-3 mb-5">
-                {% if item.whatsapp_number %}
-                    <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-buy-whatsapp">
-                        <i class="bi bi-whatsapp me-2"></i> CHAT TO BUY
+            <div class="d-grid gap-3 mb-4">
+                {% if item.is_escrow_required %}
+                    <a href="{% url 'product_checkout' item.slug %}{% if request.GET.ref %}?ref={{ request.GET.ref }}{% endif %}" class="btn btn-buy-now text-decoration-none text-center">
+                        <i class="bi bi-bag-check-fill me-2"></i> BUY NOW & HOLD IN ESCROW
                     </a>
                 {% else %}
-                    <a href="{% url 'buy_item' item.slug %}" target="_blank" class="btn btn-purchase-standard">
-                        <i class="bi bi-cart-check-fill me-2"></i> PURCHASE NOW
+                    <a href="{{ referral_link }}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
+                        <i class="bi bi-box-arrow-up-right me-2"></i> VISIT OFFICIAL SITE
                     </a>
                 {% endif %}
 
                 {% if user.is_authenticated %}
                 <div class="row g-2">
                     <div class="col-6">
-                        <button onclick="animatePromoteSection()" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow">
-                            <i class="bi bi-megaphone-fill me-2"></i> PROMOTE
+                        <button onclick="scrollToPromote()" class="btn btn-outline-dark w-100 py-3 fw-bold border-2 rounded-pill" style="border-radius: 50px !important;">
+                            PROMOTE
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-outline-dark w-100 py-3 fw-bold rounded-4 border-2" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
-                            <i class="bi bi-chat-quote-fill me-2"></i> VOUCH
+                        <button class="btn btn-dark w-100 py-3 fw-bold rounded-pill" style="border-radius: 50px !important;" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
+                            VOUCH
                         </button>
                     </div>
                 </div>
@@ -228,128 +185,81 @@
             </div>
 
             {% if user.is_authenticated and user.profile.user_type == 'MARKETER' %}
-            <div id="promoteSection" class="promote-card mb-4">
+            <div id="promoteArea" class="promote-card shadow-sm mb-4">
                 <div class="promote-header">
-                    <span><i class="bi bi-rocket-takeoff-fill me-2"></i> PROMOTER HUB</span>
-                    <span class="badge bg-success text-white small fw-900">ACTIVE</span>
+                    Marketer Rewards Hub
                 </div>
-                <div class="promote-body p-4">
-                    <div class="reward-infobox d-flex align-items-center mb-3">
-                        <div class="me-3">
-                            <i class="bi bi-lightning-charge-fill fs-2 text-warning"></i>
-                        </div>
+                <div class="p-4 bg-white">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning p-3 me-3" style="border-radius: 15px;">
+                            <i class="bi bi-percent text-midnight fs-4"></i> </div>
                         <div>
-                            <div class="small fw-800 text-muted text-uppercase">Lead Commission</div>
-                            <div class="h4 mb-0 fw-900 text-dark">Earn ₦{{ item.commission_naira|floatformat:2 }} <span class="small fw-bold opacity-50">per lead click</span></div>
+                            <div class="small fw-700 text-muted text-uppercase">Commission Rate</div>
+                            <div class="h4 mb-0 fw-900">
+                                {{ item.commission_percentage }}% <span class="fs-6 opacity-50">/ Sale</span>
+                            </div>
                         </div>
                     </div>
 
-                    <p class="fw-bold text-muted small mb-2 text-uppercase">Your Unique Affiliate URL:</p>
-                    <div class="ref-link-container shadow-sm">
-                        <input type="text" class="ref-link-input" value="{{ referral_link }}" id="refLink" readonly>
-                        <button class="copy-btn" onclick="copyLink()">COPY</button>
+                    {% if not item.is_escrow_required %}
+                    <div class="p-3 mb-4 bg-light border-start border-4 border-warning" style="border-radius: 12px;">
+                        <p class="small fw-600 text-midnight mb-0">
+                            <i class="bi bi-info-circle-fill me-2 text-warning"></i> 
+                            <strong>Note:</strong> Since this is an official store listing, final commission depends on the specific product or plan the customer completes at checkout.
+                        </p>
                     </div>
-                    <p class="small text-muted mt-3 mb-0">Share this link. When they click, they get redirected to the advertiser with your code embedded!</p>
+                    {% endif %}
+                    
+                    <label class="small fw-800 text-muted mb-2 ps-1">SHAREABLE LINK</label>
+                    <div class="d-flex p-1 bg-light" style="border-radius: 50px;">
+                        <input type="text" class="form-control border-0 bg-transparent fw-bold" value="{{ referral_link }}" id="refLink" readonly>
+                        <button class="btn btn-dark text-white px-4 fw-bold rounded-pill" style="border-radius: 50px !important;" onclick="copyRef()">COPY</button>
+                    </div>
                 </div>
-            </div>
-            {% elif not user.is_authenticated %}
-            <div class="alert alert-light border-2 rounded-4 p-4 text-center mb-4 shadow-sm">
-                <h5 class="fw-900 mb-2">EARN ₦{{ item.commission_naira|floatformat:2 }} PER CLICK</h5>
-                <p class="small fw-bold text-muted">Join the squad to get your unique link and start earning today.</p>
-                <a href="{% url 'login' %}" class="btn btn-dark fw-bold rounded-pill px-5 mt-2">LOGIN TO PROMOTE</a>
             </div>
             {% endif %}
 
-            <div class="collapse mb-4 mt-3" id="reviewForm">
-                <div class="card card-body shadow border-0 bg-light rounded-4 p-4">
-                    <h4 class="fw-bold mb-4 text-dark text-center">SHARE YOUR VOUCH</h4>
+            <div class="collapse mt-4" id="reviewForm">
+                <div class="p-4 border bg-white shadow-sm">
+                    <h5 class="fw-800 mb-4 text-center">SUBMIT YOUR VOUCH</h5>
                     <form method="POST" action="{% url 'add_review' item.slug %}">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">HOW WOULD YOU RATE THIS?</label>
-                            {{ form.rating }}
+                        <div class="mb-4 text-center">
+                            <div class="star-rating d-inline-flex">
+                                <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">VOUCH TITLE</label>
+                            <label class="small fw-800 ps-1 mb-1">HEADING</label>
                             {{ form.title }}
                         </div>
                         <div class="mb-4">
-                            <label class="form-label">YOUR EXPERIENCE</label>
+                            <label class="small fw-800 ps-1 mb-1">EXPERIENCE</label>
                             {{ form.content }}
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow">SUBMIT VOUCH</button>
+                        <button type="submit" class="btn btn-dark w-100 py-3 fw-800">POST VOUCH</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <hr class="my-5 opacity-10">
-
-    <div class="row mt-5 mb-5">
-        <div class="col-12">
-            <h2 class="fw-bold mb-4 text-dark text-uppercase">Community Vouches ({{ reviews.count }})</h2>
-            
-            {% for review in reviews %}
-            <div class="review-card shadow-sm p-4 mb-4 border">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="fw-bold mb-0 text-primary">{{ review.title|upper }}</h5>
-                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold">
-                        {{ review.rating }} ★
-                    </span>
-                </div>
-                <p class="text-dark mb-3 fs-6" style="font-weight: 600; line-height: 1.6;">{{ review.content }}</p>
-                <div class="d-flex align-items-center">
-                    <div class="bg-dark rounded-circle text-warning d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1rem; font-weight: 900;">
-                        {{ review.author.username|slice:":1"|upper }}
-                    </div>
-                    <div>
-                        <div class="fw-bold text-dark" style="font-size: 0.9rem;">{{ review.author.username }}</div>
-                        <small class="text-muted fw-bold">{{ review.created_at|date:"M d, Y" }}</small>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="text-center py-5 bg-white rounded-5 border border-dashed">
-                <i class="bi bi-chat-left-heart text-muted" style="font-size: 4rem;"></i>
-                <p class="fw-bold text-muted mt-3">NO VOUCHES YET. BE THE FIRST TO REVIEW!</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
 </div>
 
 <script>
-    // Scroll and pulse effect for the Promote section
-    function animatePromoteSection() {
-        const section = document.getElementById("promoteSection");
-        if(section) {
-            section.scrollIntoView({ behavior: 'smooth' });
-            section.classList.add("pulse-active");
-            setTimeout(() => { section.classList.remove("pulse-active"); }, 3000);
-        }
-    }
-
-    // Copy to Clipboard logic
-    function copyLink() {
+    function copyRef() {
         var copyText = document.getElementById("refLink");
         copyText.select();
-        copyText.setSelectionRange(0, 99999); // Mobile
-        navigator.clipboard.writeText(copyText.value).then(() => {
-            const btn = document.querySelector('.copy-btn');
-            btn.innerText = "COPIED!";
-            btn.style.background = "#28a745";
-            setTimeout(() => { 
-                btn.innerText = "COPY"; 
-                btn.style.background = "#0f172a";
-            }, 2000);
-        });
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("Referral Link Copied! Share this to earn commission on every sale.");
     }
 
-    // Auto-styling the Django form elements
-    document.querySelectorAll('input:not([type="file"]), select, textarea').forEach(el => {
-        el.classList.add('form-control');
-        el.classList.add('fw-bold');
-    });
+    function scrollToPromote() {
+        document.getElementById("promoteArea").scrollIntoView({ behavior: 'smooth' });
+    }
 </script>
 {% endblock %}

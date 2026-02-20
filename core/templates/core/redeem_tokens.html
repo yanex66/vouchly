@@ -1,70 +1,47 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    :root {
-        --midnight: #0f172a;
-        --midnight-dark: #020617;
-        --accent: #ffc107;
-        --soft-bg: #f8fafc;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-    }
-
-    body { background-color: var(--soft-bg); color: var(--text-main); }
-
-    .redeem-container {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 20px;
-    }
-
-    /* Premium Redemption Card */
-    .redeem-card {
-        width: 100%;
-        max-width: 500px;
+    /* --- PAGE-SPECIFIC STYLE OVERRIDE --- */
+    .redeem-content-box {
         background: white;
-        border-radius: 32px;
-        border: 1px solid rgba(0,0,0,0.04);
-        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.1);
-        overflow: hidden;
+        border: 1px solid #ddd;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
     }
 
-    .redeem-header {
-        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
-        padding: 50px 30px;
+    .redeem-banner {
+        background: var(--midnight);
+        padding: 40px 20px;
         text-align: center;
         color: white;
         border-bottom: 5px solid var(--accent);
     }
 
-    .redeem-header h2 {
-        font-weight: 800;
+    .redeem-banner h2 {
+        font-weight: 900;
         letter-spacing: -1.5px;
         text-transform: uppercase;
         margin-bottom: 5px;
     }
 
-    .redeem-body { padding: 40px; }
+    .redeem-form-area { padding: 30px; }
 
-    /* Token Balance Display */
-    .token-stat-box {
+    /* Sharp Stat Box */
+    .stat-balance-box {
         background: var(--soft-bg);
-        border: 2px dashed #e2e8f0;
-        border-radius: 24px;
+        border: 2px dashed #cbd5e1;
         padding: 30px 20px;
         text-align: center;
-        margin-bottom: 35px;
-        transition: 0.3s;
+        margin-bottom: 30px;
     }
 
-    .token-stat-box:hover { border-color: var(--accent); background: #fff; }
-
-    .token-label {
+    .stat-label {
         font-weight: 800;
-        color: var(--text-muted);
+        color: #64748b;
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1.5px;
@@ -72,28 +49,28 @@
         margin-bottom: 10px;
     }
 
-    .token-value {
+    .stat-value {
         font-size: 2.5rem;
-        font-weight: 800;
+        font-weight: 900;
         color: var(--midnight);
         letter-spacing: -1px;
         line-height: 1;
     }
 
-    .cash-badge {
+    .naira-value-badge {
         background: #fef9c3;
         color: #854d0e;
-        font-weight: 800;
-        padding: 6px 16px;
-        border-radius: 50px;
-        font-size: 0.85rem;
+        font-weight: 900;
+        padding: 8px 16px;
+        font-size: 0.9rem;
         display: inline-block;
         margin-top: 15px;
+        border: 1px solid #fde047;
     }
 
-    /* Form Elements */
-    .form-label-custom {
-        font-weight: 800;
+    /* Form UI */
+    .label-sharp {
+        font-weight: 900;
         color: var(--midnight);
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -102,123 +79,117 @@
         display: block;
     }
 
-    .input-custom {
-        border-radius: 15px !important;
-        padding: 14px 18px;
+    .input-sharp {
+        padding: 15px;
         border: 2px solid #f1f5f9;
         background-color: #f8fafc;
-        font-size: 1.1rem;
-        transition: 0.3s;
+        font-size: 1.2rem;
         width: 100%;
         color: var(--midnight);
-        font-weight: 800;
+        font-weight: 900;
         text-align: center;
     }
 
-    .input-custom:focus {
+    .input-sharp:focus {
         background-color: #fff;
         border-color: var(--accent);
-        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.15);
         outline: none;
     }
 
-    .btn-redeem-premium {
+    .btn-action-sharp {
         background: var(--midnight);
         color: white;
         border: none;
-        border-radius: 15px;
-        padding: 16px;
-        font-weight: 800;
-        letter-spacing: 1px;
+        padding: 18px;
+        font-weight: 900;
         width: 100%;
         text-transform: uppercase;
         transition: 0.3s;
-        margin-top: 10px;
+        margin-top: 15px;
     }
 
-    .btn-redeem-premium:hover {
-        background: var(--midnight-dark);
+    .btn-action-sharp:hover {
+        background: #1e293b;
         color: var(--accent);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
     }
 
-    .cancel-link {
-        color: var(--text-muted);
-        font-weight: 700;
-        text-decoration: none;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: 0.2s;
-        display: block;
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    .cancel-link:hover { color: var(--midnight); }
-
-    .info-alert {
+    .alert-info-sharp {
         background: #f0f9ff;
         border: 1px solid #e0f2fe;
         color: #0369a1;
-        border-radius: 15px;
         padding: 15px;
         font-size: 0.85rem;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 25px;
         display: flex;
         align-items: center;
     }
+
+    .back-nav {
+        color: #64748b;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 25px;
+        text-align: center;
+    }
 </style>
 
-<div class="redeem-container">
-    <div class="redeem-card">
-        <div class="redeem-header">
-            <h2>Redeem Tokens</h2>
-            <p class="small opacity-75 fw-500 mb-0">Convert VOCOIN to Wallet Cash</p>
-        </div>
+<div class="dash-container">
+    {% include 'core/includes/_sidebar.html' %}
 
-        <div class="redeem-body">
-            <div class="token-stat-box">
-                <span class="token-label">Available for Swap</span>
-                <div class="token-value">{{ vocoin_balance }} <small style="font-size: 1rem; opacity: 0.6;">VOCOIN</small></div>
-                <div class="cash-badge">₦{{ naira_value|floatformat:2 }} Cash Value</div>
+    <div class="main-stage">
+        <div class="redeem-content-box">
+            <div class="redeem-banner">
+                <h2>REDEEM REWARDS</h2>
+                <p class="small opacity-75 fw-bold mb-0">CONVERT <span class="vn-merged" style="font-size:0.6rem; color:white;">VN</span> TO SPENDABLE CASH</p>
             </div>
 
-            <form method="POST">
-                {% csrf_token %}
-                
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="form-label-custom mb-0">Amount to Transfer (₦)</label>
-                        <button type="button" class="btn btn-link p-0 text-decoration-none fw-800 small text-midnight" onclick="redeemAll()" style="font-size: 0.7rem; text-transform: uppercase;">
-                            Redeem Max
-                        </button>
+            <div class="redeem-form-area">
+                <div class="stat-balance-box">
+                    <span class="stat-label">AVAILABLE VOCOIN</span>
+                    <div class="stat-value">
+                        <span class="vn-merged">VN</span>{{ vocoin_balance|floatformat:2 }}
                     </div>
-                    <input type="number" name="amount" id="id_amount" class="input-custom" step="0.01" value="{{ naira_value }}">
+                    <div class="naira-value-badge">₦{{ naira_value|floatformat:2 }} CASH VALUE</div>
                 </div>
 
-                <div class="info-alert">
-                    <i class="bi bi-info-circle-fill me-3 fs-5"></i>
-                    <span>Converted funds are transferred instantly to your Spendable Wallet.</span>
-                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="label-sharp mb-0">AMOUNT TO TRANSFER (₦)</label>
+                            <button type="button" class="btn btn-link p-0 text-decoration-none fw-900 small text-midnight" onclick="setMaxValue()" style="font-size: 0.65rem; text-transform: uppercase;">
+                                REDEEM ALL
+                            </button>
+                        </div>
+                        <input type="number" name="amount" id="transfer_amount" class="input-sharp" step="0.01" value="{{ naira_value }}">
+                    </div>
 
-                <button type="submit" class="btn btn-redeem-premium shadow-sm">
-                    Confirm Redemption
-                </button>
-            </form>
+                    <div class="alert-info-sharp">
+                        <i class="bi bi-info-square-fill me-3 fs-5"></i>
+                        <span>Tokens are converted at the current market rate and transferred to your main wallet instantly.</span>
+                    </div>
 
-            <a href="{% url 'dashboard' %}" class="cancel-link">
-                Return to Dashboard
-            </a>
+                    <button type="submit" class="btn btn-action-sharp">
+                        CONFIRM REDEMPTION
+                    </button>
+                </form>
+
+                <a href="{% url 'dashboard' %}" class="back-nav">
+                    <i class="bi bi-arrow-left-square me-2"></i> BACK TO DASHBOARD
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    function redeemAll() {
-        document.getElementById('id_amount').value = "{{ naira_value }}";
+    function setMaxValue() {
+        document.getElementById('transfer_amount').value = "{{ naira_value }}";
     }
 </script>
 {% endblock %}

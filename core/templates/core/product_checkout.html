@@ -1,0 +1,175 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --midnight: #0f172a;
+        --v-accent: #ffc107;
+        --v-green: #16a34a;
+        --v-bg: #f8fafc;
+        --v-radius: 24px; /* Global Curve Variable */
+    }
+
+    body { background-color: var(--v-bg); }
+
+    /* --- CURVED GLOBAL DESIGN --- */
+    .btn, .card, .form-control, .badge, .checkout-card, .order-summary-box {
+        border-radius: var(--v-radius) !important;
+    }
+
+    .fw-900 { font-weight: 900; }
+
+    /* FLOATING CURVED CARD */
+    .checkout-card {
+        background: white;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        padding: 40px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+        max-width: 600px;
+        margin: 50px auto;
+        overflow: hidden;
+    }
+
+    .order-summary-box {
+        background: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    /* PILL-SHAPED BANNER */
+    .escrow-protection-banner {
+        background: var(--v-accent);
+        color: var(--midnight);
+        padding: 10px 20px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50px !important; /* Force pill shape */
+        width: 100%;
+    }
+
+    /* PILL-SHAPED PAYMENT BUTTONS */
+    .payment-btn {
+        width: 100%;
+        padding: 18px;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: none;
+        margin-bottom: 15px;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50px !important; /* Force pill shape */
+    }
+
+    .btn-paystack { background: #00c3f7; color: white; box-shadow: 0 10px 20px rgba(0, 195, 247, 0.2); }
+    .btn-flutterwave { background: #f5a623; color: white; box-shadow: 0 10px 20px rgba(245, 166, 35, 0.2); }
+
+    .payment-btn:hover {
+        transform: translateY(-3px);
+        filter: brightness(1.1);
+        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
+    }
+
+    .security-text {
+        font-size: 0.8rem;
+        color: #64748b;
+        text-align: center;
+        line-height: 1.6;
+        padding: 0 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="checkout-card">
+        
+        <div class="escrow-protection-banner shadow-sm">
+            <i class="bi bi-shield-lock-fill me-2"></i> ESCROW PROTECTION ACTIVE
+        </div>
+
+        <h3 class="fw-800 mb-4 text-center" style="letter-spacing: -1px;">ORDER CHECKOUT</h3>
+
+        <div class="order-summary-box">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="small fw-bold text-muted">ITEM</span>
+                <span class="small fw-800 text-midnight">{{ order.item.name|upper }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="small fw-bold text-muted">SELLER</span>
+                <span class="small fw-800 text-midnight">{{ order.seller.username|upper }}</span>
+            </div>
+            <hr class="my-3 opacity-10">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-800 text-muted">TOTAL DUE</span>
+                <span class="h3 fw-900 mb-0 text-success">₦{{ order.amount|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <p class="small fw-bold text-center mb-4 text-muted">Select a secure payment gateway:</p>
+
+        <button type="button" class="payment-btn btn-paystack" onclick="payWithPaystack()">
+            <i class="bi bi-credit-card-2-front-fill me-2"></i> Pay with Paystack
+        </button>
+
+        <button type="button" class="payment-btn btn-flutterwave" onclick="payWithFlutterwave()">
+            <i class="bi bi-lightning-fill me-2"></i> Pay with Flutterwave
+        </button>
+
+        <div class="mt-4 security-text">
+            <p class="mb-0"><strong>Secured Transaction:</strong> Vouchly holds your funds in the Desk vault. We only release payment to the seller after you confirm receipt of your item with your secret PIN.</p>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
+<script>
+    function payWithPaystack() {
+        const orderAmount = parseFloat("{{ order.amount }}");
+        const userEmail = "{{ request.user.email }}";
+        const publicKey = "{{ paystack_public_key }}";
+
+        let handler = PaystackPop.setup({
+            key: publicKey,
+            email: userEmail,
+            amount: orderAmount * 100,
+            currency: 'NGN',
+            ref: 'order_' + "{{ order.id }}" + '_' + Math.floor((Math.random() * 1000000000) + 1),
+            callback: function(response) {
+                window.location.href = "{% url 'verify_product_payment' %}?reference=" + response.reference + "&gateway=paystack";
+            }
+        });
+        handler.openIframe();
+    }
+
+    function payWithFlutterwave() {
+        const orderId = "{{ order.id }}";
+        const orderAmount = parseFloat("{{ order.amount }}");
+        const userEmail = "{{ request.user.email }}";
+        const flwKey = "{{ flw_public_key }}";
+        const itemName = "{{ order.item.name }}";
+
+        FlutterwaveCheckout({
+            public_key: flwKey,
+            tx_ref: "vouchly_" + orderId + "_" + Math.floor((Math.random() * 1000000000) + 1),
+            amount: orderAmount,
+            currency: "NGN",
+            customer: { email: userEmail },
+            callback: function (data) {
+                window.location.href = "{% url 'verify_product_payment' %}?transaction_id=" + data.transaction_id + "&gateway=flutterwave";
+            },
+            customizations: {
+                title: "Vouchly Escrow",
+                description: "Payment for " + itemName,
+            },
+        });
+    }
+</script>
+{% endblock %}

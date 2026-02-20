@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --v-midnight: #0f172a;
+        --v-accent: #ffc107;
+        --v-bg: #f8fafc;
+        --v-radius: 24px;
+    }
+
+    body { background-color: var(--v-bg); }
+
+    .desk-header {
+        padding: 40px 0 20px;
+        text-align: center;
+    }
+
+    /* --- THE SECURE BANNER --- */
+    .secure-banner {
+        background: linear-gradient(135deg, var(--v-midnight) 0%, #1e293b 100%);
+        padding: 30px 40px;
+        border-radius: var(--v-radius);
+        border-left: 8px solid var(--v-accent);
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
+    }
+
+    .symbol-large {
+        position: relative;
+        font-size: 3rem;
+        color: white;
+        line-height: 1;
+    }
+
+    .shield-lg {
+        position: absolute;
+        bottom: -5px;
+        right: -10px;
+        font-size: 1.2rem;
+        color: var(--v-accent);
+        background: var(--v-midnight);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .banner-text h5 {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    /* --- THE DESK CARD --- */
+    .desk-card {
+        background: white;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        border-radius: var(--v-radius) !important;
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .desk-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
+    }
+
+    .item-img-sm {
+        width: 100px;
+        height: 100px;
+        border-radius: 18px !important;
+        object-fit: cover;
+        margin-right: 25px;
+    }
+
+    .seller-tag {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .order-price {
+        font-weight: 900;
+        color: #16a34a;
+        font-size: 1.3rem;
+    }
+
+    .btn-pay-now {
+        background: var(--v-midnight);
+        color: var(--v-accent);
+        border-radius: 50px !important;
+        padding: 12px 30px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border: none;
+        transition: 0.2s;
+    }
+
+    .btn-pay-now:hover {
+        background: #1e293b;
+        color: white;
+    }
+
+    .empty-desk {
+        text-align: center;
+        padding: 100px 0;
+        background: white;
+        border-radius: var(--v-radius) !important;
+        border: 2px dashed #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+        .secure-banner { flex-direction: column; text-align: center; padding: 30px 20px; }
+        .symbol-large { margin-right: 0 !important; margin-bottom: 20px; }
+        .desk-card { flex-direction: column; text-align: center; }
+        .item-img-sm { margin-right: 0; margin-bottom: 20px; }
+        .text-end { text-align: center !important; margin-left: 0 !important; margin-top: 20px; }
+    }
+</style>
+
+<div class="container py-5">
+    <div class="desk-header">
+        <h1 class="fw-900 text-midnight mb-1" style="letter-spacing: -1.5px;">THE CHECKOUT DESK</h1>
+        <p class="fw-bold text-muted text-uppercase small" style="letter-spacing: 1.5px;">Finalize your trade deals under Escrow protection.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="secure-banner shadow-sm">
+                <div class="symbol-large me-4">
+                    <i class="bi bi-wallet2"></i>
+                    <div class="shield-lg"><i class="bi bi-shield-lock-fill"></i></div>
+                </div>
+                <div class="banner-text">
+                    <h5 class="text-white">Escrow Protection is Active</h5>
+                    <p class="small text-white opacity-75 mb-0">Your payment is held securely by Vouchly. Funds are only released to the seller after you receive the item and provide your secret 4-digit Delivery PIN.</p>
+                </div>
+            </div>
+
+            {% for order in pending_orders %}
+            <div class="desk-card">
+                <img src="{% if order.item.image %}{{ order.item.image.url }}{% else %}{% static 'core/images/placeholder.png' %}{% endif %}" class="item-img-sm shadow-sm" alt="{{ order.item.name }}">
+                
+                <div class="flex-grow-1">
+                    <div class="seller-tag">SELLER: {{ order.seller.username }}</div>
+                    <h5 class="fw-800 text-midnight mb-1">{{ order.item.name }}</h5>
+                    <div class="small text-muted fw-bold mb-0">Order initiated on {{ order.created_at|date:"M d, Y" }}</div>
+                </div>
+
+                <div class="text-end ms-4">
+                    <div class="order-price mb-2">₦{{ order.amount|floatformat:2 }}</div>
+                    <a href="{% url 'product_checkout' order.item.slug %}" class="btn btn-pay-now shadow-sm">
+                        Complete Payment
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-desk">
+                <i class="bi bi-wallet2 display-1 text-muted opacity-25 mb-3 d-block"></i>
+                <h4 class="fw-800 text-muted">Your Checkout Desk is clear.</h4>
+                <p class="fw-bold text-muted small">Items you initiate will appear here for secure payment.</p>
+                <a href="{% url 'marketplace' %}" class="btn btn-dark rounded-pill px-5 mt-3 py-3 fw-800 shadow-sm">Browse Marketplace</a>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

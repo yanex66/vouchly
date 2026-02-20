@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 import os
 import uuid
+import random
 
 # Helper function for secure file naming
 def secure_verification_path(instance, filename):
@@ -40,8 +41,13 @@ class Item(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     commission_naira = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    
+    # --- HYBRID ESCROW LOGIC ---
+    # Set this to FALSE in Admin for products like Travelstart
+    is_escrow_required = models.BooleanField(default=True, help_text="Uncheck for Admin/Agency items that don't need internal payment.")
+    external_url = models.URLField(blank=True, null=True, help_text="Direct link for Agency items (e.g. Travelstart)")
+    
     whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
-    website = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='item_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
@@ -53,7 +59,8 @@ class Item(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        type_label = "ESCROW" if self.is_escrow_required else "DIRECT"
+        return f"[{type_label}] {self.name}"
 
 # --- 2. SUBSCRIPTIONS ---
 class PromotionPlan(models.Model):
@@ -65,21 +72,16 @@ class PromotionPlan(models.Model):
     whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
     destination_type = models.CharField(max_length=10, choices=[('whatsapp', 'WhatsApp'), ('website', 'Website')], default='whatsapp')
     website_url = models.URLField(blank=True, null=True)
-    
     agree_to_commissions = models.BooleanField(default=False)
-    
     product_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    # FIXED: Changed default from 10 to 0
     commission_percentage = models.PositiveIntegerField(default=0)
-    
     duration_days = models.IntegerField() 
-    
     is_paid = models.BooleanField(default=False)
     payment_reference = models.CharField(max_length=100, blank=True, null=True)
     subscription_expiry = models.DateTimeField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
 # --- 3. REVIEWS & REFERRALS ---
 class Review(models.Model):
     item = models.ForeignKey(Item, related_name='reviews', on_delete=models.CASCADE)
@@ -108,7 +110,12 @@ class Profile(models.Model):
         ('VERIFIED', 'Verified'),
         ('REJECTED', 'Rejected'),
     ]
-    BANK_CHOICES = [('', 'Select Bank'), ('gtbank', 'GTBank'), ('zenith', 'Zenith Bank'), ('opay', 'Opay'), ('kuda', 'Kuda')]
+
+    BANK_CHOICES = [
+        ('', 'Select Bank'), ('access', 'Access Bank'), ('gtbank', 'GTB'), 
+        ('zenith', 'Zenith Bank'), ('opay', 'OPay'), ('kuda', 'Kuda Bank'), 
+        ('palmpay', 'PalmPay'), ('moniepoint', 'Moniepoint MFB')
+    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='MARKETER')
@@ -135,20 +142,42 @@ class AdvertiserVerification(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-# --- 5. SYSTEM SETTINGS (DYNAMIC PRICING) ---
+# --- 5. SYSTEM SETTINGS ---
 class SubscriptionPrice(models.Model):
-    plan_name = models.CharField(max_length=50, help_text="e.g., Weekly Plan")
-    duration_days = models.IntegerField(unique=True, help_text="Must match 7, 30, 180, or 365")
+    plan_name = models.CharField(max_length=50)
+    duration_days = models.IntegerField(unique=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
-        return f"{self.plan_name} ({self.duration_days} Days) - ₦{self.price:,.2f}"
+        return f"{self.plan_name} ({self.duration_days} Days)"
 
-    class Meta:
-        verbose_name = "Plan Price Setting"
-        verbose_name_plural = "Plan Price Settings"
+# --- 6. MARKETPLACE & ESCROW ORDERS ---
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Waiting for Payment'),
+        ('PAID', 'Paid (Held in Escrow)'),
+        ('SHIPPED', 'In Transit'),
+        ('COMPLETED', 'Delivered & Funds Released'),
+        ('CANCELLED', 'Cancelled'),
+    ]
 
-# --- 6. OTHERS & SIGNALS ---
+    item = models.ForeignKey(Item, related_name='orders', on_delete=models.CASCADE)
+    buyer = models.ForeignKey(User, related_name='purchases', on_delete=models.CASCADE)
+    seller = models.ForeignKey(User, related_name='sales', on_delete=models.CASCADE)
+    referrer = models.ForeignKey(User, related_name='referred_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    commission_earned = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    delivery_pin = models.CharField(max_length=4, blank=True)
+    payment_reference = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.delivery_pin:
+            self.delivery_pin = str(random.randint(1000, 9999))
+        super().save(*args, **kwargs)
+
+# --- 7. OTHERS & SIGNALS ---
 class Referral(models.Model):
     referrer = models.ForeignKey(User, related_name='referrals_made', on_delete=models.CASCADE)
     referred_user = models.OneToOneField(User, related_name='referred_by', on_delete=models.CASCADE)

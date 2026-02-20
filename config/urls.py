@@ -6,9 +6,9 @@ from django.conf.urls.static import static
 from django.shortcuts import redirect
 
 # Import all custom views explicitly from core.views
-# Removed "from . import views" to fix the ImportError
 from core.views import (
     home, 
+    marketplace,  # Added this
     item_detail, 
     add_review, 
     search, 
@@ -27,29 +27,34 @@ from core.views import (
     promote_request,
     promotion_payment,
     verify_promotion_payment,
-    payment_success,
     ad_analytics,
     about, 
     contact, 
     privacy, 
     terms,
-    verify_identity
+    verify_identity,
+    product_checkout,
+    verify_product_payment,
+    confirm_receipt,
+    mark_as_shipped, 
+    checkout_desk,
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     
-    # --- Google & Allauth Authentication URLs ---
-    path('accounts/', include('allauth.urls')),
+    # --- NEW MARKETPLACE PATH ---
+    path('marketplace/', marketplace, name='marketplace'), 
     
-    # --- Custom Authentication URLs ---
+    # --- Authentication URLs ---
+    path('accounts/', include('allauth.urls')),
     path('register/', register, name='register'),
     path('set-role-session/', set_role_session, name='set_role_session'),
     path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='core/logout.html'), name='logout'),
     
-    # --- Password Change ---
+    # --- Password Management ---
     path('settings/password/', auth_views.PasswordChangeView.as_view(
         template_name='core/change_password.html',
         success_url='/dashboard/'
@@ -57,7 +62,7 @@ urlpatterns = [
     
     path('accounts/profile/', lambda request: redirect('dashboard')),
 
-    # --- Feature URLs ---
+    # --- Marketplace & Search ---
     path('search/', search, name='search'),
     path('dashboard/', user_dashboard, name='dashboard'),
     path('referrals/', referrals_page, name='referrals_page'), 
@@ -65,28 +70,32 @@ urlpatterns = [
     path('categories/', category_list, name='category_list'),
     path('category/<slug:slug>/', category_detail, name='category_detail'),
     path('item/<slug:slug>/', item_detail, name='item_detail'),
+    
+    # --- Escrow Checkout & Payment ---
+    path('checkout/<slug:slug>/', product_checkout, name='product_checkout'),
+    path('checkout/verify-payment/', verify_product_payment, name='verify_product_payment'),
+    
+    # --- Delivery & PIN Verification ---
+    path('order/confirm-receipt/<int:order_id>/', confirm_receipt, name='confirm_receipt'),
+    path('order/mark-shipped/<int:order_id>/', mark_as_shipped, name='mark_as_shipped'),
+
+    # --- Reviews ---
     path('item/<slug:slug>/add-review/', add_review, name='add_review'),
     path('review/delete/<int:review_id>/', delete_review, name='delete_review'),
+    
+    # --- User Profile & Payouts ---
     path('profile/edit/', edit_profile, name='edit_profile'),
     path('payout/request/', request_payout, name='request_payout'), 
-    
-    # --- Bank Verification ---
     path('verify-bank/', verify_bank_account, name='verify_bank_account'), 
-
-    # --- Identity Verification ---
     path('verify-identity/', verify_identity, name='verify_identity'),
 
-    # --- Seller Promotion & Subscription URLs ---
+    # --- Advertiser Subscription URLs ---
     path('promote/request/', promote_request, name='promote_request'),
     path('promote/payment/<int:pk>/', promotion_payment, name='promotion_payment'),
-    
-    # FIXED: This matches the name "{% url 'verify_promotion_payment' %}" in your template
     path('promote/verify/', verify_promotion_payment, name='verify_promotion_payment'),
-    
-    path('promote/success/<int:pk>/', payment_success, name='payment_success'),
     path('promote/analytics/', ad_analytics, name='ad_analytics'),
     
-    # --- Affiliate Tracking URL ---
+    # --- Affiliate Tracking Legacy Redirect ---
     path('buy/<slug:slug>/', buy_item, name='buy_item'),
 
     # --- Static Pages ---
@@ -94,6 +103,7 @@ urlpatterns = [
     path('contact/', contact, name='contact'),
     path('privacy/', privacy, name='privacy'),
     path('terms/', terms, name='terms'),
+    path('checkout-desk/', checkout_desk, name='checkout_desk'),
 ]
 
 if settings.DEBUG:

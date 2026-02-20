@@ -7,200 +7,209 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        --whatsapp-green: #25D366;
     }
 
     body { background-color: var(--soft-bg); }
 
-    .edit-profile-card {
-        border-radius: 32px;
+    /* --- SIDE-BY-SIDE FLEX --- */
+    .dash-flex {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    /* MINI SIDEBAR: Sharp edges, icon-only mobile */
+    .side-nav {
+        width: 50px; 
+        flex-shrink: 0;
+        position: sticky;
+        top: 90px;
         background: white;
-        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
-        overflow: hidden;
-        margin-bottom: 120px;
+        border-radius: 0 !important;
+        padding: 10px 5px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    .edit-header {
-        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
-        padding: 30px 40px;
-        color: white;
-        border-bottom: 5px solid var(--accent);
-    }
-
-    /* Profile Image Styling */
-    .profile-img-container {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 20px;
-    }
-
-    .profile-img-preview {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid white;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    .img-upload-btn {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background: var(--accent);
-        color: var(--midnight);
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
+    .nav-item-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        border: 3px solid white;
-        transition: 0.3s;
+        width: 38px;
+        height: 38px;
+        color: var(--midnight);
+        text-decoration: none;
+        border-radius: 0 !important;
+        margin-bottom: 8px;
     }
-    .img-upload-btn:hover { transform: scale(1.1); }
 
-    /* Input Styling */
-    .input-custom, .form-control, .form-select {
-        border-radius: 15px !important;
-        padding: 14px 18px;
-        border: 2px solid #f1f5f9;
+    .nav-item-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+    }
+
+    .nav-text { display: none; }
+
+    @media (min-width: 992px) {
+        .side-nav { width: 240px; align-items: stretch; padding: 20px; }
+        .nav-item-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
+        .nav-text { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
+    }
+
+    /* SHARP CARD DESIGN */
+    .edit-profile-card {
+        border-radius: 0 !important; 
+        background: white;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+    }
+
+    .edit-header {
+        background: var(--midnight);
+        padding: 20px;
+        color: white;
+        border-bottom: 4px solid var(--accent);
+    }
+
+    .profile-img-preview {
+        width: 70px;
+        height: 70px;
+        border-radius: 0 !important; 
+        object-fit: cover;
+        border: 3px solid white;
+    }
+
+    .form-control, .form-select, .btn {
+        border-radius: 0 !important; 
         background-color: #f8fafc;
         font-weight: 600;
-        transition: 0.3s;
-        width: 100%;
     }
 
-    .view-data-point {
-        display: block;
-        padding: 14px 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--midnight);
-        border-bottom: 2px solid #f1f5f9;
-    }
-
-    /* Floating Save Bar */
+    /* FIXED SAVE BAR & BUTTONS (Sharp Edges) */
     .save-bar {
         position: fixed;
-        bottom: 25px;
+        bottom: 0; /* Pinned to bottom for cleaner look */
         left: 50%;
-        transform: translateX(-50%) translateY(150%);
-        width: 90%;
-        max-width: 600px;
+        transform: translateX(-50%) translateY(100%);
+        width: 100%;
+        max-width: 100%;
         background: var(--midnight);
         padding: 15px 25px;
-        border-radius: 25px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        z-index: 1000;
-        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border-radius: 0 !important; 
+        z-index: 1100;
+        transition: 0.4s ease-in-out;
     }
     .save-bar.show { transform: translateX(-50%) translateY(0); }
 
-    .btn-edit-toggle {
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        color: white;
-        border-radius: 12px;
-        padding: 8px 20px;
-        font-weight: 700;
-        transition: 0.3s;
+    /* Button Color Fix */
+    .btn-cancel-custom {
+        background: #334155 !important; /* Dark Slate for visibility */
+        color: white !important;
+        border: none;
+        padding: 8px 25px;
+        font-weight: 800;
+        text-transform: uppercase;
     }
-    .btn-edit-toggle:hover { background: var(--accent); color: var(--midnight); }
 
+    .btn-save-custom {
+        background: var(--accent) !important;
+        color: var(--midnight) !important;
+        border: none;
+        padding: 8px 25px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .view-mode-only { display: block; }
     .edit-mode-only { display: none; }
 </style>
 
-<div class="container py-5 mt-3">
-    <div class="row g-4">
-        <div class="col-lg-3">
-            {% include 'core/includes/_sidebar.html' %}
+<div class="container-fluid py-3">
+    <div class="dash-flex">
+        
+        <div class="side-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item-link" title="Overview">
+                <i class="bi bi-grid-fill"></i>
+                <span class="nav-text">Overview</span>
+            </a>
+            <a href="{% url 'ad_analytics' %}" class="nav-item-link" title="Analytics">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span class="nav-text">Analytics</span>
+            </a>
+            <a href="{% url 'promote_request' %}" class="nav-item-link" title="Promote">
+                <i class="bi bi-megaphone-fill"></i>
+                <span class="nav-text">Promote</span>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="nav-item-link active" title="Settings">
+                <i class="bi bi-gear-fill"></i>
+                <span class="nav-text">Settings</span>
+            </a>
         </div>
 
-        <div class="col-lg-9">
+        <div class="flex-grow-1">
             <form method="POST" enctype="multipart/form-data" id="profileForm">
                 {% csrf_token %}
                 
                 <div class="edit-profile-card">
                     <div class="edit-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="fw-900 mb-0">Settings</h2>
-                            <p class="small opacity-75 fw-500 mb-0">Manage your business identity</p>
-                        </div>
-                        <button type="button" class="btn btn-edit-toggle" id="toggleEditBtn">
-                            <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                        <h6 class="fw-900 mb-0">ACCOUNT SETTINGS</h6>
+                        <button type="button" class="btn btn-sm btn-outline-warning fw-800 px-3" id="toggleEditBtn">
+                            EDIT
                         </button>
                     </div>
 
-                    <div class="p-4 p-md-5">
-                        
-                        <div class="text-center mb-5">
-                            <div class="profile-img-container">
+                    <div class="p-3">
+                        <div class="text-center mb-4">
+                            <div class="position-relative d-inline-block">
                                 <img src="{{ user.profile.image.url }}" class="profile-img-preview" id="imagePreview">
-                                <label for="id_image" class="img-upload-btn edit-mode-only" id="uploadLabel">
-                                    <i class="bi bi-camera-fill"></i>
+                                <label for="id_image" class="position-absolute bottom-0 end-0 bg-warning p-1" style="cursor:pointer; width:25px; height:25px; display:flex; align-items:center; justify-content:center;">
+                                    <i class="bi bi-camera-fill text-dark" style="font-size: 0.8rem;"></i>
                                 </label>
                                 <div style="display: none;">{{ form.image }}</div>
                             </div>
-                            <h4 class="fw-900 text-midnight mb-0">{{ user.username }}</h4>
-                            <p class="badge bg-soft-primary text-primary fw-800">{{ user.profile.user_type }}</p>
+                            <h6 class="fw-900 mt-2 mb-0">{{ user.username|upper }}</h6>
                         </div>
 
-                        <div class="mb-5">
-                            <h5 class="fw-900 mb-1"><i class="bi bi-whatsapp text-success me-2"></i>Business Contact</h5>
-                            <p class="small text-muted mb-3">Leads from marketers will be routed to this number.</p>
-                            
-                            <div class="view-mode-only">
-                                <span class="view-data-point">{{ user.profile.whatsapp_number|default:"No number set" }}</span>
+                        <div class="mb-4">
+                            <label class="fw-900 small text-muted text-uppercase mb-1">Business WhatsApp</label>
+                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
+                                {{ user.profile.whatsapp_number|default:"None" }}
                             </div>
-                            
                             <div class="edit-mode-only">
                                 {{ form.whatsapp_number }}
-                                <small class="text-muted d-block mt-2">* Use international format (e.g., 2348031234567)</small>
                             </div>
                         </div>
 
-                        <div>
-                            <h5 class="fw-900 mb-3"><i class="bi bi-bank2 text-primary me-2"></i>Payout Destination</h5>
-                            <div class="row">
-                                <div class="col-md-4 mb-4">
-                                    <label class="fw-800 small text-uppercase mb-2 d-block">Bank</label>
-                                    <div class="view-mode-only">
-                                        <span class="view-data-point">{{ user.profile.get_bank_name_display|default:"Not set" }}</span>
-                                    </div>
-                                    <div class="edit-mode-only">{{ form.bank_name }}</div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <label class="fw-800 small text-uppercase mb-2 d-block">Account Number</label>
-                                    <div class="view-mode-only">
-                                        <span class="view-data-point">{{ user.profile.account_number|default:"Not set" }}</span>
-                                    </div>
-                                    <div class="edit-mode-only">{{ form.account_number }}</div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <label class="fw-800 small text-uppercase mb-2 d-block">Account Holder Name</label>
-                                    <div class="view-mode-only">
-                                        <span class="view-data-point text-primary">{{ user.profile.account_name|default:"Not verified" }}</span>
-                                    </div>
-                                    <div class="edit-mode-only">
-                                        {{ form.account_name }}
-                                        <div id="verify-loader" style="display:none;">
-                                            <span class="spinner-border spinner-border-sm me-2"></span> AUTO-VERIFYING...
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="mb-3">
+                            <label class="fw-900 small text-muted text-uppercase mb-1">Payout Bank</label>
+                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
+                                {{ user.profile.get_bank_name_display|default:"None" }}
+                            </div>
+                            <div class="edit-mode-only">
+                                {{ form.bank_name }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-900 small text-muted text-uppercase mb-1">Account Number</label>
+                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
+                                {{ user.profile.account_number|default:"None" }}
+                            </div>
+                            <div class="edit-mode-only">
+                                {{ form.account_number }}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="save-bar d-flex justify-content-between align-items-center" id="saveBar">
-                    <span class="text-white fw-700">Confirm profile updates?</span>
-                    <div class="d-flex align-items-center gap-3">
-                        <button type="button" class="btn btn-link text-white text-decoration-none fw-700 p-0" onclick="window.location.reload()">Cancel</button>
-                        <button type="submit" class="btn" style="background: var(--accent); color: var(--midnight); font-weight: 800; border-radius: 12px; padding: 10px 25px;">Save Changes</button>
+                <div class="save-bar d-flex justify-content-between align-items-center shadow-lg" id="saveBar">
+                    <small class="text-white fw-bold">UNSAVED CHANGES</small>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-cancel-custom" onclick="window.location.reload()">NO</button>
+                        <button type="submit" class="btn btn-save-custom">SAVE</button>
                     </div>
                 </div>
             </form>
@@ -213,40 +222,40 @@
     const viewElements = document.querySelectorAll('.view-mode-only');
     const editElements = document.querySelectorAll('.edit-mode-only');
     const saveBar = document.getElementById('saveBar');
-    const imageInput = document.getElementById('id_image');
+    const imageInput = document.querySelector('input[type="file"]');
     const imagePreview = document.getElementById('imagePreview');
 
-    // 1. Toggle Edit Mode
+    // 1. Logic for Manual Edit Button
     toggleBtn.addEventListener('click', function() {
-        const isEditing = toggleBtn.innerHTML.includes('Cancel');
+        const isEditing = toggleBtn.innerText === 'CANCEL';
         if (isEditing) {
             viewElements.forEach(el => el.style.display = 'block');
             editElements.forEach(el => el.style.display = 'none');
-            toggleBtn.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Edit Profile';
+            toggleBtn.innerText = 'EDIT';
             saveBar.classList.remove('show');
         } else {
             viewElements.forEach(el => el.style.display = 'none');
             editElements.forEach(el => el.style.display = 'block');
-            toggleBtn.innerHTML = '<i class="bi bi-x-lg me-2"></i>Cancel Edit';
+            toggleBtn.innerText = 'CANCEL';
             saveBar.classList.add('show');
-            // Ensure camera button shows
-            document.getElementById('uploadLabel').style.display = 'flex';
         }
     });
 
-    // 2. Image Real-time Preview
+    // 2. Logic for Image Upload (Shows SAVE button immediately)
     imageInput.addEventListener('change', function() {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.setAttribute('src', e.target.result);
-            }
+            reader.onload = (e) => imagePreview.setAttribute('src', e.target.result);
             reader.readAsDataURL(file);
+            
+            // Force Save Bar to appear after image is picked
+            saveBar.classList.add('show');
+            // Also sync the edit button text
+            toggleBtn.innerText = 'CANCEL';
+            viewElements.forEach(el => el.style.display = 'none');
+            editElements.forEach(el => el.style.display = 'block');
         }
     });
-
-    // 3. Bank Verification logic (from previous version)
-    // ... (Your performVerification fetch code here)
 </script>
 {% endblock %}

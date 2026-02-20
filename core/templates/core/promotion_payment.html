@@ -3,68 +3,105 @@
 
 {% block content %}
 <style>
-    .auth-card {
+    /* --- SHARP INVOICE STYLES --- */
+    .invoice-wrapper {
         background: #0f172a !important; 
-        border-radius: 35px;
         color: #ffffff;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 550px;
+        margin: 0 auto;
+        padding: 40px;
     }
-    .invoice-details-box {
+
+    /* Total removal of border-radius for sharp edges */
+    .invoice-wrapper, .details-box-sharp, .btn-payment-sharp {
+        border-radius: 0 !important;
+    }
+
+    .details-box-sharp {
         background-color: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 30px;
     }
+
     .text-light-muted { color: #94a3b8; }
-    .fw-900 { font-weight: 900 !important; }
-    .fw-800 { font-weight: 800 !important; }
-    .fw-700 { font-weight: 700 !important; }
+    
+    .btn-payment-sharp {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 16px;
+        font-weight: 900;
+        text-transform: uppercase;
+        border: none;
+        margin-bottom: 12px;
+        transition: 0.3s;
+    }
+
+    .btn-paystack { background: #ffffff; color: #0f172a; }
+    .btn-flutterwave { background: #f5a623; color: #ffffff; }
+
+    .btn-payment-sharp:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .cancel-btn-sharp {
+        color: #94a3b8;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+    }
 </style>
 
-<div class="container py-5 mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="auth-card p-5">
+<div class="dash-container">
+    {% include 'core/includes/_sidebar.html' %}
+
+    <div class="main-stage">
+        <div class="invoice-wrapper">
+            
+            <div class="text-center mb-4">
+                <img src="{% static 'core/images/vlogo.png' %}" alt="Logo" style="height: 50px; object-fit: contain;">
+                <h3 class="fw-900 mt-3 text-white" style="letter-spacing: -1.5px;">SUBSCRIPTION INVOICE</h3>
+                <p class="text-light-muted small fw-bold">Select a method to activate your ad plan</p>
+            </div>
+
+            <div class="details-box-sharp">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fw-800 text-light-muted extra-small text-uppercase">Ad Product:</span>
+                    <span class="fw-900 text-white text-end small">{{ promotion.product_name|upper }}</span>
+                </div>
+                <hr class="border-white opacity-25">
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="fw-900 h6 mb-0 text-white">TOTAL PAYABLE:</span>
+                    <span class="fw-900 h3 mb-0 text-warning">₦{{ amount|floatformat:2 }}</span>
+                </div>
+            </div>
+
+            <div class="payment-actions">
+                <button type="button" class="btn-payment-sharp btn-paystack" onclick="payWithPaystack()">
+                    <i class="bi bi-credit-card-fill me-2"></i> Pay with Paystack
+                </button>
+
+                <button type="button" class="btn-payment-sharp btn-flutterwave" onclick="makePayment()">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Pay with Flutterwave
+                </button>
                 
-                <div class="text-center mb-4">
-                    <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly Logo" style="height: 60px; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
-                    <h2 class="fw-900 mt-2 text-white" id="logo-text" style="display: none; letter-spacing: -1.5px;">VOUCHLY</h2>
-                </div>
+                <a href="{% url 'promote_request' %}" class="cancel-btn-sharp">
+                    <i class="bi bi-x-square me-2"></i> Cancel Checkout
+                </a>
+            </div>
 
-                <div class="text-center mb-5">
-                    <h2 class="fw-900 text-white" style="letter-spacing: -1.5px;">SUBSCRIPTION INVOICE</h2>
-                    <p class="text-light-muted fw-bold">Select a method to activate your ad plan.</p>
-                </div>
-
-                <div class="invoice-details-box p-4 mb-4">
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="fw-700 text-light-muted small text-uppercase">Ad Product:</span>
-                        <span class="fw-800 text-white text-end">{{ promotion.product_name }}</span>
-                    </div>
-                    <hr class="border-white opacity-25">
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="fw-900 h5 mb-0 text-white">TOTAL PAYABLE:</span>
-                        <span class="fw-900 h3 mb-0 text-success">₦{{ amount|floatformat:2 }}</span>
-                    </div>
-                </div>
-
-                <div class="payment-action">
-                    <button type="button" class="btn btn-light w-100 py-3 fw-900 rounded-pill shadow-lg border-0 mb-3" onclick="payWithPaystack()">
-                        <i class="bi bi-credit-card-fill me-2"></i> PAY WITH PAYSTACK
-                    </button>
-
-                    <button type="button" class="btn w-100 py-3 fw-900 rounded-pill shadow-lg border-0 mb-3" style="background: #f5a623; color: white;" onclick="makePayment()">
-                        <i class="bi bi-shield-lock-fill me-2"></i> PAY WITH FLUTTERWAVE
-                    </button>
-                    
-                    <a href="{% url 'promote_request' %}" class="btn btn-link w-100 text-light-muted fw-bold text-decoration-none small">
-                        <i class="bi bi-arrow-left me-1"></i> Cancel Checkout
-                    </a>
-                </div>
-
-                <div class="text-center mt-4 opacity-50">
-                    <p class="text-white small fw-bold mb-0">SECURED BY PAYSTACK & FLUTTERWAVE</p>
-                </div>
+            <div class="text-center mt-4 opacity-50">
+                <p class="text-white extra-small fw-900 mb-0">SECURED ENCRYPTION BY GATEWAY PROVIDERS</p>
             </div>
         </div>
     </div>
@@ -120,9 +157,6 @@
             },
             callback: function (data) {
                 window.location.href = "{% url 'verify_promotion_payment' %}?transaction_id=" + data.transaction_id + "&gateway=flutterwave&status=" + data.status;
-            },
-            onclose: function() {
-                console.log("Payment modal closed.");
             }
         });
     }

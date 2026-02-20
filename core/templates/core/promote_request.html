@@ -7,16 +7,64 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
     
     body { background-color: var(--soft-bg); }
 
+    /* SIDE-BY-SIDE FLEX WRAPPER */
+    .dash-flex-wrapper {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        padding: 15px;
+    }
+
+    /* SHARP MINI SIDEBAR */
+    .mini-sidebar {
+        width: 50px; 
+        flex-shrink: 0;
+        position: sticky;
+        top: 80px;
+        background: white;
+        border-radius: 0 !important; /* STRICT SHARP */
+        padding: 10px 5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-icon-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: var(--midnight);
+        text-decoration: none;
+        border-radius: 0 !important;
+        margin-bottom: 12px;
+    }
+
+    .nav-icon-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+    }
+
+    .nav-label { display: none; }
+
+    @media (min-width: 992px) {
+        .mini-sidebar { width: 250px; align-items: stretch; padding: 20px; }
+        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
+        .nav-label { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
+    }
+
+    /* SHARP CARD DESIGN */
     .promo-card {
         background: white;
-        border-radius: 32px;
-        padding: 40px;
-        box-shadow: var(--card-shadow);
+        border-radius: 0 !important;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         border: 1px solid rgba(0,0,0,0.04);
     }
 
@@ -25,158 +73,152 @@
         color: var(--midnight);
         font-size: 0.75rem;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 10px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
         display: block;
     }
 
-    .input-custom, .form-control, .form-select {
-        border-radius: 15px !important;
-        padding: 14px 18px;
-        border: 2px solid #f1f5f9;
-        background-color: #f8fafc;
-        font-size: 1rem;
-        transition: 0.3s;
-        width: 100%;
-        color: var(--midnight);
+    .form-control, .form-select, .btn {
+        border-radius: 0 !important; /* STRICT SHARP */
+        padding: 14px;
         font-weight: 600;
-    }
-
-    .form-control:focus, .form-select:focus {
-        background-color: #fff;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.15);
-        outline: none;
+        font-size: 0.95rem;
     }
 
     .destination-box {
         background: #f1f5f9;
-        border-radius: 20px;
-        padding: 25px;
+        padding: 20px;
         margin: 20px 0;
         border: 2px dashed #cbd5e1;
+        border-radius: 0 !important;
+    }
+
+    .agreement-box {
+        background: #f8fafc;
+        border-left: 5px solid var(--accent);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+    .naira-text {
+        font-weight: 900;
+        color: var(--midnight);
+        font-size: 1.2rem;
+        margin: 0 4px;
     }
 </style>
 
-<div class="container py-5 mt-3">
-    <div class="row g-4">
-        <div class="col-lg-3">
-            {% include 'core/includes/_sidebar.html' %}
+<div class="container-fluid py-3">
+    <div class="dash-flex-wrapper">
+        
+        <div class="mini-sidebar">
+            <a href="{% url 'dashboard' %}" class="nav-icon-link" title="Overview">
+                <i class="bi bi-grid-fill"></i> <span class="nav-label">Overview</span>
+            </a>
+            <a href="{% url 'ad_analytics' %}" class="nav-icon-link" title="Analytics">
+                <i class="bi bi-bar-chart-fill"></i> <span class="nav-label">Analytics</span>
+            </a>
+            <a href="{% url 'promote_request' %}" class="nav-icon-link active" title="Promote">
+                <i class="bi bi-megaphone-fill"></i> <span class="nav-label">List Product</span>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="nav-icon-link" title="Settings">
+                <i class="bi bi-gear-fill"></i> <span class="nav-label">Settings</span>
+            </a>
         </div>
 
-        <div class="col-lg-9">
+        <div class="flex-grow-1">
             <div class="promo-card">
                 
-                {% if active_sub %}
-                <div class="alert alert-success border-0 shadow-sm p-4 mb-5" style="border-radius: 25px; background: #f0fdf4;">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-success rounded-circle p-2 me-3">
-                            <i class="bi bi-patch-check-fill text-white"></i>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger p-3 mb-4 border-0" style="border-radius: 0; background: #fef2f2; color: #991b1b;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ message }}
                         </div>
-                        <div>
-                            <h6 class="fw-900 mb-0 text-success" style="letter-spacing: -0.5px;">LISTING ACCESS ACTIVE</h6>
-                            <p class="small fw-bold mb-0 text-muted">
-                                You can post new products instantly until 
-                                <span class="text-dark">{{ active_sub.subscription_expiry|date:"M d, Y" }}</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                    {% endfor %}
                 {% endif %}
 
-                <div class="text-center mb-5">
-                    <h2 class="fw-900" style="color: var(--midnight); letter-spacing: -1.5px;">LIST YOUR PRODUCT</h2>
-                    <p class="text-muted fw-bold">Reach thousands of active marketers ready to share your products.</p>
-                </div>
+                <h4 class="fw-900 text-midnight mb-4" style="letter-spacing: -1.5px;">LIST NEW PRODUCT</h4>
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    {% if form.errors %}
-                    <div class="alert alert-danger rounded-4 border-0 shadow-sm p-4 mb-4">
-                        <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Please correct the errors below.</h6>
-                        {{ form.non_field_errors }}
-                    </div>
-                    {% endif %}
-                    
-                    <div class="mb-4">
-                        <label class="form-label-custom">Product Name</label>
-                        {{ form.product_name }}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-4">
+                                <label class="form-label-custom">Product Name</label>
+                                {{ form.product_name }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label-custom">Category</label>
+                                {{ form.category }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-4">
+                                <label class="form-label-custom text-primary">Plan Duration</label>
+                                <select name="duration_days" class="form-select border-primary" required>
+                                    <option value="30">30 Days (Standard)</option>
+                                    <option value="60">60 Days (Professional)</option>
+                                    <option value="90">90 Days (Enterprise)</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-custom">Category</label>
-                            {{ form.category }}
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-custom">Product Image</label>
-                            {{ form.product_image }}
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label-custom">Product Image</label>
+                        {{ form.product_image }}
                     </div>
 
                     <div class="destination-box">
-                        <h6 class="fw-900 text-midnight mb-3">LANDING PAGE DESTINATION</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label-custom">Destination Type</label>
-                                <select name="destination_type" id="destToggle" class="form-select fw-bold border-2 rounded-4">
-                                    <option value="whatsapp" {% if request.POST.destination_type == 'whatsapp' %}selected{% endif %}>WhatsApp (From Settings)</option>
-                                    <option value="website" {% if request.POST.destination_type == 'website' %}selected{% endif %}>Website Link</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6" id="websiteInput" style="display: none;">
-                                <label class="form-label-custom">Website URL</label>
-                                {{ form.website_url }}
-                            </div>
+                        <label class="form-label-custom">Destination Type</label>
+                        <select name="destination_type" id="destToggle" class="form-select mb-3">
+                            <option value="whatsapp">WhatsApp (Direct Chat)</option>
+                            <option value="website">External Website Link</option>
+                        </select>
+                        
+                        <div id="websiteInput" style="display: none;">
+                            <label class="form-label-custom">Website URL</label>
+                            {{ form.website_url }}
+                        </div>
 
-                            <div class="col-md-6" id="whatsappInfo">
-                                <label class="form-label-custom">Active WhatsApp</label>
-                                <div class="form-control bg-white text-success border-success-subtle">
-                                    <i class="bi bi-whatsapp me-2"></i> {{ request.user.profile.whatsapp_number|default:"Not set in settings" }}
-                                </div>
+                        <div id="whatsappInfo">
+                            <label class="form-label-custom">Routing to your WhatsApp</label>
+                            <div class="p-3 border bg-white fw-bold">
+                                <i class="bi bi-whatsapp text-success me-2"></i> {{ request.user.profile.whatsapp_number }}
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label-custom">Detailed Description</label>
+                        <label class="form-label-custom">Short Description</label>
                         {{ form.description }}
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-custom">Product Price (₦)</label>
+                    <div class="row g-3">
+                        <div class="col-6 mb-4">
+                            <label class="form-label-custom">Price (₦)</label>
                             {{ form.product_price }}
                         </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-custom">Marketer Commission (%)</label>
+                        <div class="col-6 mb-4">
+                            <label class="form-label-custom">Comm. (%)</label>
                             {{ form.commission_percentage }}
                         </div>
                     </div>
 
-                    {% if not active_sub %}
-                    <div class="mb-4">
-                        <label class="form-label-custom">Select Subscription Plan</label>
-                        {{ form.duration_days }}
-                    </div>
-
-                    <div class="bg-light p-4 rounded-4 mb-4 border-start border-warning border-4">
-                        <div class="form-check">
+                    <div class="agreement-box">
+                        <div class="form-check d-flex align-items-center">
                             {{ form.agree_to_commissions }}
-                            <label class="form-check-label fw-bold small ms-2" for="id_agree_to_commissions">
-                                I AGREE TO PAY ₦<span id="calc-naira">0.00</span> COMMISSION PER LEAD
+                            <label class="form-check-label ms-3 fw-800 text-midnight" for="id_agree_to_commissions" style="font-size: 0.9rem;">
+                                AGREE TO PAY MARKETER <span class="naira-text">₦<span id="calc-naira">0.00</span></span> PER PRODUCT SOLD
                             </label>
                         </div>
                     </div>
-                    {% else %}
-                        <input type="hidden" name="duration_days" value="7"> 
-                        <input type="hidden" name="agree_to_commissions" value="on">
-                    {% endif %}
 
-                    <button type="submit" class="btn btn-dark w-100 py-3 fw-900 rounded-pill shadow-lg mt-3">
-                        {% if active_sub %}POST PRODUCT NOW{% else %}SUBMIT & PROCEED TO PAYMENT{% endif %}
+                    <button type="submit" class="btn btn-dark w-100 py-3 fw-900 border-0 shadow-sm">
+                        {% if active_sub %}POST PRODUCT NOW{% else %}PROCEED TO PAYMENT{% endif %}
                     </button>
                 </form>
             </div>
@@ -195,30 +237,23 @@
 
         function toggleDest() {
             if (destToggle.value === 'website') {
-                websiteInput.style.display = 'block';
-                whatsappInfo.style.display = 'none';
+                websiteInput.style.display = 'block'; whatsappInfo.style.display = 'none';
             } else {
-                websiteInput.style.display = 'none';
-                whatsappInfo.style.display = 'block';
+                websiteInput.style.display = 'none'; whatsappInfo.style.display = 'block';
             }
         }
-        if(destToggle) destToggle.addEventListener('change', toggleDest);
+        destToggle.addEventListener('change', toggleDest);
         toggleDest(); 
 
-        // UPDATED CALCULATOR: Set to 0 correctly
         function calculateCommission() {
-            if (!nairaPreview) return;
             const price = parseFloat(priceInput.value) || 0;
             const perc = parseFloat(percInput.value) || 0;
             const total = (price * (perc / 100));
-            nairaPreview.textContent = total.toLocaleString(undefined, {
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
-            });
+            nairaPreview.textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2});
         }
         
-        if(priceInput) priceInput.addEventListener('input', calculateCommission);
-        if(percInput) percInput.addEventListener('input', calculateCommission);
+        priceInput.addEventListener('input', calculateCommission);
+        percInput.addEventListener('input', calculateCommission);
         calculateCommission(); 
     });
 </script>

@@ -7,146 +7,186 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
     
     body { background-color: var(--soft-bg); }
 
-    /* Analytics Cards */
+    /* --- SIDE-BY-SIDE FLEX LAYOUT --- */
+    .dash-flex-wrapper {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    /* MINI SIDEBAR: Sharp corners, icon-only on mobile */
+    .mini-sidebar {
+        width: 50px; 
+        flex-shrink: 0;
+        position: sticky;
+        top: 80px;
+        background: white;
+        border-radius: 0 !important; /* SHARP */
+        padding: 10px 5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-icon-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        color: var(--midnight);
+        text-decoration: none;
+        border-radius: 0 !important; /* SHARP */
+        margin-bottom: 10px;
+    }
+
+    .nav-icon-link i { font-size: 1.1rem; }
+
+    .nav-icon-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+    }
+
+    .nav-label { display: none; }
+
+    @media (min-width: 992px) {
+        .mini-sidebar { width: 240px; align-items: stretch; padding: 20px; }
+        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
+        .nav-label { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
+    }
+
+    /* SHARP ANALYTICS CARDS */
     .table-card {
         background: white;
-        border-radius: 28px;
-        border: 1px solid rgba(0,0,0,0.04);
-        box-shadow: var(--card-shadow);
+        border-radius: 0 !important; /* SHARP */
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         overflow: hidden;
     }
 
     .stat-box {
         background: #f1f5f9;
-        border-radius: 20px;
-        transition: 0.3s;
+        border-radius: 0 !important; /* SHARP */
         border: 1px solid transparent;
+        text-align: center;
+        padding: 10px;
     }
 
-    .stat-box:hover { 
-        background: white; 
-        border-color: var(--accent);
-        transform: translateY(-5px);
+    /* --- MERGED VN SYMBOL --- */
+    .vn-merged {
+        position: relative;
+        display: inline-flex;
+        font-weight: 900;
+        color: var(--accent);
+        letter-spacing: -4px;
+        font-style: italic;
     }
-    
-    .badge-vocoin { 
-        background: #fef9c3; 
-        color: #854d0e; 
-        font-weight: 800; 
-        border-radius: 50px; 
-        padding: 6px 16px; 
-        font-size: 0.8rem;
-    }
-
-    .chart-container {
-        padding: 20px;
-        background: white;
+    .vn-merged::after {
+        content: "=";
+        position: absolute;
+        left: -10%;
+        top: 20%;
+        width: 120%;
+        transform: rotate(-15deg);
+        color: var(--accent);
     }
 </style>
 
-<div class="container py-5 mt-3">
-    <div class="row g-4">
-        <div class="col-lg-3">
-            {% include 'core/includes/_sidebar.html' %}
+<div class="container-fluid py-3">
+    <div class="dash-flex-wrapper">
+        
+        <div class="mini-sidebar">
+            <a href="{% url 'dashboard' %}" class="nav-icon-link" title="Overview">
+                <i class="bi bi-grid-fill"></i>
+                <span class="nav-label">Overview</span>
+            </a>
+            <a href="{% url 'ad_analytics' %}" class="nav-icon-link active" title="Analytics">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span class="nav-label">Analytics</span>
+            </a>
+            <a href="{% url 'promote_request' %}" class="nav-icon-link" title="Promote">
+                <i class="bi bi-megaphone-fill"></i>
+                <span class="nav-label">List Product</span>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="nav-icon-link" title="Settings">
+                <i class="bi bi-gear-fill"></i>
+                <span class="nav-label">Settings</span>
+            </a>
         </div>
 
-        <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-900 mb-0" style="color: var(--midnight); letter-spacing: -1.5px;">Ad Performance</h2>
-                    <p class="text-muted fw-bold small mb-0">Detailed insights into your traffic and spending.</p>
-                </div>
-                <div class="badge bg-success bg-opacity-10 text-success fw-800 px-3 py-2 rounded-pill">
-                    <i class="bi bi-broadcast me-1"></i> LIVE TRACKING
-                </div>
-            </div>
+        <div class="flex-grow-1">
+            
+            <h5 class="fw-900 text-midnight mb-4" style="letter-spacing: -1px;">AD PERFORMANCE</h5>
 
-            <div class="table-card p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h6 class="fw-800 text-midnight small text-uppercase" style="letter-spacing: 1px;">Traffic by Product</h6>
-                    <span class="text-muted small fw-bold">Total Clicks Across Active Ads</span>
-                </div>
-                <div class="chart-container" style="height: 350px; position: relative;">
+            <div class="table-card p-3 mb-4">
+                <h6 class="fw-800 text-midnight small text-uppercase mb-3">Traffic by Product</h6>
+                <div style="height: 250px; position: relative;">
                     <canvas id="clicksChart"></canvas>
                 </div>
             </div>
 
             <div class="table-card mb-4">
-                <div class="p-4 border-bottom d-flex align-items-center justify-content-between bg-white">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-trophy-fill text-warning me-2 fs-4"></i>
-                        <h5 class="fw-800 mb-0">Your Best Marketers</h5>
-                    </div>
-                    <span class="text-muted small fw-bold">Driving Most Traffic</span>
+                <div class="p-3 border-bottom bg-white d-flex align-items-center">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i>
+                    <h6 class="fw-800 mb-0 small">Best Marketers</h6>
                 </div>
-                <div class="p-4">
-                    <div class="row g-3">
+                <div class="p-3">
+                    <div class="row g-2">
                         {% for marketer in top_marketers %}
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="stat-box text-center p-3 shadow-sm">
-                                <div class="small fw-800 text-muted mb-1 text-uppercase">{{ marketer.referrer__username|truncatechars:8 }}</div>
-                                <div class="h3 fw-900 mb-0 text-midnight">{{ marketer.total_clicks }}</div>
-                                <div class="text-primary fw-900 small" style="font-size: 0.6rem; letter-spacing: 0.5px;">CLICKS</div>
+                        <div class="col-6">
+                            <div class="stat-box shadow-sm border">
+                                <div class="extra-small fw-800 text-muted text-uppercase mb-1">{{ marketer.referrer__username|truncatechars:6 }}</div>
+                                <div class="h4 fw-900 mb-0 text-midnight">{{ marketer.total_clicks }}</div>
+                                <div class="text-primary fw-900" style="font-size: 0.5rem;">CLICKS</div>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12 text-center text-muted py-4 fw-bold border rounded-4">
-                            <i class="bi bi-people mb-2 d-block fs-2 opacity-25"></i>
-                            Waiting for marketers to start sharing...
-                        </div>
+                        <div class="col-12 text-center text-muted small py-3 fw-bold border">No data yet.</div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
 
             <div class="table-card">
-                <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="fw-800 mb-0">Financial Breakdown</h5>
-                    <span class="badge bg-light text-dark border fw-bold">{{ my_items.count }} Active Ads</span>
+                <div class="p-3 border-bottom bg-white">
+                    <h6 class="fw-800 mb-0 small text-uppercase">Financial Breakdown</h6>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="ps-4 py-3">Product Name</th>
-                                <th class="text-center">Reward / Click</th>
-                                <th class="text-center">Total Traffic</th>
-                                <th class="text-end pe-4">Total Cost (₦)</th>
+                    <table class="table align-middle mb-0" style="font-size: 0.8rem;">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-3 py-2 border-0">Product</th>
+                                <th class="text-center border-0">Clicks</th>
+                                <th class="text-end pe-3 border-0">Cost (<span class="vn-merged" style="font-size: 0.6rem;">VN</span>)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in my_items %}
                             <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-midnight">{{ item.name }}</div>
-                                    <div class="text-muted small fw-bold">₦{{ item.price|floatformat:0 }} Unit Price</div>
+                                <td class="ps-3">
+                                    <div class="fw-bold text-midnight">{{ item.name|truncatechars:12 }}</div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="fw-bold text-primary">₦{{ item.commission_naira|floatformat:2 }}</span>
+                                    <span class="badge bg-light text-dark border-0">{{ item.total_clicks }}</span>
                                 </td>
-                                <td class="text-center">
-                                    <span class="badge-vocoin text-dark">{{ item.total_clicks }} CLICKS</span>
-                                </td>
-                                <td class="text-end pe-4 fw-900 text-danger" style="font-size: 1.1rem;">
-                                    ₦{{ item.total_commission_spent|floatformat:2 }}
+                                <td class="text-end pe-3 fw-900 text-danger">
+                                    {{ item.total_commission_spent|floatformat:2 }}
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center py-5 text-muted fw-bold">
-                                    No items found. Visit "Overview" to see your listings.
-                                </td>
-                            </tr>
+                            <tr><td colspan="3" class="text-center py-4 text-muted border-0">No items found.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -166,46 +206,19 @@
             data: {
                 labels: chartLabels,
                 datasets: [{
-                    label: 'Clicks Generated',
                     data: chartValues,
                     backgroundColor: '#0f172a',
-                    borderRadius: 15,
+                    borderRadius: 0, /* SHARP BARS */
                     hoverBackgroundColor: '#ffc107',
-                    borderSkipped: false,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#0f172a',
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 13 },
-                        padding: 15,
-                        cornerRadius: 12,
-                        displayColors: false,
-                        callbacks: {
-                            label: function(context) {
-                                return context.raw + ' Verified Clicks';
-                            }
-                        }
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        grid: { color: '#f1f5f9', drawBorder: false },
-                        ticks: { 
-                            font: { weight: '600' },
-                            precision: 0 
-                        } 
-                    },
-                    x: { 
-                        grid: { display: false },
-                        ticks: { font: { weight: '700' } }
-                    }
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+                    x: { grid: { display: false }, ticks: { font: { size: 10, weight: '700' } } }
                 }
             }
         });

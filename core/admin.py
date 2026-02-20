@@ -8,7 +8,7 @@ from datetime import timedelta
 from .models import (
     Category, Item, Review, Profile, Referral, 
     PayoutRequest, PromotionPlan, ProductReferral, ChatMessage,
-    AdvertiserVerification, SubscriptionPrice
+    AdvertiserVerification, SubscriptionPrice, Order  # Added Order here
 )
 
 # --- INLINE SETTINGS ---
@@ -21,7 +21,6 @@ class ItemInline(admin.TabularInline):
 # --- 1. CATEGORY & ITEM ADMIN ---
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    # FIXED: Added missing opening quote for 'parent' and ensured parenthesis are balanced
     list_display = ('name', 'parent', 'slug')
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
@@ -29,19 +28,28 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'commission_naira', 'category', 'is_featured', 'created_at')
-    list_filter = ('category', 'is_featured')
+    list_display = ('name', 'price', 'commission_naira', 'category', 'is_escrow_required', 'is_featured', 'created_at')
+    list_filter = ('category', 'is_featured', 'is_escrow_required')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
     
     fieldsets = (
         (None, {'fields': ('category', 'owner', 'name', 'slug', 'description')}),
         ('Pricing & Commission', {'fields': ('price', 'commission_naira')}),
-        ('Media & Links', {'fields': ('image', 'website')}),
-        ('Advanced', {'fields': ('is_featured',), 'classes': ('collapse',)}),
+        ('Media & Links', {'fields': ('image', 'external_url', 'whatsapp_number')}), # FIXED: 'external_url'
+        ('Advanced Control', {'fields': ('is_escrow_required', 'is_featured'), 'classes': ('collapse',)}),
     )
 
-# --- 2. SELLER PROMOTION ADMIN (DYNAMIC) ---
+# --- 2. ORDER & ESCROW MANAGEMENT ---
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'item', 'buyer', 'seller', 'amount', 'status', 'delivery_pin', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('payment_reference', 'delivery_pin', 'buyer__username', 'seller__username')
+    readonly_fields = ('delivery_pin', 'payment_reference', 'created_at')
+    list_editable = ('status',) # Allows quick status updates from the list view
+
+# --- 3. SELLER PROMOTION ADMIN (DYNAMIC) ---
 @admin.register(PromotionPlan)
 class PromotionPlanAdmin(admin.ModelAdmin):
     list_display = (
@@ -77,10 +85,9 @@ class PromotionPlanAdmin(admin.ModelAdmin):
         queryset.update(is_approved=True)
         self.message_user(request, "Selected promotions are now approved and active.")
 
-# --- 3. SYSTEM SETTINGS ---
+# --- 4. SYSTEM SETTINGS ---
 @admin.register(SubscriptionPrice)
 class SubscriptionPriceAdmin(admin.ModelAdmin):
-    # FIXED: 'price' must be here for list_editable to work
     list_display = ('plan_name', 'duration_days', 'price', 'formatted_price') 
     list_editable = ('price',)
 
@@ -88,7 +95,7 @@ class SubscriptionPriceAdmin(admin.ModelAdmin):
         return "₦{:,.2f}".format(obj.price)
     formatted_price.short_description = "Current Display Price"
 
-# --- 4. IDENTITY & PROFILE ADMIN ---
+# --- 5. IDENTITY & PROFILE ADMIN ---
 @admin.register(AdvertiserVerification)
 class AdvertiserVerificationAdmin(admin.ModelAdmin):
     list_display = ('business_name', 'user', 'view_identity', 'view_address', 'verification_actions', 'submitted_at')
@@ -164,7 +171,7 @@ class ProfileAdmin(admin.ModelAdmin):
         return "₦{:,.2f}".format(obj.balance)
     formatted_balance.short_description = 'Wallet'
 
-# --- 5. REVENUE & TRACKING ADMIN ---
+# --- 6. REVENUE & TRACKING ADMIN ---
 @admin.register(ProductReferral)
 class ProductReferralAdmin(admin.ModelAdmin):
     list_display = ('referrer', 'item', 'clicks', 'last_click')
@@ -172,13 +179,14 @@ class ProductReferralAdmin(admin.ModelAdmin):
 @admin.register(PayoutRequest)
 class PayoutRequestAdmin(admin.ModelAdmin):
     list_display = ('user', 'amount_display', 'bank_name', 'status', 'created_at')
+    list_filter = ('status',)
     list_editable = ('status',)
 
     def amount_display(self, obj):
         return "₦{:,.2f}".format(obj.amount)
     amount_display.short_description = 'Amount'
 
-# --- 6. OTHERS ---
+# --- 7. OTHERS ---
 admin.site.register(Referral)
 admin.site.register(Review)
 admin.site.register(ChatMessage)
