@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -19,12 +20,33 @@
 
     .fw-900 { font-weight: 900; }
     
+    /* BACK BUTTON STYLE */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--midnight);
+        font-weight: 700;
+        margin-bottom: 25px;
+        transition: 0.3s;
+        padding: 8px 16px;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .back-btn:hover {
+        color: var(--accent);
+        transform: translateX(-5px);
+    }
+
+    /* CLICKABLE IMAGE WRAPPER */
     .detail-img-wrapper {
         border: 1px solid rgba(0,0,0,0.05);
         background: white;
         padding: 12px;
         overflow: hidden;
         box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+        position: relative;
+        cursor: pointer;
     }
 
     .detail-img-wrapper img {
@@ -117,10 +139,13 @@
 </style>
 
 <div class="container py-5 mt-3">
+    <a href="{% url 'marketplace' %}" class="back-btn rounded-pill">
+        <i class="bi bi-arrow-left-circle-fill me-2 fs-5"></i> Back to Marketplace
+    </a>
+
     <div class="row g-5">
-        
         <div class="col-md-6 mb-4">
-            <div class="detail-img-wrapper">
+            <div class="detail-img-wrapper" onclick="document.getElementById('mainActionButton').click()">
                 {% if item.image %}
                     <img src="{{ item.image.url }}" class="img-fluid w-100" alt="{{ item.name }}" style="height: 550px; object-fit: cover;">
                 {% else %}
@@ -151,7 +176,7 @@
                 </span>
             </div>
 
-            <h2 class="fw-900 mb-4" style="color: #16a34a; font-size: 2.2rem;">₦{{ item.price|floatformat:2 }}</h2>
+            <h2 class="fw-900 mb-4" style="color: #16a34a; font-size: 2.2rem;">₦{{ item.price|intcomma }}</h2>
             
             <p class="text-secondary mb-5 fw-500" style="line-height: 1.8; font-size: 1.1rem;">
                 {{ item.description }}
@@ -159,11 +184,11 @@
 
             <div class="d-grid gap-3 mb-4">
                 {% if item.is_escrow_required %}
-                    <a href="{% url 'product_checkout' item.slug %}{% if request.GET.ref %}?ref={{ request.GET.ref }}{% endif %}" class="btn btn-buy-now text-decoration-none text-center">
+                    <a id="mainActionButton" href="{% url 'product_checkout' item.slug %}{% if request.GET.ref %}?ref={{ request.GET.ref }}{% endif %}" class="btn btn-buy-now text-decoration-none text-center">
                         <i class="bi bi-bag-check-fill me-2"></i> BUY NOW & HOLD IN ESCROW
                     </a>
                 {% else %}
-                    <a href="{{ referral_link }}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
+                    <a id="mainActionButton" href="{{ referral_link }}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
                         <i class="bi bi-box-arrow-up-right me-2"></i> VISIT OFFICIAL SITE
                     </a>
                 {% endif %}
@@ -196,7 +221,7 @@
                         <div>
                             <div class="small fw-700 text-muted text-uppercase">Commission Rate</div>
                             <div class="h4 mb-0 fw-900">
-                                {{ item.commission_percentage }}% <span class="fs-6 opacity-50">/ Sale</span>
+                                {{ item.commission_percentage|default:"0" }}% <span class="fs-6 opacity-50">/ Sale</span>
                             </div>
                         </div>
                     </div>
@@ -205,7 +230,7 @@
                     <div class="p-3 mb-4 bg-light border-start border-4 border-warning" style="border-radius: 12px;">
                         <p class="small fw-600 text-midnight mb-0">
                             <i class="bi bi-info-circle-fill me-2 text-warning"></i> 
-                            <strong>Note:</strong> Since this is an official store listing, final commission depends on the specific product or plan the customer completes at checkout.
+                            <strong>Note:</strong> Final commission depends on the specific plan chosen on the partner site.
                         </p>
                     </div>
                     {% endif %}
@@ -259,7 +284,9 @@
     }
 
     function scrollToPromote() {
-        document.getElementById("promoteArea").scrollIntoView({ behavior: 'smooth' });
+        const el = document.getElementById("promoteArea");
+        if(el) { el.scrollIntoView({ behavior: 'smooth' }); }
+        else { alert("Login as a Marketer to see your rewards hub!"); }
     }
 </script>
 {% endblock %}

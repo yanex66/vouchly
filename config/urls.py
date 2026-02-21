@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 # Import all custom views explicitly from core.views
 from core.views import (
     home, 
-    marketplace,  # Added this
+    marketplace,
     item_detail, 
     add_review, 
     search, 
@@ -38,6 +38,7 @@ from core.views import (
     confirm_receipt,
     mark_as_shipped, 
     checkout_desk,
+    bulk_add_categories, # Added for the bulk upload tool
 )
 
 urlpatterns = [
@@ -104,8 +105,12 @@ urlpatterns = [
     path('privacy/', privacy, name='privacy'),
     path('terms/', terms, name='terms'),
     path('checkout-desk/', checkout_desk, name='checkout_desk'),
+
+    # --- Temporary Admin Tools ---
+    path('run-bulk-categories/', bulk_add_categories, name='bulk_add_categories'),
 ]
 
+# Serving static and media files during development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

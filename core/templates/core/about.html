@@ -46,6 +46,69 @@
         border-radius: 2px;
     }
 
+    /* --- TEAM SECTION --- */
+    .team-card {
+        background: white;
+        border-radius: var(--v-radius);
+        padding: 30px;
+        text-align: center;
+        transition: 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .team-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+
+    .team-img-wrapper {
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 20px;
+        position: relative;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid white;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .team-demo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(15px);
+        transform: scale(1.2);
+    }
+
+    .revealing-tag {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--accent);
+        font-size: 0.6rem;
+        font-weight: 900;
+        padding: 5px 10px;
+        border-radius: 50px;
+        white-space: nowrap;
+        letter-spacing: 1px;
+        border: 1px solid var(--accent);
+    }
+
+    .team-role {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: var(--midnight);
+        padding: 4px 12px;
+        border-radius: 50px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
     /* --- ICON BOXES --- */
     .icon-box {
         background: white;
@@ -147,6 +210,43 @@
                     <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-graph-up-arrow fs-3"></i><div class="small fw-800 mt-2">Advertise</div></div></div>
                     <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-shield-check fs-3"></i><div class="small fw-800 mt-2">Escrow Protected</div></div></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Meet the Team</h2>
+    <div class="row g-4 mb-5 pb-5 justify-content-center">
+        <div class="col-md-4 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
+                    <div class="revealing-tag">COMING SOON</div>
+                </div>
+                <div class="team-role">CEO & Founder</div>
+                <h5 class="fw-800 mb-1">IBJ IYANUOLUWA</h5>
+                <p class="small text-muted mb-0 fw-600">Visionary & Strategy</p>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
+                    <div class="revealing-tag">COMING SOON</div>
+                </div>
+                <div class="team-role">Operations Manager</div>
+                <h5 class="fw-800 mb-1">Alexander Vance</h5>
+                <p class="small text-muted mb-0 fw-600">Product & Systems</p>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
+                    <div class="revealing-tag">COMING SOON</div>
+                </div>
+                <div class="team-role">Head of Community</div>
+                <h5 class="fw-800 mb-1">Sarah Jenkins</h5>
+                <p class="small text-muted mb-0 fw-600">Support & Safety</p>
             </div>
         </div>
     </div>

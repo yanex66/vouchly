@@ -9,11 +9,12 @@ from django.db import models
 from django.db.models import Q, Avg, Count, Sum, F
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.utils import timezone
+from django.utils.text import slugify
 
 # Model and Form Imports
 from .models import (
@@ -40,7 +41,6 @@ def home(request):
         'latest_items': latest_items, 
         'featured_review': featured_review,
         'featured_reviewers': featured_reviewers,
-        # Used to hide CTA sections for logged-in users
         'is_authenticated': request.user.is_authenticated,
     }
     return render(request, 'core/home.html', context)
@@ -81,7 +81,6 @@ def buy_item(request, slug):
     item = get_object_or_404(Item, slug=slug)
     ref = request.GET.get('ref', 'DIRECT')
     
-    # Track Click for Marketer
     if ref != 'DIRECT':
         referrer = User.objects.filter(username=ref).first()
         if referrer:
@@ -89,11 +88,9 @@ def buy_item(request, slug):
             pr.clicks += 1
             pr.save()
 
-    # Case A: Official Agency Direct Link (FIXED: Redirects to external store)
     if not item.is_escrow_required and item.external_url:
         return HttpResponseRedirect(item.external_url)
     
-    # Case B: Internal Escrow Product (Send to Checkout Desk)
     return redirect(f'/checkout/{slug}/?ref={ref}')
 
 @login_required(login_url='/login/')
@@ -336,7 +333,6 @@ def verify_promotion_payment(request):
             Item.objects.create(
                 category=promo.category, owner=promo.seller, name=promo.product_name,
                 description=promo.description, image=promo.product_image, price=promo.product_price,
-                # Correctly uses percentage to calculate commission
                 commission_naira=(promo.product_price * promo.commission_percentage) / 100,
                 expiry_date=expiry, is_featured=True
             )
@@ -353,15 +349,11 @@ def ad_analytics(request):
 def item_detail(request, slug):
     item = get_object_or_404(Item, slug=slug)
     
-    # Generate Unique Link Bridge
     if item.is_escrow_required:
-        # Standard Escrow products stay internal
         ref_link = f"{request.build_absolute_uri('/')[:-1]}/checkout/{item.slug}/?ref={request.user.username}" if request.user.is_authenticated else ""
     else:
-        # Official Agency items go through the /buy/ bridge to avoid loops
         ref_link = f"{request.build_absolute_uri('/')[:-1]}/buy/{item.slug}/?ref={request.user.username}" if request.user.is_authenticated else ""
     
-    # Rating Calculation
     avg_rating = item.reviews.aggregate(Avg('rating'))['rating__avg'] or 5.0
     
     return render(request, 'core/item_detail.html', {
@@ -422,11 +414,36 @@ def checkout_desk(request):
     return render(request, 'core/checkout_desk.html', {'pending_orders': pending_orders})
 
 def payment_success(request, pk): return render(request, 'core/payment_success.html', {'pk': pk})
-
-def about(request): 
-    # Context variable used to hide CTA in template for logged-in users
-    return render(request, 'core/about.html', {'is_authenticated': request.user.is_authenticated})
-
+def about(request): return render(request, 'core/about.html', {'is_authenticated': request.user.is_authenticated})
 def contact(request): return render(request, 'core/contact.html')
 def privacy(request): return render(request, 'core/privacy.html')
 def terms(request): return render(request, 'core/terms.html')
+
+# --- 11. BULK CATEGORY UPLOAD (Temporary Admin Tool) ---
+def bulk_add_categories(request):
+    """
+    Visit: vouchly.store/run-bulk-categories/ while logged in as admin.
+    """
+    if not request.user.is_superuser:
+        return HttpResponse("Unauthorized", status=401)
+        
+    category_names = [
+        "Digital Courses", "AI & Automation Tools", "E-books & Guides", 
+        "Software & Subscriptions", "Smartphones & Tablets", "Computers & Laptops", 
+        "Gadgets & Wearables", "Gaming & Consoles", "Men's Fashion", 
+        "Women's Fashion", "Health & Wellness", "Beauty & Skincare", 
+        "Marketing & Advertising", "Freelance Services", "Business Consulting", 
+        "Real Estate & Housing", "Home & Kitchen", "Automobiles & Parts", 
+        "Crypto & Finance", "Data & Airtime", "Gift Cards", 
+        "Job Opportunities", "Events & Tickets", "Travel & Tourism", 
+        "Agriculture & Farm", "Education & Scholarships", "Food & Groceries", 
+        "Interior Design", "Photography & Video", "Others"
+    ]
+
+    categories_to_create = [
+        Category(name=name, slug=slugify(name)) 
+        for name in category_names
+    ]
+    
+    Category.objects.bulk_create(categories_to_create, ignore_conflicts=True)
+    return HttpResponse(f"<h1>Success!</h1><p>Successfully added {len(category_names)} categories to Vouchly.</p>")
