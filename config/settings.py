@@ -7,25 +7,27 @@ import dj_database_url
 env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Read .env file locally, but Railway will use its dashboard variables
+# Read .env file locally, but Render will use its dashboard variables
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False) 
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
 
+# UPDATED: Added Render domain to prevent Bad Request (400)
 ALLOWED_HOSTS = [
     'www.vouchly.store', 
     'vouchly.store', 
-    '.railway.app', 
+    'vouchly-5w0g.onrender.com',  # Your specific Render URL
     'localhost', 
     '127.0.0.1'
 ]
 
+# UPDATED: Added Render domain for secure form submissions
 CSRF_TRUSTED_ORIGINS = [
     'https://www.vouchly.store',
     'https://vouchly.store',
-    'https://*.railway.app'
+    'https://vouchly-5w0g.onrender.com'
 ]
 
 # --- 2. APPS ---
@@ -49,7 +51,7 @@ SITE_ID = 1
 # --- 3. MIDDLEWARE ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,7 +84,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- 5. DATABASE ---
-# This fixes the "no such table" error by connecting to PostgreSQL
+# Connects to Render PostgreSQL via the DATABASE_URL environment variable
 DATABASES = {
     'default': dj_database_url.config(
         default=env('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
@@ -96,7 +98,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# WhiteNoise storage for Railway
+# WhiteNoise storage optimized for Render/Production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -150,7 +152,6 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
 # --- 10. PAYMENT GATEWAY ---
-# Mapped to match your provided .env keys precisely
 PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
 PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
 
