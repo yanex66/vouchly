@@ -137,7 +137,7 @@ SOCIALACCOUNT_PROVIDERS = {
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
-
+SOCIALACCOUNT_LOGIN_ON_GET = True
 # --- 9. SECURITY & VAULT ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_VAULT_ROOT = os.path.join(BASE_DIR, 'secure_vault')
