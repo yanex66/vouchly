@@ -247,6 +247,8 @@
                     </a>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}"><i class="bi bi-headset me-2"></i> Contact Hub</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle me-2"></i> About Us</a></li>
+                
                 {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid me-2"></i> My Dashboard</a></li>
                 {% else %}
