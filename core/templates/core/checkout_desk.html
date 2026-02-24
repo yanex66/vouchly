@@ -1,184 +1,301 @@
 {% extends 'core/base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block content %}
 <style>
     :root {
-        --v-midnight: #0f172a;
-        --v-accent: #ffc107;
-        --v-bg: #f8fafc;
-        --v-radius: 24px;
+        --midnight: #0f172a;
+        --accent: #ffc107;
+        --soft-bg: #f8fafc;
+        --seller-bg: #f0fdf4;
+        --seller-accent: #16a34a;
+        --buyer-bg: #f8fafc;
+        --buyer-accent: #2563eb;
     }
 
-    body { background-color: var(--v-bg); }
+    body { background-color: var(--soft-bg); }
 
-    .desk-header {
-        padding: 40px 0 20px;
-        text-align: center;
-    }
-
-    /* --- THE SECURE BANNER --- */
-    .secure-banner {
-        background: linear-gradient(135deg, var(--v-midnight) 0%, #1e293b 100%);
-        padding: 30px 40px;
-        border-radius: var(--v-radius);
-        border-left: 8px solid var(--v-accent);
+    /* --- SIDE-BY-SIDE FLEX --- */
+    .dash-flex-wrapper {
         display: flex;
-        align-items: center;
-        margin-bottom: 40px;
-        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
-    }
-
-    .symbol-large {
-        position: relative;
-        font-size: 3rem;
-        color: white;
-        line-height: 1;
-    }
-
-    .shield-lg {
-        position: absolute;
-        bottom: -5px;
-        right: -10px;
-        font-size: 1.2rem;
-        color: var(--v-accent);
-        background: var(--v-midnight);
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .banner-text h5 {
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        margin-bottom: 5px;
-    }
-
-    /* --- THE DESK CARD --- */
-    .desk-card {
-        background: white;
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        border-radius: var(--v-radius) !important;
-        margin-bottom: 20px;
-        overflow: hidden;
-        transition: 0.3s;
-        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
+        gap: 20px;
+        align-items: flex-start;
         padding: 20px;
     }
 
-    .desk-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
+    /* --- NAVIGATION TABS --- */
+    .nav-pills .nav-link {
+        border-radius: 30px !important;
+        padding: 12px 25px;
+        font-weight: 800;
+        color: #64748b;
+        background: white;
+        border: 1px solid #e2e8f0;
+        margin-right: 10px;
+        transition: 0.3s;
     }
 
-    .item-img-sm {
-        width: 100px;
-        height: 100px;
-        border-radius: 18px !important;
+    .nav-pills .nav-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+        border-color: var(--midnight);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    /* --- CURVED CARD DESIGN --- */
+    .order-card {
+        border: none;
+        border-radius: 25px !important;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: 0.3s;
+        border: 1px solid #f1f5f9;
+    }
+
+    .order-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+    }
+
+    /* --- PRODUCT IMAGE STYLING --- */
+    .product-img-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #f1f5f9;
+        flex-shrink: 0;
+    }
+
+    .product-img-thumbnail {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        margin-right: 25px;
     }
 
-    .seller-tag {
+    /* --- PILL STATUS BADGES --- */
+    .status-badge {
         font-size: 0.7rem;
         font-weight: 800;
-        color: #94a3b8;
+        padding: 8px 16px;
+        border-radius: 30px !important;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
     }
 
-    .order-price {
+    .status-paid { background: #dcfce7; color: #166534; }
+    .status-shipped { background: #dbeafe; color: #1e40af; }
+    .status-completed { background: #f3f4f6; color: #374151; }
+    .status-refunded { background: #fee2e2; color: #991b1b; }
+    .status-pending { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; }
+
+    /* --- INPUTS & BUTTONS --- */
+    .pin-input {
+        letter-spacing: 5px;
         font-weight: 900;
-        color: #16a34a;
-        font-size: 1.3rem;
-    }
-
-    .btn-pay-now {
-        background: var(--v-midnight);
-        color: var(--v-accent);
-        border-radius: 50px !important;
-        padding: 12px 30px;
-        font-weight: 800;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        border: none;
-        transition: 0.2s;
-    }
-
-    .btn-pay-now:hover {
-        background: #1e293b;
-        color: white;
-    }
-
-    .empty-desk {
         text-align: center;
-        padding: 100px 0;
-        background: white;
-        border-radius: var(--v-radius) !important;
-        border: 2px dashed #e2e8f0;
+        font-size: 1.2rem;
+        border: 2px dashed #cbd5e1;
+        border-radius: 15px !important;
+        height: 50px;
     }
 
-    @media (max-width: 768px) {
-        .secure-banner { flex-direction: column; text-align: center; padding: 30px 20px; }
-        .symbol-large { margin-right: 0 !important; margin-bottom: 20px; }
-        .desk-card { flex-direction: column; text-align: center; }
-        .item-img-sm { margin-right: 0; margin-bottom: 20px; }
-        .text-end { text-align: center !important; margin-left: 0 !important; margin-top: 20px; }
+    .btn-action-curved {
+        border-radius: 30px !important;
+        font-weight: 700;
+        padding: 10px 20px;
+    }
+
+    .pending-order-glow {
+        border: 2px solid #ffc107 !important;
+        box-shadow: 0 0 15px rgba(255, 193, 7, 0.1) !important;
     }
 </style>
 
-<div class="container py-5">
-    <div class="desk-header">
-        <h1 class="fw-900 text-midnight mb-1" style="letter-spacing: -1.5px;">THE CHECKOUT DESK</h1>
-        <p class="fw-bold text-muted text-uppercase small" style="letter-spacing: 1.5px;">Finalize your trade deals under Escrow protection.</p>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
+<div class="container-fluid">
+    <div class="dash-flex-wrapper">
+        
+        {% include 'core/includes/_sidebar.html' %}
+        <div class="flex-grow-1" style="min-width: 0;">
             
-            <div class="secure-banner shadow-sm">
-                <div class="symbol-large me-4">
-                    <i class="bi bi-wallet2"></i>
-                    <div class="shield-lg"><i class="bi bi-shield-lock-fill"></i></div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+                <div>
+                    <h2 class="fw-900 mb-1">Order Management</h2>
+                    <p class="text-muted small mb-0">Track purchases & manage sales</p>
                 </div>
-                <div class="banner-text">
-                    <h5 class="text-white">Escrow Protection is Active</h5>
-                    <p class="small text-white opacity-75 mb-0">Your payment is held securely by Vouchly. Funds are only released to the seller after you receive the item and provide your secret 4-digit Delivery PIN.</p>
-                </div>
-            </div>
-
-            {% for order in pending_orders %}
-            <div class="desk-card">
-                <img src="{% if order.item.image %}{{ order.item.image.url }}{% else %}{% static 'core/images/placeholder.png' %}{% endif %}" class="item-img-sm shadow-sm" alt="{{ order.item.name }}">
                 
-                <div class="flex-grow-1">
-                    <div class="seller-tag">SELLER: {{ order.seller.username }}</div>
-                    <h5 class="fw-800 text-midnight mb-1">{{ order.item.name }}</h5>
-                    <div class="small text-muted fw-bold mb-0">Order initiated on {{ order.created_at|date:"M d, Y" }}</div>
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="pills-buying-tab" data-bs-toggle="pill" data-bs-target="#pills-buying" type="button">
+                            <i class="bi bi-bag-fill me-2"></i>My Purchases
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="pills-selling-tab" data-bs-toggle="pill" data-bs-target="#pills-selling" type="button">
+                            <i class="bi bi-shop me-2"></i>My Sales
+                            {% if incoming_orders.count > 0 %}
+                            <span class="badge bg-danger ms-2 rounded-pill">{{ incoming_orders.count }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content" id="pills-tabContent">
+
+                <div class="tab-pane fade show active" id="pills-buying">
+                    {% if my_orders %}
+                        {% for order in my_orders %}
+                        <div class="order-card p-4 border-start border-5 {% if order.status == 'PENDING' %}border-warning pending-order-glow{% else %}border-primary{% endif %}">
+                            <div class="row align-items-center">
+                                <div class="col-md-5 mb-3 mb-md-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-img-container me-3 shadow-sm">
+                                            {% if order.item.image %}
+                                                <img src="{{ order.item.image.url }}" class="product-img-thumbnail">
+                                            {% else %}
+                                                <div class="w-100 h-100 d-flex align-items-center justify-content-center fw-900 text-muted">
+                                                    {{ order.item.name|slice:":1" }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-800 mb-1">{{ order.item.name }}</h5>
+                                            <p class="small text-muted mb-0">Seller: <strong>{{ order.seller.username }}</strong> • {{ order.created_at|date:"M d, Y" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    <span class="status-badge 
+                                        {% if order.status == 'PAID' %}status-paid
+                                        {% elif order.status == 'SHIPPED' %}status-shipped
+                                        {% elif order.status == 'REFUNDED' %}status-refunded
+                                        {% elif order.status == 'PENDING' %}status-pending
+                                        {% else %}status-completed{% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                    
+                                    {% if order.status == 'PAID' or order.status == 'SHIPPED' %}
+                                    <div class="mt-2 p-2 bg-light rounded-4 border border-dashed">
+                                        <small class="text-muted d-block fw-bold" style="font-size: 0.6rem;">YOUR SECRET PIN</small>
+                                        <span class="fw-900 text-dark fs-5">{{ order.delivery_pin|default:"..." }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4 text-end">
+                                    <h5 class="fw-900 text-dark mb-3">₦{{ order.amount|intcomma }}</h5>
+                                    
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        {% if order.status == 'PENDING' %}
+                                            <form action="{% url 'cancel_order' order.id %}" method="POST" onsubmit="return confirm('Discard this order request?')">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm btn-action-curved">CANCEL</button>
+                                            </form>
+                                            <a href="{% url 'product_checkout' order.item.slug %}" class="btn btn-primary btn-sm btn-action-curved px-4">PAY NOW</a>
+                                        {% elif order.status == 'PAID' %}
+                                            <a href="{% url 'request_refund' order.id %}" class="btn btn-outline-danger btn-sm btn-action-curved">Request Refund</a>
+                                        {% elif order.status == 'SHIPPED' %}
+                                            <button disabled class="btn btn-primary btn-sm btn-action-curved opacity-75">
+                                                <i class="bi bi-truck me-1"></i> In Transit
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" width="80" class="mb-3 opacity-25">
+                            <h5 class="text-muted fw-bold">No purchases yet.</h5>
+                            <a href="{% url 'marketplace' %}" class="btn btn-primary btn-action-curved mt-2 w-auto px-4">Start Shopping</a>
+                        </div>
+                    {% endif %}
                 </div>
 
-                <div class="text-end ms-4">
-                    <div class="order-price mb-2">₦{{ order.amount|floatformat:2 }}</div>
-                    <a href="{% url 'product_checkout' order.item.slug %}" class="btn btn-pay-now shadow-sm">
-                        Complete Payment
-                    </a>
+                <div class="tab-pane fade" id="pills-selling">
+                    {% if incoming_orders %}
+                        {% for order in incoming_orders %}
+                        <div class="order-card p-4 border-start border-5 border-success">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-img-container me-3 shadow-sm">
+                                            {% if order.item.image %}
+                                                <img src="{{ order.item.image.url }}" class="product-img-thumbnail">
+                                            {% else %}
+                                                <div class="w-100 h-100 d-flex align-items-center justify-content-center fw-900 text-muted">
+                                                    {{ order.item.name|slice:":1" }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <small class="text-uppercase fw-bold text-success" style="font-size: 0.65rem;">Incoming Sale</small>
+                                            <h5 class="fw-800 mb-1">{{ order.item.name }}</h5>
+                                            <p class="small text-muted mb-0">Buyer: <strong>{{ order.buyer.username }}</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                    {% if order.status == 'PAID' %}
+                                        <div class="alert alert-warning py-2 mb-0 border-0 shadow-sm rounded-4">
+                                            <i class="bi bi-hourglass-split me-1"></i>
+                                            <strong class="small">Action: Ship Item</strong>
+                                        </div>
+                                    {% elif order.status == 'SHIPPED' %}
+                                        <div class="alert alert-info py-2 mb-0 border-0 shadow-sm rounded-4">
+                                            <i class="bi bi-truck me-1"></i>
+                                            <strong class="small">Waiting for Buyer PIN</strong>
+                                        </div>
+                                    {% elif order.status == 'COMPLETED' %}
+                                        <span class="badge status-completed">Completed</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="bg-light p-3 rounded-4 border">
+                                        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                                            <span class="small fw-bold text-muted">EARNINGS</span>
+                                            <span class="fw-900 text-success">₦{{ order.seller_earning|floatformat:2|intcomma }}</span>
+                                        </div>
+
+                                        {% if order.status == 'PAID' %}
+                                            <form method="POST" action="{% url 'mark_as_shipped' order.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-dark btn-action-curved w-100">Mark Shipped</button>
+                                            </form>
+                                        {% elif order.status == 'SHIPPED' %}
+                                            <form method="POST" action="{% url 'verify_delivery' order.id %}">
+                                                {% csrf_token %}
+                                                <div class="input-group mb-2">
+                                                    <input type="text" name="pin" class="form-control pin-input" placeholder="0000" maxlength="4" required>
+                                                    <button class="btn btn-success fw-bold px-3" type="submit">VERIFY</button>
+                                                </div>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-white w-100 fw-bold text-success border-0" disabled>
+                                                <i class="bi bi-check-circle-fill me-2"></i> Funds Released
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1067/1067566.png" width="80" class="mb-3 opacity-25">
+                            <h5 class="text-muted fw-bold">No active sales.</h5>
+                            <p class="small text-muted">Items you list for sale will appear here.</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            {% empty %}
-            <div class="empty-desk">
-                <i class="bi bi-wallet2 display-1 text-muted opacity-25 mb-3 d-block"></i>
-                <h4 class="fw-800 text-muted">Your Checkout Desk is clear.</h4>
-                <p class="fw-bold text-muted small">Items you initiate will appear here for secure payment.</p>
-                <a href="{% url 'marketplace' %}" class="btn btn-dark rounded-pill px-5 mt-3 py-3 fw-800 shadow-sm">Browse Marketplace</a>
-            </div>
-            {% endfor %}
-
         </div>
     </div>
 </div>

@@ -14,68 +14,36 @@
     /* --- SIDE-BY-SIDE FLEX LAYOUT --- */
     .dash-flex-wrapper {
         display: flex;
-        gap: 10px;
+        gap: 20px;
         align-items: flex-start;
-        padding: 10px;
+        padding: 20px;
     }
 
-    /* MINI SIDEBAR: Sharp corners, icon-only on mobile */
-    .mini-sidebar {
-        width: 50px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 80px;
-        background: white;
-        border-radius: 0 !important; /* SHARP */
-        padding: 10px 5px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    /* --- GLOBAL CURVED DESIGN --- */
+    .table-card, .stat-box, .badge, .btn-action-curved {
+        border-radius: 20px !important; /* Unified curves */
     }
 
-    .nav-icon-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        color: var(--midnight);
-        text-decoration: none;
-        border-radius: 0 !important; /* SHARP */
-        margin-bottom: 10px;
-    }
-
-    .nav-icon-link i { font-size: 1.1rem; }
-
-    .nav-icon-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-    }
-
-    .nav-label { display: none; }
-
-    @media (min-width: 992px) {
-        .mini-sidebar { width: 240px; align-items: stretch; padding: 20px; }
-        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
-        .nav-label { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
-    }
-
-    /* SHARP ANALYTICS CARDS */
+    /* CURVED ANALYTICS CARDS */
     .table-card {
         background: white;
-        border-radius: 0 !important; /* SHARP */
-        border: 1px solid rgba(0,0,0,0.08);
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
         overflow: hidden;
     }
 
     .stat-box {
         background: #f1f5f9;
-        border-radius: 0 !important; /* SHARP */
         border: 1px solid transparent;
         text-align: center;
-        padding: 10px;
+        padding: 15px;
+        transition: 0.3s;
+    }
+    
+    .stat-box:hover {
+        background: white;
+        border-color: var(--accent);
+        transform: translateY(-3px);
     }
 
     /* --- MERGED VN SYMBOL --- */
@@ -96,37 +64,23 @@
         transform: rotate(-15deg);
         color: var(--accent);
     }
+
+    @media (max-width: 991px) {
+        .dash-flex-wrapper { padding: 10px; gap: 10px; }
+    }
 </style>
 
-<div class="container-fluid py-3">
+<div class="container-fluid">
     <div class="dash-flex-wrapper">
         
-        <div class="mini-sidebar">
-            <a href="{% url 'dashboard' %}" class="nav-icon-link" title="Overview">
-                <i class="bi bi-grid-fill"></i>
-                <span class="nav-label">Overview</span>
-            </a>
-            <a href="{% url 'ad_analytics' %}" class="nav-icon-link active" title="Analytics">
-                <i class="bi bi-bar-chart-fill"></i>
-                <span class="nav-label">Analytics</span>
-            </a>
-            <a href="{% url 'promote_request' %}" class="nav-icon-link" title="Promote">
-                <i class="bi bi-megaphone-fill"></i>
-                <span class="nav-label">List Product</span>
-            </a>
-            <a href="{% url 'edit_profile' %}" class="nav-icon-link" title="Settings">
-                <i class="bi bi-gear-fill"></i>
-                <span class="nav-label">Settings</span>
-            </a>
-        </div>
-
-        <div class="flex-grow-1">
+        {% include 'core/includes/_sidebar.html' %}
+        <div class="flex-grow-1" style="min-width: 0;">
             
-            <h5 class="fw-900 text-midnight mb-4" style="letter-spacing: -1px;">AD PERFORMANCE</h5>
+            <h5 class="fw-900 text-midnight mb-4" style="letter-spacing: -1px;">AD PERFORMANCE ANALYTICS</h5>
 
-            <div class="table-card p-3 mb-4">
-                <h6 class="fw-800 text-midnight small text-uppercase mb-3">Traffic by Product</h6>
-                <div style="height: 250px; position: relative;">
+            <div class="table-card p-4 mb-4">
+                <h6 class="fw-800 text-midnight small text-uppercase mb-4">Traffic by Product</h6>
+                <div style="height: 280px; position: relative;">
                     <canvas id="clicksChart"></canvas>
                 </div>
             </div>
@@ -134,20 +88,20 @@
             <div class="table-card mb-4">
                 <div class="p-3 border-bottom bg-white d-flex align-items-center">
                     <i class="bi bi-trophy-fill text-warning me-2"></i>
-                    <h6 class="fw-800 mb-0 small">Best Marketers</h6>
+                    <h6 class="fw-800 mb-0 small text-uppercase">Best Performing Marketers</h6>
                 </div>
-                <div class="p-3">
-                    <div class="row g-2">
+                <div class="p-4">
+                    <div class="row g-3">
                         {% for marketer in top_marketers %}
-                        <div class="col-6">
+                        <div class="col-6 col-md-4 col-lg-3">
                             <div class="stat-box shadow-sm border">
-                                <div class="extra-small fw-800 text-muted text-uppercase mb-1">{{ marketer.referrer__username|truncatechars:6 }}</div>
+                                <div class="extra-small fw-800 text-muted text-uppercase mb-1">{{ marketer.referrer__username|truncatechars:10 }}</div>
                                 <div class="h4 fw-900 mb-0 text-midnight">{{ marketer.total_clicks }}</div>
-                                <div class="text-primary fw-900" style="font-size: 0.5rem;">CLICKS</div>
+                                <div class="text-primary fw-900" style="font-size: 0.6rem; letter-spacing: 1px;">CLICKS GENERATED</div>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-12 text-center text-muted small py-3 fw-bold border">No data yet.</div>
+                        <div class="col-12 text-center text-muted small py-4 fw-bold">No marketer data yet.</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -155,32 +109,32 @@
 
             <div class="table-card">
                 <div class="p-3 border-bottom bg-white">
-                    <h6 class="fw-800 mb-0 small text-uppercase">Financial Breakdown</h6>
+                    <h6 class="fw-800 mb-0 small text-uppercase">Commission Breakdown</h6>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0" style="font-size: 0.8rem;">
+                    <table class="table align-middle mb-0">
                         <thead class="bg-light">
                             <tr>
-                                <th class="ps-3 py-2 border-0">Product</th>
-                                <th class="text-center border-0">Clicks</th>
-                                <th class="text-end pe-3 border-0">Cost (<span class="vn-merged" style="font-size: 0.6rem;">VN</span>)</th>
+                                <th class="ps-4 py-3 border-0 small fw-800">Product</th>
+                                <th class="text-center border-0 small fw-800">Total Clicks</th>
+                                <th class="text-end pe-4 border-0 small fw-800">Spent (<span class="vn-merged" style="font-size: 0.6rem;">VN</span>)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in my_items %}
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-bold text-midnight">{{ item.name|truncatechars:12 }}</div>
+                            <tr class="order-row" style="border-bottom: 1px solid #f1f5f9;">
+                                <td class="ps-4 py-3">
+                                    <div class="fw-900 text-midnight small">{{ item.name|upper }}</div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border-0">{{ item.total_clicks }}</span>
+                                    <span class="badge bg-dark text-white px-3 py-2" style="font-size: 0.7rem;">{{ item.total_clicks }}</span>
                                 </td>
-                                <td class="text-end pe-3 fw-900 text-danger">
+                                <td class="text-end pe-4 fw-900 text-danger">
                                     {{ item.total_commission_spent|floatformat:2 }}
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="3" class="text-center py-4 text-muted border-0">No items found.</td></tr>
+                            <tr><td colspan="3" class="text-center py-5 text-muted fw-bold border-0">No active products found.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -206,9 +160,10 @@
             data: {
                 labels: chartLabels,
                 datasets: [{
+                    label: 'Clicks',
                     data: chartValues,
                     backgroundColor: '#0f172a',
-                    borderRadius: 0, /* SHARP BARS */
+                    borderRadius: 10, /* CURVED BARS */
                     hoverBackgroundColor: '#ffc107',
                 }]
             },
@@ -217,8 +172,15 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
-                    x: { grid: { display: false }, ticks: { font: { size: 10, weight: '700' } } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#f1f5f9', drawBorder: false }, 
+                        ticks: { font: { size: 11, weight: '600' } } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { font: { size: 11, weight: '700' } } 
+                    }
                 }
             }
         });

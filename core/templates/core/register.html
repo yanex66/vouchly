@@ -40,9 +40,11 @@
         border-bottom: 5px solid var(--accent);
     }
 
-    .auth-body { padding: 45px 40px; }
+    .auth-header h2 { font-weight: 800; text-transform: uppercase; letter-spacing: -1.5px; }
 
-    /* Role Selector Styling */
+    .auth-body { padding: 40px; }
+
+    /* Role Selector */
     .role-selector {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -71,7 +73,7 @@
     
     .role-btn.active i { color: var(--midnight); }
 
-    /* Google Button Styling */
+    /* Google Button */
     .btn-google-compact {
         background: white;
         color: var(--midnight);
@@ -91,43 +93,78 @@
     }
 
     .btn-google-compact.disabled {
-        opacity: 0.4;
+        opacity: 0.5;
         pointer-events: none;
         filter: grayscale(1);
     }
 
-    .btn-google-compact:not(.disabled):hover {
-        border-color: var(--accent);
-        background: #f8fafc;
-    }
-
+    /* --- BEAUTIFIED DIVIDER --- */
     .auth-divider {
         display: flex;
         align-items: center;
         text-align: center;
-        margin: 30px 0;
+        margin: 35px 0;
         color: var(--text-muted);
         font-weight: 800;
         font-size: 0.7rem;
         text-transform: uppercase;
+        letter-spacing: 1.5px;
     }
 
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
-    .auth-divider:not(:empty)::before { margin-right: 15px; }
-    .auth-divider:not(:empty)::after { margin-left: 15px; }
+    .auth-divider::before, 
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
 
-    .form-label-custom { font-weight: 800; color: var(--midnight); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; display: block; }
-    .input-custom, select.form-control { border-radius: 15px !important; padding: 14px 18px; border: 2px solid #f1f5f9; background-color: #f8fafc; font-size: 1rem; width: 100%; font-weight: 600; }
-    
-    .btn-auth-premium { background: var(--midnight); color: white; border: none; border-radius: 15px; padding: 16px; font-weight: 800; width: 100%; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
-    .btn-auth-premium:hover { background: var(--midnight-dark); color: var(--accent); transform: translateY(-3px); }
+    .auth-divider:not(:empty)::before { margin-right: 20px; }
+    .auth-divider:not(:empty)::after { margin-left: 20px; }
+
+    /* Form Fields */
+    .form-group-custom { margin-bottom: 22px; }
+
+    input[type="text"], input[type="email"], input[type="password"], select {
+        border-radius: 15px !important; 
+        padding: 14px 18px !important; 
+        border: 2px solid #f1f5f9 !important; 
+        background-color: #f8fafc !important; 
+        width: 100%; 
+        font-weight: 600; 
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: var(--accent) !important;
+        background-color: #fff !important;
+        outline: none;
+        box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.1);
+    }
+
+    .btn-auth-premium { 
+        background: var(--midnight); 
+        color: white; 
+        border: none; 
+        border-radius: 15px; 
+        padding: 16px; 
+        font-weight: 800; 
+        width: 100%; 
+        text-transform: uppercase; 
+        transition: 0.3s; 
+    }
+
+    .btn-auth-premium:hover { 
+        background: var(--midnight-dark); 
+        color: var(--accent); 
+        transform: translateY(-3px); 
+    }
 </style>
 
 <div class="auth-container">
-    <div class="auth-card">
+    <div class="auth-card shadow-lg">
         <div class="auth-header">
-            <h2 class="mb-1">Join Vouchly</h2>
-            <p class="small opacity-75 fw-500 mb-0">Select your account type to continue</p>
+            <h2>Join Vouchly</h2>
+            <p class="small opacity-75 fw-bold mb-0">Select your account type to continue</p>
         </div>
 
         <div class="auth-body">
@@ -142,48 +179,72 @@
                 </div>
             </div>
 
-            <a href="{% provider_login_url 'google' %}" id="google-btn" class="btn-google-compact disabled">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="height: 18px; margin-right: 12px;">
-                Sign up with Google
-            </a>
+            <div class="mb-2 text-center">
+                <a href="{% provider_login_url 'google' %}" id="google-btn" class="btn-google-compact disabled">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="height: 18px; margin-right: 12px;">
+                    Sign up with Google
+                </a>
+                <p id="role-warning" class="text-muted mt-2 fw-bold" style="font-size: 0.6rem; letter-spacing: 0.5px;">PICK A ROLE TO ENABLE GOOGLE</p>
+            </div>
 
-            <div class="auth-divider">Or use email</div>
+            <div class="auth-divider">
+                <span>Or use email</span>
+            </div>
 
             <form method="POST">
                 {% csrf_token %}
+                
                 {% for field in form %}
-                <div class="mb-4">
-                    <label class="form-label-custom" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}<div class="text-danger small fw-bold mt-1">{{ field.errors }}</div>{% endif %}
-                </div>
+                    <div class="form-group-custom {% if field.name == 'user_type' %}d-none{% endif %}">
+                        <label class="fw-800 text-midnight small text-uppercase mb-2 d-block" style="letter-spacing: 1px; font-size: 0.7rem;">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <div class="text-danger extra-small fw-bold mt-1" style="font-size: 0.65rem;">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 {% endfor %}
-                <button class="btn btn-auth-premium shadow-sm mt-3" type="submit">Create Account</button>
+
+                <button class="btn btn-auth-premium shadow mt-2" type="submit">Create Account</button>
             </form>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted small fw-bold">Already part of the community? 
+                    <a href="{% url 'login' %}" class="text-midnight fw-800 text-decoration-none ms-1">Sign In</a>
+                </p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     function setRole(role) {
-        // Update UI
+        // UI Visual Update
         document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('role-' + role.toLowerCase()).classList.add('active');
         
-        // Enable Google Button
+        // Logical Enable
         document.getElementById('google-btn').classList.remove('disabled');
+        document.getElementById('role-warning').style.display = 'none';
         
-        // Sync with the hidden/visible form field if it exists
+        // Fill the hidden Django form field
         const formSelect = document.querySelector('select[name="user_type"]');
-        if(formSelect) formSelect.value = role;
+        if(formSelect) {
+            formSelect.value = role;
+        }
 
-        // Save to Session via AJAX
+        // Notify backend of role for social signup
         fetch(`/set-role-session/?role=${role}`);
     }
 
-    document.querySelectorAll('input, select').forEach(input => {
-        if (input.type !== 'checkbox' && input.type !== 'hidden') {
-            input.classList.add('input-custom');
+    // Handle form errors: re-select role if user_type was already chosen
+    window.addEventListener('DOMContentLoaded', () => {
+        const currentRole = document.querySelector('select[name="user_type"]')?.value;
+        if(currentRole === 'MARKETER' || currentRole === 'ADVERTISER') {
+            setRole(currentRole);
         }
     });
 </script>

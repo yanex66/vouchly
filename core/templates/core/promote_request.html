@@ -11,133 +11,112 @@
     
     body { background-color: var(--soft-bg); }
 
-    /* SIDE-BY-SIDE FLEX WRAPPER */
     .dash-flex-wrapper {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         align-items: flex-start;
-        padding: 15px;
+        padding: 20px;
     }
 
-    /* SHARP MINI SIDEBAR */
-    .mini-sidebar {
-        width: 50px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 80px;
-        background: white;
-        border-radius: 0 !important; /* STRICT SHARP */
-        padding: 10px 5px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .nav-icon-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: var(--midnight);
-        text-decoration: none;
-        border-radius: 0 !important;
-        margin-bottom: 12px;
-    }
-
-    .nav-icon-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-    }
-
-    .nav-label { display: none; }
-
-    @media (min-width: 992px) {
-        .mini-sidebar { width: 250px; align-items: stretch; padding: 20px; }
-        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
-        .nav-label { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
-    }
-
-    /* SHARP CARD DESIGN */
     .promo-card {
         background: white;
-        border-radius: 0 !important;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 25px !important;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.05);
+        border: 1px solid #f1f5f9;
     }
 
     .form-label-custom {
         font-weight: 800;
         color: var(--midnight);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         display: block;
     }
 
     .form-control, .form-select, .btn {
-        border-radius: 0 !important; /* STRICT SHARP */
+        border-radius: 12px !important;
         padding: 14px;
         font-weight: 600;
         font-size: 0.95rem;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+
+    /* Strategy Toggle Styling */
+    .strategy-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .strat-btn {
+        border: 2px solid #e2e8f0;
+        background: white;
+        padding: 15px;
+        border-radius: 15px !important;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .strat-btn i { font-size: 1.2rem; display: block; margin-bottom: 5px; }
+    .strat-btn span { font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .strat-btn.active {
+        border-color: var(--midnight);
+        background: var(--midnight);
+        color: var(--accent);
     }
 
     .destination-box {
         background: #f1f5f9;
-        padding: 20px;
-        margin: 20px 0;
-        border: 2px dashed #cbd5e1;
-        border-radius: 0 !important;
+        padding: 25px;
+        margin: 25px 0;
+        border: 2px solid var(--midnight);
+        border-radius: 20px !important;
     }
 
     .agreement-box {
-        background: #f8fafc;
+        background: #fff9e6;
         border-left: 5px solid var(--accent);
         padding: 20px;
         margin-bottom: 30px;
+        border-radius: 0 15px 15px 0;
     }
 
-    .naira-text {
-        font-weight: 900;
-        color: var(--midnight);
-        font-size: 1.2rem;
-        margin: 0 4px;
+    @media (max-width: 991px) {
+        .dash-flex-wrapper { flex-direction: column; padding: 10px; }
     }
 </style>
 
-<div class="container-fluid py-3">
+<div class="container-fluid">
     <div class="dash-flex-wrapper">
         
-        <div class="mini-sidebar">
-            <a href="{% url 'dashboard' %}" class="nav-icon-link" title="Overview">
-                <i class="bi bi-grid-fill"></i> <span class="nav-label">Overview</span>
-            </a>
-            <a href="{% url 'ad_analytics' %}" class="nav-icon-link" title="Analytics">
-                <i class="bi bi-bar-chart-fill"></i> <span class="nav-label">Analytics</span>
-            </a>
-            <a href="{% url 'promote_request' %}" class="nav-icon-link active" title="Promote">
-                <i class="bi bi-megaphone-fill"></i> <span class="nav-label">List Product</span>
-            </a>
-            <a href="{% url 'edit_profile' %}" class="nav-icon-link" title="Settings">
-                <i class="bi bi-gear-fill"></i> <span class="nav-label">Settings</span>
-            </a>
-        </div>
+        {% include 'core/includes/_sidebar.html' %}
 
-        <div class="flex-grow-1">
+        <div class="flex-grow-1" style="min-width: 0;">
             <div class="promo-card">
                 
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-danger p-3 mb-4 border-0" style="border-radius: 0; background: #fef2f2; color: #991b1b;">
+                        <div class="alert alert-danger p-3 mb-4 border-0" style="border-radius: 12px; background: #fef2f2; color: #991b1b;">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
 
-                <h4 class="fw-900 text-midnight mb-4" style="letter-spacing: -1.5px;">LIST NEW PRODUCT</h4>
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-900 text-midnight mb-1" style="letter-spacing: -1px;">LIST PRODUCT</h4>
+                        <p class="text-muted small fw-bold">Choose how you want marketers to promote you.</p>
+                    </div>
+                    <i class="bi bi-megaphone fs-2 text-primary opacity-50"></i>
+                </div>
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -157,8 +136,8 @@
 
                         <div class="col-md-4">
                             <div class="mb-4">
-                                <label class="form-label-custom text-primary">Plan Duration</label>
-                                <select name="duration_days" class="form-select border-primary" required>
+                                <label class="form-label-custom text-primary">Ad Plan Duration</label>
+                                <select name="duration_days" class="form-select border-primary text-primary fw-bold" required>
                                     <option value="30">30 Days (Standard)</option>
                                     <option value="60">60 Days (Professional)</option>
                                     <option value="90">90 Days (Enterprise)</option>
@@ -168,57 +147,65 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label-custom">Product Image</label>
+                        <label class="form-label-custom">Product Display Image</label>
                         {{ form.product_image }}
                     </div>
 
-                    <div class="destination-box">
-                        <label class="form-label-custom">Destination Type</label>
-                        <select name="destination_type" id="destToggle" class="form-select mb-3">
-                            <option value="whatsapp">WhatsApp (Direct Chat)</option>
-                            <option value="website">External Website Link</option>
-                        </select>
+                    <div class="destination-box shadow-sm">
+                        <label class="form-label-custom">Promotion Strategy</label>
                         
-                        <div id="websiteInput" style="display: none;">
-                            <label class="form-label-custom">Website URL</label>
-                            {{ form.website_url }}
+                        <div class="strategy-selector">
+                            <div class="strat-btn active" id="btn-internal" onclick="setStrategy('internal')">
+                                <i class="bi bi-shield-check"></i>
+                                <span>Promote on Vouchly</span>
+                            </div>
+                            <div class="strat-btn" id="btn-external" onclick="setStrategy('website')">
+                                <i class="bi bi-globe"></i>
+                                <span>Own Website</span>
+                            </div>
                         </div>
 
-                        <div id="whatsappInfo">
-                            <label class="form-label-custom">Routing to your WhatsApp</label>
-                            <div class="p-3 border bg-white fw-bold">
-                                <i class="bi bi-whatsapp text-success me-2"></i> {{ request.user.profile.whatsapp_number }}
-                            </div>
+                        <input type="hidden" name="destination_type" id="id_destination_type" value="internal">
+
+                        <div id="websiteInput" style="display: none;">
+                            <label class="form-label-custom">Insert Website URL</label>
+                            {{ form.website_url }}
+                            <small class="text-muted fw-bold d-block mt-2" style="font-size: 0.65rem;">Marketers will redirect traffic here.</small>
+                        </div>
+
+                        <div id="vouchlyInfo" class="p-3 bg-white rounded-3 border">
+                            <p class="mb-0 small fw-bold text-dark"><i class="bi bi-info-circle-fill text-primary me-2"></i> Internal Escrow</p>
+                            <small class="text-muted">Orders will be handled through Vouchly's secure checkout system.</small>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label-custom">Short Description</label>
+                        <label class="form-label-custom">Product Description</label>
                         {{ form.description }}
                     </div>
 
                     <div class="row g-3">
                         <div class="col-6 mb-4">
-                            <label class="form-label-custom">Price (₦)</label>
+                            <label class="form-label-custom">Retail Price (₦)</label>
                             {{ form.product_price }}
                         </div>
                         <div class="col-6 mb-4">
-                            <label class="form-label-custom">Comm. (%)</label>
+                            <label class="form-label-custom">Marketer Bonus (%)</label>
                             {{ form.commission_percentage }}
                         </div>
                     </div>
 
-                    <div class="agreement-box">
+                    <div class="agreement-box shadow-sm">
                         <div class="form-check d-flex align-items-center">
                             {{ form.agree_to_commissions }}
-                            <label class="form-check-label ms-3 fw-800 text-midnight" for="id_agree_to_commissions" style="font-size: 0.9rem;">
-                                AGREE TO PAY MARKETER <span class="naira-text">₦<span id="calc-naira">0.00</span></span> PER PRODUCT SOLD
+                            <label class="form-check-label ms-3 fw-800 text-midnight" for="id_agree_to_commissions" style="font-size: 0.85rem;">
+                                I AGREE TO PAY <span class="text-success">₦<span id="calc-naira">0.00</span></span> PER UNIT SOLD.
                             </label>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100 py-3 fw-900 border-0 shadow-sm">
-                        {% if active_sub %}POST PRODUCT NOW{% else %}PROCEED TO PAYMENT{% endif %}
+                    <button type="submit" class="btn btn-dark w-100 py-3 fw-900 border-0 shadow">
+                        {% if active_sub %}PUBLISH PRODUCT{% else %}PAY & LIST PRODUCT{% endif %}
                     </button>
                 </form>
             </div>
@@ -227,23 +214,34 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const destToggle = document.getElementById('destToggle');
+    function setStrategy(type) {
         const websiteInput = document.getElementById('websiteInput');
-        const whatsappInfo = document.getElementById('whatsappInfo');
+        const vouchlyInfo = document.getElementById('vouchlyInfo');
+        const hiddenInput = document.getElementById('id_destination_type');
+        const btnInternal = document.getElementById('btn-internal');
+        const btnExternal = document.getElementById('btn-external');
+
+        // Update Hidden Input
+        hiddenInput.value = type;
+
+        // Toggle UI
+        if (type === 'website') {
+            websiteInput.style.display = 'block';
+            vouchlyInfo.style.display = 'none';
+            btnExternal.classList.add('active');
+            btnInternal.classList.remove('active');
+        } else {
+            websiteInput.style.display = 'none';
+            vouchlyInfo.style.display = 'block';
+            btnInternal.classList.add('active');
+            btnExternal.classList.remove('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
         const priceInput = document.getElementById('id_product_price');
         const percInput = document.getElementById('id_commission_percentage');
         const nairaPreview = document.getElementById('calc-naira');
-
-        function toggleDest() {
-            if (destToggle.value === 'website') {
-                websiteInput.style.display = 'block'; whatsappInfo.style.display = 'none';
-            } else {
-                websiteInput.style.display = 'none'; whatsappInfo.style.display = 'block';
-            }
-        }
-        destToggle.addEventListener('change', toggleDest);
-        toggleDest(); 
 
         function calculateCommission() {
             const price = parseFloat(priceInput.value) || 0;

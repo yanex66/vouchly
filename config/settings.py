@@ -7,23 +7,21 @@ import dj_database_url
 env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Read .env file locally, but Render will use its dashboard variables
+# Read .env file locally
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-default-key')
 DEBUG = env.bool('DEBUG', default=False) 
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
 
-# UPDATED: Added Render domain to prevent Bad Request (400)
 ALLOWED_HOSTS = [
     'www.vouchly.store', 
     'vouchly.store', 
-    'vouchly-5w0g.onrender.com',  # Your specific Render URL
+    'vouchly-5w0g.onrender.com',
     'localhost', 
     '127.0.0.1'
 ]
 
-# UPDATED: Added Render domain for secure form submissions
 CSRF_TRUSTED_ORIGINS = [
     'https://www.vouchly.store',
     'https://vouchly.store',
@@ -32,21 +30,24 @@ CSRF_TRUSTED_ORIGINS = [
 
 # --- 2. APPS ---
 INSTALLED_APPS = [
+    # Cloudinary MUST be above django.contrib.staticfiles
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary', 
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'core',
     'django.contrib.humanize',
-    'cloudinary_storage',
-    'cloudinary',
+    
+    # CORE APP CONFIG (Ensures signals.py is loaded)
+    'core.apps.CoreConfig',
 ]
 
 SITE_ID = 1
@@ -54,7 +55,7 @@ SITE_ID = 1
 # --- 3. MIDDLEWARE ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,7 +88,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- 5. DATABASE ---
-# Connects to Render PostgreSQL via the DATABASE_URL environment variable
 DATABASES = {
     'default': dj_database_url.config(
         default=env('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
@@ -101,13 +101,21 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# WhiteNoise storage optimized for Render/Production
+# WhiteNoise storage
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Cloudinary Media Configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
+    'API_KEY': env('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default=''),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# --- 7. EMAIL SETTINGS ---
+# --- 7. EMAIL SETTINGS (GMAIL SMTP) ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -116,7 +124,12 @@ EMAIL_HOST_USER = env('EMAIL_USER', default='')
 EMAIL_HOST_PASSWORD = env('EMAIL_PASS', default='')
 DEFAULT_FROM_EMAIL = f"Vouchly <{env('EMAIL_USER', default='')}>"
 
-# --- 8. AUTHENTICATION & ALLAUTH ---
+# --- 8. TERMII SMS SETTINGS ---
+TERMII_API_KEY = env('TERMII_API_KEY', default='')
+TERMII_SENDER_ID = env('TERMII_SENDER_ID', default='Vouchly')
+TERMII_BASE_URL = env('TERMII_BASE_URL', default='https://api.ng.termii.com')
+
+# --- 9. AUTHENTICATION & ALLAUTH ---
 AUTHENTICATION_BACKENDS = [
     'core.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -141,7 +154,8 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 SOCIALACCOUNT_LOGIN_ON_GET = True
-# --- 9. SECURITY & VAULT ---
+
+# --- 10. SECURITY & VAULT ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_VAULT_ROOT = os.path.join(BASE_DIR, 'secure_vault')
 
@@ -154,23 +168,12 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-# --- 10. PAYMENT GATEWAY ---
+# --- 11. PAYMENTS ---
 PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
 PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
 
-FLUTTERWAVE_PUBLIC_KEY = env('FLWPUBK_TEST', default='') 
-FLUTTERWAVE_SECRET_KEY = env('FLWSECK_TEST', default='')
+FLUTTERWAVE_PUBLIC_KEY = env('FLUTTERWAVE_PUBLIC_KEY', default='') 
+FLUTTERWAVE_SECRET_KEY = env('FLUTTERWAVE_SECRET_KEY', default='')
 FLUTTERWAVE_ENCRYPTION_KEY = env('FLUTTERWAVE_ENCRYPTION_KEY', default='')
 
 MINIMUM_WITHDRAWAL_AMOUNT = 1000
-
-# settings.py
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
-}
-
-# This line ensures all new uploads go to the cloud
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

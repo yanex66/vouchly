@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block content %}
 <style>
@@ -12,56 +12,17 @@
     
     body { background-color: var(--soft-bg); }
 
-    /* --- GLOBAL SHARP DESIGN --- */
-    .mini-sidebar, .nav-icon-link, .vocoin-card, .stat-card, .table-card, .btn-sharp, .badge, .status-dot {
-        border-radius: 0 !important;
+    /* --- GLOBAL CURVED DESIGN --- */
+    .stat-card, .table-card, .btn-sharp, .badge, .stat-card-inner, .listing-box {
+        border-radius: 20px !important; /* Unified curves */
     }
 
     /* --- SIDEBAR LAYOUT --- */
     .dash-flex-wrapper {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         align-items: flex-start;
-        padding: 15px;
-    }
-
-    .mini-sidebar {
-        width: 55px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 80px;
-        background: white;
-        padding: 15px 5px;
-        box-shadow: 5px 0 15px rgba(0,0,0,0.03);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 1px solid #e2e8f0;
-    }
-
-    .nav-icon-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: var(--midnight);
-        text-decoration: none;
-        margin-bottom: 12px;
-        transition: 0.2s;
-    }
-
-    .nav-icon-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-    }
-
-    .nav-label { display: none; }
-
-    @media (min-width: 992px) {
-        .mini-sidebar { width: 250px; align-items: stretch; padding: 25px; }
-        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 18px; }
-        .nav-label { display: inline; margin-left: 15px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        padding: 20px;
     }
 
     /* --- WALLET SECTION --- */
@@ -71,14 +32,7 @@
         color: white;
         border-left: 10px solid var(--accent);
         margin-bottom: 25px;
-    }
-
-    .vn-merged {
-        font-weight: 900;
-        color: var(--accent);
-        letter-spacing: -3px; 
-        font-style: italic;
-        margin-right: 5px;
+        border-radius: 25px !important; /* Curved edges */
     }
 
     /* --- ORDER TRACKING --- */
@@ -87,6 +41,7 @@
         border: 1px solid #e2e8f0;
         padding: 25px;
         margin-top: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
     }
 
     .order-row {
@@ -100,60 +55,58 @@
     .status-badge {
         font-size: 0.65rem;
         font-weight: 900;
-        padding: 5px 10px;
+        padding: 8px 12px;
         text-transform: uppercase;
+        border-radius: 30px !important; /* Pill shape */
     }
 
     .bg-escrow { background: #e0f2fe; color: #0369a1; }
     .bg-paid { background: #dcfce7; color: #166534; }
+
+    /* --- STAT CARD STYLING --- */
+    .stat-card-inner {
+        background: white;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        height: 100%;
+    }
+
+    .btn-action-curved {
+        border-radius: 30px !important;
+        font-weight: 700;
+        padding: 10px 20px;
+    }
+
+    @media (max-width: 991px) {
+        .dash-flex-wrapper { padding: 10px; gap: 10px; }
+    }
 </style>
 
 <div class="container-fluid">
     <div class="dash-flex-wrapper">
         
-        <div class="mini-sidebar">
-            <a href="{% url 'dashboard' %}" class="nav-icon-link active">
-                <i class="bi bi-speedometer2"></i>
-                <span class="nav-label">Dashboard</span>
-            </a>
-            <a href="{% url 'promote_request' %}" class="nav-icon-link">
-                <i class="bi bi-plus-square-fill"></i>
-                <span class="nav-label">New Listing</span>
-            </a>
-            <a href="{% url 'ad_analytics' %}" class="nav-icon-link">
-                <i class="bi bi-graph-up-arrow"></i>
-                <span class="nav-label">Ad Performance</span>
-            </a>
-            <a href="{% url 'verify_identity' %}" class="nav-icon-link">
-                <i class="bi bi-shield-check"></i>
-                <span class="nav-label">Verification</span>
-            </a>
-            <hr class="w-100 border-dark my-3">
-            <a href="{% url 'logout' %}" class="nav-icon-link text-danger">
-                <i class="bi bi-door-open-fill"></i>
-                <span class="nav-label">Sign Out</span>
-            </a>
-        </div>
-
+        {% include 'core/includes/_sidebar.html' %}
         <div class="flex-grow-1">
             
             <div class="row g-4">
                 <div class="col-lg-7">
                     <div class="vocoin-card shadow-sm h-100">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <span class="badge bg-warning text-dark fw-900">ESCROW WALLET</span>
-                            <span class="small fw-bold opacity-75">LIVE UPDATES</span>
+                            <span class="badge bg-warning text-dark fw-900 px-3 py-2">ESCROW WALLET</span>
+                            <span class="small fw-bold opacity-75">REAL-TIME BALANCE</span>
                         </div>
-                        <h6 class="fw-bold opacity-50 small mb-1">AVAILABLE TO WITHDRAW</h6>
+                        <h6 class="fw-bold opacity-50 small mb-1">{{ balance_label }}</h6>
+                        
                         <h1 class="fw-900 mb-4" style="font-size: 3rem;">
-                            <span class="vn-merged">VN</span>{{ available_balance|floatformat:2 }}
+                            ₦{{ available_balance|floatformat:2|intcomma }}
                         </h1>
+                        
                         <div class="row g-2">
                             <div class="col-6">
-                                <a href="{% url 'request_payout' %}" class="btn btn-warning w-100 btn-sharp py-3">WITHDRAW</a>
+                                <a href="{% url 'request_payout' %}" class="btn btn-warning w-100 btn-action-curved py-3 fw-bold">WITHDRAW</a>
                             </div>
                             <div class="col-6">
-                                <button class="btn btn-outline-light w-100 btn-sharp py-3 border-2">HISTORY</button>
+                                <a href="{% url 'checkout_desk' %}" class="btn btn-outline-light w-100 btn-action-curved py-3 border-2 fw-bold">ORDERS</a>
                             </div>
                         </div>
                     </div>
@@ -162,24 +115,25 @@
                 <div class="col-lg-5">
                     <div class="row g-3">
                         <div class="col-6">
-                            <div class="stat-card shadow-sm h-100">
+                            <div class="stat-card-inner shadow-sm">
                                 <i class="bi bi-box-seam text-muted fs-4"></i>
                                 <div class="mt-2 small fw-bold text-muted">ACTIVE ADS</div>
                                 <h3 class="fw-900 mb-0">{{ my_products.count }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="stat-card shadow-sm h-100">
+                            <div class="stat-card-inner shadow-sm">
                                 <i class="bi bi-people text-muted fs-4"></i>
                                 <div class="mt-2 small fw-bold text-muted">MARKETERS</div>
-                                <h3 class="fw-900 mb-0">12</h3> </div>
+                                <h3 class="fw-900 mb-0">12</h3> 
+                            </div>
                         </div>
                         <div class="col-12">
-                            <div class="stat-card shadow-sm bg-white" style="border-left: 5px solid #2563eb;">
+                            <div class="stat-card-inner shadow-sm border-start border-5 border-primary">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="text-start">
                                         <div class="small fw-bold text-muted">TOTAL SALES REVENUE</div>
-                                        <h4 class="fw-900 mb-0 text-primary">₦{{ lifetime_total|floatformat:2 }}</h4>
+                                        <h4 class="fw-900 mb-0 text-primary">₦{{ total_revenue|floatformat:2|intcomma }}</h4>
                                     </div>
                                     <i class="bi bi-currency-exchange fs-1 opacity-25"></i>
                                 </div>
@@ -191,8 +145,8 @@
 
             <div class="table-card shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-900 mb-0" style="letter-spacing: -1px;">ESCROW SALES & SHIPMENTS</h5>
-                    <span class="badge bg-dark text-white">REACTION REQUIRED</span>
+                    <h5 class="fw-900 mb-0" style="letter-spacing: -1px;">ESCROW SALES</h5>
+                    <a href="{% url 'checkout_desk' %}" class="btn btn-dark btn-sm btn-action-curved px-4">VIEW ALL</a>
                 </div>
 
                 <div class="table-responsive">
@@ -202,7 +156,6 @@
                                 <th class="border-0 small fw-900">ORDER #</th>
                                 <th class="border-0 small fw-900">PRODUCT</th>
                                 <th class="border-0 small fw-900">STATUS</th>
-                                <th class="border-0 small fw-900">EARNINGS</th>
                                 <th class="border-0 small fw-900 text-end">ACTIONS</th>
                             </tr>
                         </thead>
@@ -211,7 +164,7 @@
                             <tr class="order-row">
                                 <td class="fw-bold">#{{ order.id }}</td>
                                 <td>
-                                    <div class="fw-900 small">{{ order.item.name|upper }}</div>
+                                    <div class="fw-900 small">{{ order.item.name|upper|truncatechars:20 }}</div>
                                     <div class="extra-small text-muted fw-bold">Buyer: {{ order.buyer.username }}</div>
                                 </td>
                                 <td>
@@ -225,12 +178,14 @@
                                         <span class="badge bg-light text-dark status-badge">{{ order.status }}</span>
                                     {% endif %}
                                 </td>
-                                <td class="fw-900 text-success">₦{{ order.amount|floatformat:2 }}</td>
                                 <td class="text-end">
                                     {% if order.status == 'PAID' %}
-                                        <a href="{% url 'mark_as_shipped' order.id %}" class="btn btn-dark btn-sm btn-sharp px-3">MARK AS SHIPPED</a>
+                                        <form action="{% url 'mark_as_shipped' order.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-dark btn-sm btn-action-curved px-3">MARK SHIPPED</button>
+                                        </form>
                                     {% elif order.status == 'SHIPPED' %}
-                                        <button class="btn btn-outline-dark btn-sm btn-sharp disabled" style="opacity: 0.5;">AWAITING PIN</button>
+                                        <a href="{% url 'checkout_desk' %}" class="btn btn-outline-primary btn-sm btn-action-curved fw-bold">ENTER PIN</a>
                                     {% else %}
                                         <i class="bi bi-check2-all text-success fs-5"></i>
                                     {% endif %}
@@ -238,7 +193,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center py-5 text-muted fw-bold">No escrow sales recorded yet.</td>
+                                <td colspan="4" class="text-center py-5 text-muted fw-bold">No escrow sales recorded yet.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -251,18 +206,18 @@
                 <div class="row g-3">
                     {% for item in my_products %}
                     <div class="col-md-6 col-xl-4">
-                        <div class="border p-3 d-flex align-items-center">
+                        <div class="border p-3 d-flex align-items-center listing-box">
                             <div class="flex-shrink-0" style="width: 60px; height: 60px;">
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" class="w-100 h-100 object-fit-cover">
+                                    <img src="{{ item.image.url }}" class="w-100 h-100 object-fit-cover rounded-3">
                                 {% endif %}
                             </div>
                             <div class="ms-3 flex-grow-1 overflow-hidden">
                                 <div class="fw-900 small text-truncate">{{ item.name|upper }}</div>
-                                <div class="extra-small fw-bold text-muted">COMMISSION: ₦{{ item.commission_naira|floatformat:0 }}</div>
+                                <div class="extra-small fw-bold text-muted">COMMISSION: ₦{{ item.commission_naira|floatformat:0|intcomma }}</div>
                             </div>
                             <div class="ms-2">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-light btn-sm border"><i class="bi bi-eye"></i></a>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-light btn-sm border rounded-circle"><i class="bi bi-eye"></i></a>
                             </div>
                         </div>
                     </div>

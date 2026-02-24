@@ -38,7 +38,7 @@
         align-items: flex-start;
     }
 
-    /* SCROLLABLE SIDEBAR FOR 30+ CATEGORIES */
+    /* SCROLLABLE SIDEBAR */
     .market-sidebar-desktop { 
         display: block; 
         position: sticky; 
@@ -67,7 +67,7 @@
         padding-bottom: 80px;
     }
 
-    /* PRODUCT CARDS - FULL CLICK LOGIC */
+    /* PRODUCT CARDS */
     .m-card {
         background: white;
         border: 1px solid rgba(0,0,0,0.03);
@@ -76,7 +76,7 @@
         display: flex;
         flex-direction: column;
         box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        position: relative; /* Required for stretched-link */
+        position: relative;
     }
 
     .m-card:hover {
@@ -185,10 +185,21 @@
                     <div class="p-3 pt-1 flex-grow-1">
                         <small class="text-muted fw-bold text-uppercase" style="font-size: 0.6rem;">{{ item.category.name }}</small>
                         <h6 class="m-title-sm text-midnight my-1">{{ item.name }}</h6>
-                        <div class="price-tag mb-2">₦{{ item.price|intcomma }}</div>
+                        
+                        <div class="price-tag mb-2">
+                            {% if item.price > 0 %}
+                                ₦{{ item.price|intcomma }}
+                            {% else %}
+                                <span class="text-muted" style="font-size: 0.85rem; font-weight: 700;">PROMO DEAL</span>
+                            {% endif %}
+                        </div>
                         
                         <a href="{% url 'item_detail' item.slug %}" class="btn btn-dark w-100 py-2 fw-bold stretched-link" style="font-size: 0.75rem;">
-                            View Deal
+                            {% if item.price > 0 %}
+                                View Deal
+                            {% else %}
+                                Get Started
+                            {% endif %}
                         </a>
                     </div>
                 </div>

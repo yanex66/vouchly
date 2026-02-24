@@ -11,143 +11,84 @@
 
     body { background-color: var(--soft-bg); }
 
-    /* --- SIDE-BY-SIDE FLEX --- */
     .dash-flex {
         display: flex;
-        gap: 10px;
+        gap: 15px;
         align-items: flex-start;
-        padding: 10px;
+        padding: 15px;
     }
 
-    /* MINI SIDEBAR: Sharp edges, icon-only mobile */
-    .side-nav {
-        width: 50px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 90px;
-        background: white;
-        border-radius: 0 !important;
-        padding: 10px 5px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .nav-item-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        color: var(--midnight);
-        text-decoration: none;
-        border-radius: 0 !important;
-        margin-bottom: 8px;
-    }
-
-    .nav-item-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-    }
-
-    .nav-text { display: none; }
-
-    @media (min-width: 992px) {
-        .side-nav { width: 240px; align-items: stretch; padding: 20px; }
-        .nav-item-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 15px; }
-        .nav-text { display: inline; margin-left: 12px; font-weight: 700; font-size: 0.9rem; }
-    }
-
-    /* SHARP CARD DESIGN */
     .edit-profile-card {
-        border-radius: 0 !important; 
+        border-radius: 25px !important;
         background: white;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 15px 40px rgba(15, 23, 42, 0.05);
         overflow: hidden;
+        border: 1px solid #f1f5f9;
     }
 
     .edit-header {
         background: var(--midnight);
-        padding: 20px;
+        padding: 25px;
         color: white;
         border-bottom: 4px solid var(--accent);
     }
 
     .profile-img-preview {
-        width: 70px;
-        height: 70px;
-        border-radius: 0 !important; 
+        width: 100px;
+        height: 100px;
+        border-radius: 50% !important;
         object-fit: cover;
-        border: 3px solid white;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .form-control, .form-select, .btn {
-        border-radius: 0 !important; 
+    .form-control, .form-select {
+        border-radius: 12px !important;
         background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
         font-weight: 600;
+        padding: 12px;
     }
-
-    /* FIXED SAVE BAR & BUTTONS (Sharp Edges) */
+    
     .save-bar {
         position: fixed;
-        bottom: 0; /* Pinned to bottom for cleaner look */
+        bottom: 30px;
         left: 50%;
-        transform: translateX(-50%) translateY(100%);
-        width: 100%;
-        max-width: 100%;
+        transform: translateX(-50%) translateY(200%);
+        width: 90%;
+        max-width: 600px;
         background: var(--midnight);
-        padding: 15px 25px;
-        border-radius: 0 !important; 
-        z-index: 1100;
-        transition: 0.4s ease-in-out;
+        padding: 15px 30px;
+        border-radius: 50px !important;
+        z-index: 2000;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
     .save-bar.show { transform: translateX(-50%) translateY(0); }
 
-    /* Button Color Fix */
-    .btn-cancel-custom {
-        background: #334155 !important; /* Dark Slate for visibility */
-        color: white !important;
-        border: none;
-        padding: 8px 25px;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
-
     .btn-save-custom {
-        background: var(--accent) !important;
-        color: var(--midnight) !important;
-        border: none;
-        padding: 8px 25px;
-        font-weight: 800;
-        text-transform: uppercase;
+        background: var(--accent) !important; color: var(--midnight) !important;
+        border: none; padding: 10px 30px; font-weight: 800; border-radius: 30px !important;
     }
 
     .view-mode-only { display: block; }
     .edit-mode-only { display: none; }
+    
+    .verified-badge {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .d-none { display: none !important; }
+    .name-text-default { color: var(--midnight); font-weight: 900; font-size: 1.25rem; }
+    .name-text-error { color: #dc3545; font-weight: 700; }
 </style>
 
-<div class="container-fluid py-3">
+<div class="container-fluid py-4">
     <div class="dash-flex">
         
-        <div class="side-nav">
-            <a href="{% url 'dashboard' %}" class="nav-item-link" title="Overview">
-                <i class="bi bi-grid-fill"></i>
-                <span class="nav-text">Overview</span>
-            </a>
-            <a href="{% url 'ad_analytics' %}" class="nav-item-link" title="Analytics">
-                <i class="bi bi-bar-chart-fill"></i>
-                <span class="nav-text">Analytics</span>
-            </a>
-            <a href="{% url 'promote_request' %}" class="nav-item-link" title="Promote">
-                <i class="bi bi-megaphone-fill"></i>
-                <span class="nav-text">Promote</span>
-            </a>
-            <a href="{% url 'edit_profile' %}" class="nav-item-link active" title="Settings">
-                <i class="bi bi-gear-fill"></i>
-                <span class="nav-text">Settings</span>
-            </a>
-        </div>
+        {% include 'core/includes/_sidebar.html' %}
 
         <div class="flex-grow-1">
             <form method="POST" enctype="multipart/form-data" id="profileForm">
@@ -155,61 +96,72 @@
                 
                 <div class="edit-profile-card">
                     <div class="edit-header d-flex justify-content-between align-items-center">
-                        <h6 class="fw-900 mb-0">ACCOUNT SETTINGS</h6>
-                        <button type="button" class="btn btn-sm btn-outline-warning fw-800 px-3" id="toggleEditBtn">
-                            EDIT
-                        </button>
+                        <h6 class="fw-900 mb-0" style="letter-spacing: 1px;">MY PROFILE SETTINGS</h6>
+                        <button type="button" class="btn btn-sm btn-outline-warning fw-800 px-4" id="toggleEditBtn" style="border-radius:30px;">EDIT</button>
                     </div>
 
-                    <div class="p-3">
-                        <div class="text-center mb-4">
+                    <div class="p-4">
+                        <div class="text-center mb-5 mt-2">
                             <div class="position-relative d-inline-block">
-                                <img src="{{ user.profile.image.url }}" class="profile-img-preview" id="imagePreview">
-                                <label for="id_image" class="position-absolute bottom-0 end-0 bg-warning p-1" style="cursor:pointer; width:25px; height:25px; display:flex; align-items:center; justify-content:center;">
-                                    <i class="bi bi-camera-fill text-dark" style="font-size: 0.8rem;"></i>
+                                <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% else %}https://ui-avatars.com/api/?name={{ user.username }}&background=0f172a&color=ffc107&bold=true{% endif %}" 
+                                     class="profile-img-preview" id="imagePreview">
+                                
+                                <label for="id_image" class="position-absolute bottom-0 end-0 bg-warning shadow-sm" 
+                                       style="cursor:pointer; width:35px; height:35px; border-radius: 50%; display:flex; align-items:center; justify-content:center; border: 2px solid white;">
+                                    <i class="bi bi-camera-fill text-dark"></i>
                                 </label>
-                                <div style="display: none;">{{ form.image }}</div>
+                                
+                                <input type="file" name="image" id="id_image" style="display: none;" accept="image/*">
                             </div>
-                            <h6 class="fw-900 mt-2 mb-0">{{ user.username|upper }}</h6>
+                            <h5 class="fw-900 mt-3 mb-0 text-dark">{{ user.username|upper }}</h5>
+                            <span class="badge bg-dark text-warning rounded-pill px-3">{{ user.profile.user_type }}</span>
                         </div>
 
-                        <div class="mb-4">
-                            <label class="fw-900 small text-muted text-uppercase mb-1">Business WhatsApp</label>
-                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
-                                {{ user.profile.whatsapp_number|default:"None" }}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="fw-900 small text-muted text-uppercase mb-2 ps-1">Email Address</label>
+                                <div class="view-mode-only fw-bold text-midnight bg-light p-3 rounded-4 border">{{ user.email }}</div>
+                                <input type="email" name="email" class="form-control edit-mode-only" value="{{ user.email }}">
                             </div>
-                            <div class="edit-mode-only">
-                                {{ form.whatsapp_number }}
-                            </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="fw-900 small text-muted text-uppercase mb-1">Payout Bank</label>
-                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
-                                {{ user.profile.get_bank_name_display|default:"None" }}
+                            <div class="col-md-6">
+                                <label class="fw-900 small text-muted text-uppercase mb-2 ps-1">Seller Contact Info</label>
+                                <div class="view-mode-only fw-bold text-midnight bg-light p-3 rounded-4 border">{{ user.profile.whatsapp_number|default:"Not Set" }}</div>
+                                <input type="text" name="whatsapp_number" class="form-control edit-mode-only" value="{{ user.profile.whatsapp_number }}" placeholder="e.g. 08012345678">
                             </div>
-                            <div class="edit-mode-only">
-                                {{ form.bank_name }}
-                            </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="fw-900 small text-muted text-uppercase mb-1">Account Number</label>
-                            <div class="view-mode-only fw-bold text-midnight border-bottom pb-2">
-                                {{ user.profile.account_number|default:"None" }}
+                            <div class="col-md-6">
+                                <label class="fw-900 small text-muted text-uppercase mb-2 ps-1">Payout Bank</label>
+                                <div class="view-mode-only fw-bold text-midnight bg-light p-3 rounded-4 border">{{ user.profile.get_bank_name_display|default:"Not Set" }}</div>
+                                <select name="bank_name" id="id_bank_name" class="form-select edit-mode-only">
+                                    {% for code, name in user.profile.BANK_CHOICES %}
+                                        <option value="{{ code }}" {% if user.profile.bank_name == code %}selected{% endif %}>{{ name }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                            <div class="edit-mode-only">
-                                {{ form.account_number }}
+
+                            <div class="col-md-6">
+                                <label class="fw-900 small text-muted text-uppercase mb-2 ps-1">Account Number</label>
+                                <div class="view-mode-only fw-bold text-midnight bg-light p-3 rounded-4 border">{{ user.profile.account_number|default:"Not Set" }}</div>
+                                <input type="text" name="account_number" id="id_account_number" class="form-control edit-mode-only" value="{{ user.profile.account_number }}" maxlength="10">
+                            </div>
+
+                            <div class="col-md-12 mt-3 {% if not user.profile.account_name %}d-none{% endif %}" id="verifiedNameBox">
+                                <div class="p-3 verified-badge rounded-4">
+                                    <small class="fw-bold text-uppercase">Verified Account Name</small>
+                                    <div id="account_name_display" class="name-text-default">{{ user.profile.account_name }}</div>
+                                    <input type="hidden" name="account_name" id="id_account_name" value="{{ user.profile.account_name }}">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="save-bar d-flex justify-content-between align-items-center shadow-lg" id="saveBar">
-                    <small class="text-white fw-bold">UNSAVED CHANGES</small>
+                    <small class="text-white fw-bold ps-2">YOU HAVE UNSAVED CHANGES</small>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-cancel-custom" onclick="window.location.reload()">NO</button>
-                        <button type="submit" class="btn btn-save-custom">SAVE</button>
+                        <button type="button" class="btn btn-outline-light rounded-pill px-4" onclick="window.location.reload()">DISCARD</button>
+                        <button type="submit" class="btn btn-save-custom shadow">SAVE CHANGES</button>
                     </div>
                 </div>
             </form>
@@ -219,43 +171,60 @@
 
 <script>
     const toggleBtn = document.getElementById('toggleEditBtn');
-    const viewElements = document.querySelectorAll('.view-mode-only');
-    const editElements = document.querySelectorAll('.edit-mode-only');
+    const viewEls = document.querySelectorAll('.view-mode-only');
+    const editEls = document.querySelectorAll('.edit-mode-only');
     const saveBar = document.getElementById('saveBar');
-    const imageInput = document.querySelector('input[type="file"]');
+    const imageInput = document.getElementById('id_image'); 
     const imagePreview = document.getElementById('imagePreview');
+    
+    const bankEl = document.getElementById('id_bank_name');
+    const accEl = document.getElementById('id_account_number');
+    const nameBox = document.getElementById('verifiedNameBox');
+    const nameDisplay = document.getElementById('account_name_display');
+    const nameInput = document.getElementById('id_account_name');
 
-    // 1. Logic for Manual Edit Button
     toggleBtn.addEventListener('click', function() {
-        const isEditing = toggleBtn.innerText === 'CANCEL';
-        if (isEditing) {
-            viewElements.forEach(el => el.style.display = 'block');
-            editElements.forEach(el => el.style.display = 'none');
-            toggleBtn.innerText = 'EDIT';
-            saveBar.classList.remove('show');
-        } else {
-            viewElements.forEach(el => el.style.display = 'none');
-            editElements.forEach(el => el.style.display = 'block');
-            toggleBtn.innerText = 'CANCEL';
-            saveBar.classList.add('show');
+        const isEdit = this.innerText === 'EDIT';
+        viewEls.forEach(el => el.style.display = isEdit ? 'none' : 'block');
+        editEls.forEach(el => el.style.display = isEdit ? 'block' : 'none');
+        this.innerText = isEdit ? 'CANCEL' : 'EDIT';
+        if (!isEdit) saveBar.classList.remove('show');
+    });
+
+    imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                saveBar.classList.add('show');
+                if(toggleBtn.innerText === 'EDIT') toggleBtn.click();
+            };
+            reader.readAsDataURL(this.files[0]);
         }
     });
 
-    // 2. Logic for Image Upload (Shows SAVE button immediately)
-    imageInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => imagePreview.setAttribute('src', e.target.result);
-            reader.readAsDataURL(file);
-            
-            // Force Save Bar to appear after image is picked
-            saveBar.classList.add('show');
-            // Also sync the edit button text
-            toggleBtn.innerText = 'CANCEL';
-            viewElements.forEach(el => el.style.display = 'none');
-            editElements.forEach(el => el.style.display = 'block');
+    async function checkAccount() {
+        if (bankEl.value && accEl.value.length === 10) {
+            nameBox.classList.remove('d-none');
+            nameDisplay.innerHTML = 'Verifying...';
+            try {
+                const response = await fetch(`/verify-bank-account/?bank_code=${bankEl.value}&account_number=${accEl.value}`);
+                const data = await response.json();
+                if (data.status) {
+                    nameDisplay.innerText = data.account_name;
+                    nameInput.value = data.account_name;
+                    nameDisplay.className = "name-text-default";
+                    saveBar.classList.add('show');
+                } else {
+                    nameDisplay.innerText = "Account not found";
+                    nameDisplay.className = "name-text-error";
+                }
+            } catch (e) {
+                nameDisplay.innerText = "Verification error";
+            }
         }
-    });
+    }
+    bankEl.addEventListener('change', checkAccount);
+    accEl.addEventListener('input', checkAccount);
 </script>
-{% endblock %}
+{% endblock %}w

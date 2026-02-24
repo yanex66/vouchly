@@ -8,15 +8,10 @@
         --v-accent: #ffc107;
         --v-green: #16a34a;
         --v-bg: #f8fafc;
-        --v-radius: 24px; /* Global Curve Variable */
+        --v-radius: 24px;
     }
 
     body { background-color: var(--v-bg); }
-
-    /* --- CURVED GLOBAL DESIGN --- */
-    .btn, .card, .form-control, .badge, .checkout-card, .order-summary-box {
-        border-radius: var(--v-radius) !important;
-    }
 
     .fw-900 { font-weight: 900; }
 
@@ -24,104 +19,128 @@
     .checkout-card {
         background: white;
         border: 1px solid rgba(15, 23, 42, 0.05);
+        border-radius: var(--v-radius);
         padding: 40px;
         box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-        max-width: 600px;
+        max-width: 550px;
         margin: 50px auto;
         overflow: hidden;
+        position: relative;
+    }
+
+    /* IRON-CLAD BANNER (Matches Dashboard) */
+    .escrow-banner {
+        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        color: white;
+        padding: 15px 25px;
+        margin: -40px -40px 30px -40px; /* Bleed to edges */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 4px solid var(--v-accent);
     }
 
     .order-summary-box {
         background: #f8fafc;
         border: 2px dashed #e2e8f0;
+        border-radius: 16px;
         padding: 25px;
         margin-bottom: 30px;
     }
 
-    /* PILL-SHAPED BANNER */
-    .escrow-protection-banner {
-        background: var(--v-accent);
-        color: var(--midnight);
-        padding: 10px 20px;
-        text-align: center;
-        font-weight: 800;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        margin-bottom: 30px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50px !important; /* Force pill shape */
-        width: 100%;
-    }
-
-    /* PILL-SHAPED PAYMENT BUTTONS */
+    /* PAYMENT BUTTONS */
     .payment-btn {
         width: 100%;
-        padding: 18px;
+        padding: 16px;
         font-weight: 800;
         text-transform: uppercase;
         border: none;
         margin-bottom: 15px;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 50px !important; /* Force pill shape */
+        transition: 0.2s;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
     }
 
-    .btn-paystack { background: #00c3f7; color: white; box-shadow: 0 10px 20px rgba(0, 195, 247, 0.2); }
-    .btn-flutterwave { background: #f5a623; color: white; box-shadow: 0 10px 20px rgba(245, 166, 35, 0.2); }
+    .btn-paystack { background: #00c3f7; color: white; }
+    .btn-paystack:hover { background: #00afe0; transform: translateY(-2px); }
 
-    .payment-btn:hover {
-        transform: translateY(-3px);
-        filter: brightness(1.1);
-        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
-    }
+    .btn-flutterwave { background: #f5a623; color: white; }
+    .btn-flutterwave:hover { background: #e0961f; transform: translateY(-2px); }
 
-    .security-text {
-        font-size: 0.8rem;
-        color: #64748b;
-        text-align: center;
-        line-height: 1.6;
-        padding: 0 10px;
+    .guarantee-badge {
+        font-size: 0.75rem;
+        background: #ecfdf5;
+        color: #059669;
+        padding: 8px 15px;
+        border-radius: 30px;
+        display: inline-block;
+        font-weight: 700;
+        border: 1px solid #a7f3d0;
+        margin-bottom: 20px;
     }
 </style>
 
 <div class="container">
     <div class="checkout-card">
         
-        <div class="escrow-protection-banner shadow-sm">
-            <i class="bi bi-shield-lock-fill me-2"></i> ESCROW PROTECTION ACTIVE
+        <div class="escrow-banner">
+            <i class="bi bi-shield-lock-fill fs-4 me-2 text-warning"></i>
+            <div class="lh-1 text-start">
+                <div class="fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Iron-Clad Escrow</div>
+                <div class="small opacity-75" style="font-size: 0.65rem;">Funds frozen until delivery confirmed</div>
+            </div>
         </div>
 
-        <h3 class="fw-800 mb-4 text-center" style="letter-spacing: -1px;">ORDER CHECKOUT</h3>
+        <div class="text-center">
+            <div class="guarantee-badge">
+                <i class="bi bi-check-circle-fill me-1"></i> 48-Hour Auto-Refund Guarantee
+            </div>
+        </div>
+
+        <h4 class="fw-900 text-center mb-4 text-dark">SECURE CHECKOUT</h4>
 
         <div class="order-summary-box">
             <div class="d-flex justify-content-between mb-2">
                 <span class="small fw-bold text-muted">ITEM</span>
-                <span class="small fw-800 text-midnight">{{ order.item.name|upper }}</span>
+                <span class="small fw-800 text-dark">{{ order.item.name|truncatechars:25 }}</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
                 <span class="small fw-bold text-muted">SELLER</span>
-                <span class="small fw-800 text-midnight">{{ order.seller.username|upper }}</span>
+                <span class="small fw-800 text-dark">{{ order.seller.username }}</span>
             </div>
-            <hr class="my-3 opacity-10">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="small fw-bold text-muted">ESCROW FEE</span>
+                <span class="small fw-bold text-success">INCLUDED</span>
+            </div>
+            
+            <hr class="my-3 opacity-25">
+            
             <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-800 text-muted">TOTAL DUE</span>
-                <span class="h3 fw-900 mb-0 text-success">₦{{ order.amount|floatformat:2 }}</span>
+                <span class="fw-800 text-muted">TOTAL PAYABLE</span>
+                <span class="h3 fw-900 mb-0 text-dark">₦{{ order.amount|floatformat:2 }}</span>
             </div>
         </div>
 
-        <p class="small fw-bold text-center mb-4 text-muted">Select a secure payment gateway:</p>
+        <p class="small fw-bold text-center mb-3 text-muted">Select Secure Gateway:</p>
 
-        <button type="button" class="payment-btn btn-paystack" onclick="payWithPaystack()">
-            <i class="bi bi-credit-card-2-front-fill me-2"></i> Pay with Paystack
+        <button type="button" class="payment-btn btn-paystack shadow-sm" onclick="payWithPaystack()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/db/Paystack_Logo.png" alt="Paystack" style="height: 20px; filter: brightness(0) invert(1);" class="me-2">
+            Pay Securely
         </button>
 
-        <button type="button" class="payment-btn btn-flutterwave" onclick="payWithFlutterwave()">
+        <button type="button" class="payment-btn btn-flutterwave shadow-sm" onclick="payWithFlutterwave()">
             <i class="bi bi-lightning-fill me-2"></i> Pay with Flutterwave
         </button>
 
-        <div class="mt-4 security-text">
-            <p class="mb-0"><strong>Secured Transaction:</strong> Vouchly holds your funds in the Desk vault. We only release payment to the seller after you confirm receipt of your item with your secret PIN.</p>
+        <div class="mt-4 text-center border-top pt-3">
+            <small class="text-muted d-block" style="font-size: 0.7rem; line-height: 1.4;">
+                <i class="bi bi-lock-fill"></i> 
+                Your money is held in the <strong>Vouchly Vault</strong>. 
+                The seller cannot touch it until you verify the item using your secret PIN.
+            </small>
         </div>
 
     </div>
@@ -139,11 +158,14 @@
         let handler = PaystackPop.setup({
             key: publicKey,
             email: userEmail,
-            amount: orderAmount * 100,
+            amount: orderAmount * 100, // Kobo
             currency: 'NGN',
             ref: 'order_' + "{{ order.id }}" + '_' + Math.floor((Math.random() * 1000000000) + 1),
             callback: function(response) {
                 window.location.href = "{% url 'verify_product_payment' %}?reference=" + response.reference + "&gateway=paystack";
+            },
+            onClose: function(){
+                alert('Transaction was not completed, window closed.');
             }
         });
         handler.openIframe();
@@ -167,7 +189,8 @@
             },
             customizations: {
                 title: "Vouchly Escrow",
-                description: "Payment for " + itemName,
+                description: "Secure Payment for " + itemName,
+                logo: "https://vouchly.store/static/core/images/logo.png", // Replace with your logo URL if available
             },
         });
     }

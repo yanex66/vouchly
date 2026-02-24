@@ -109,6 +109,7 @@
         border: none; border-radius: 15px; padding: 16px;
         font-weight: 800; width: 100%; text-transform: uppercase;
         transition: 0.3s;
+        cursor: pointer;
     }
 
     .btn-auth-premium:hover {
@@ -125,31 +126,44 @@
         </div>
 
         <div class="auth-body">
-           {% load static %}
+            {% load static %}
 
-<!-- <a href="{% provider_login_url 'google' %}" class="btn-google-premium"> -->
-    <a href="{% provider_login_url 'google' %}" class="btn-google-premium">
-    <img src="{% static 'core/images/google-logo.png' %}" 
-         alt="Google Logo" 
-         style="height: 18px; margin-right: 12px;">
-    SIGN IN WITH GOOGLE
-</a>
+            <a href="{% provider_login_url 'google' %}" class="btn-google-premium">
+                <img src="{% static 'core/images/google-logo.png' %}" alt="Google" style="height: 18px; margin-right: 12px;">
+                SIGN IN WITH GOOGLE
+            </a>
 
             <div class="auth-divider">Or use email</div>
 
-            <form method="POST">
+            {% if form.errors %}
+                <div class="alert alert-danger border-0 small fw-bold mb-4" style="border-radius: 15px; background: #fee2e2; color: #991b1b; padding: 15px;">
+                    {% for field in form %}
+                        {% for error in field.errors %}{{ error }}{% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
+                
                 <div class="mb-4">
                     <label class="form-label-custom">Email Address</label>
-                    <input type="email" name="username" class="input-custom" placeholder="name@example.com" required>
+                    <input type="email" name="login" class="input-custom" placeholder="name@example.com" required autocomplete="email">
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="form-label-custom">Password</label>
-                    <input type="password" name="password" class="input-custom" placeholder="••••••••" required>
+                    <input type="password" name="password" class="input-custom" placeholder="••••••••" required autocomplete="current-password">
                 </div>
 
-                <button class="btn btn-auth-premium shadow-sm" type="submit">Log In</button>
+                <div class="text-end mb-4">
+                    <a href="{% url 'password_reset' %}" class="small fw-bold text-decoration-none" style="color: var(--midnight); font-size: 0.7rem;">
+                        FORGOT PASSWORD?
+                    </a>
+                </div>
+
+                <button class="btn-auth-premium shadow-sm" type="submit">Log In</button>
             </form>
 
             <div class="mt-5 text-center">

@@ -43,7 +43,6 @@ class Item(models.Model):
     commission_naira = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     
     # --- HYBRID ESCROW LOGIC ---
-    # Set this to FALSE in Admin for products like Travelstart
     is_escrow_required = models.BooleanField(default=True, help_text="Uncheck for Admin/Agency items that don't need internal payment.")
     external_url = models.URLField(blank=True, null=True, help_text="Direct link for Agency items (e.g. Travelstart)")
     
@@ -103,7 +102,12 @@ class ProductReferral(models.Model):
 
 # --- 4. USER PROFILES, WALLET & VERIFICATION ---
 class Profile(models.Model):
-    USER_TYPES = [('MARKETER', 'Marketer'), ('ADVERTISER', 'Advertiser')]
+    USER_TYPES = [
+        ('MARKETER', 'Marketer'), 
+        ('ADVERTISER', 'Advertiser'),
+        ('BUYER', 'Buyer')
+    ]
+    
     VERIFICATION_STATUS = [
         ('UNVERIFIED', 'Unverified'),
         ('PENDING', 'Pending Review'),
@@ -111,19 +115,44 @@ class Profile(models.Model):
         ('REJECTED', 'Rejected'),
     ]
 
+    # Values updated to official Paystack/Nigerian Bank Codes for API auto-verification
     BANK_CHOICES = [
-        ('', 'Select Bank'), ('access', 'Access Bank'), ('gtbank', 'GTB'), 
-        ('zenith', 'Zenith Bank'), ('opay', 'OPay'), ('kuda', 'Kuda Bank'), 
-        ('palmpay', 'PalmPay'), ('moniepoint', 'Moniepoint MFB')
+        ('', 'Select Bank'),
+        ('044', 'Access Bank'),
+        ('050', 'Ecobank'),
+        ('070', 'Fidelity Bank'),
+        ('011', 'First Bank of Nigeria'),
+        ('214', 'First City Monument Bank (FCMB)'),
+        ('058', 'Guaranty Trust Bank (GTB)'),
+        ('030', 'Heritage Bank'),
+        ('082', 'Keystone Bank'),
+        ('50211', 'Kuda Bank'),
+        ('50515', 'Moniepoint MFB'),
+        ('999992', 'OPay'),
+        ('999991', 'PalmPay'),
+        ('076', 'Polaris Bank'),
+        ('221', 'Stanbic IBTC Bank'),
+        ('068', 'Standard Chartered Bank'),
+        ('232', 'Sterling Bank'),
+        ('032', 'Union Bank of Nigeria'),
+        ('033', 'United Bank for Africa (UBA)'),
+        ('035', 'Wema Bank'),
+        ('057', 'Zenith Bank'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='MARKETER')
     verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='UNVERIFIED')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Seller Contact Information
+    whatsapp_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Seller Contact Info")
+    
+    # Wallet Balances
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     token_rewards = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    
+    # Bank Details for Payouts
     bank_name = models.CharField(max_length=100, choices=BANK_CHOICES, null=True, blank=True)
     account_number = models.CharField(max_length=10, null=True, blank=True)
     account_name = models.CharField(max_length=100, null=True, blank=True)
@@ -155,9 +184,10 @@ class SubscriptionPrice(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Waiting for Payment'),
-        ('PAID', 'Paid (Held in Escrow)'),
+        ('PAID', 'Paid - Funds Held in Escrow'), 
         ('SHIPPED', 'In Transit'),
         ('COMPLETED', 'Delivered & Funds Released'),
+        ('REFUNDED', 'Refunded to Buyer'),
         ('CANCELLED', 'Cancelled'),
     ]
 
@@ -165,17 +195,35 @@ class Order(models.Model):
     buyer = models.ForeignKey(User, related_name='purchases', on_delete=models.CASCADE)
     seller = models.ForeignKey(User, related_name='sales', on_delete=models.CASCADE)
     referrer = models.ForeignKey(User, related_name='referred_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    commission_earned = models.DecimalField(max_digits=12, decimal_places=2)
+    commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    
+    # --- VERIFICATION FIELDS ---
     delivery_pin = models.CharField(max_length=4, blank=True)
+    is_delivered = models.BooleanField(default=False)
     payment_reference = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    
+    # --- AUTO-REFUND TIMER ---
     created_at = models.DateTimeField(auto_now_add=True)
+    refund_deadline = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        # 1. Auto-generate 4-digit PIN if missing
         if not self.delivery_pin:
             self.delivery_pin = str(random.randint(1000, 9999))
+            
+        # 2. Set Auto-Refund Deadline (48 Hours from creation)
+        if not self.refund_deadline:
+            base_time = self.created_at if self.created_at else timezone.now()
+            self.refund_deadline = base_time + timedelta(hours=48)
+            
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.item.name}"
 
 # --- 7. OTHERS & SIGNALS ---
 class Referral(models.Model):

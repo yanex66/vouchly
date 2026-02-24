@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block content %}
 <style>
@@ -7,236 +7,169 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
-        --v-green: #16a34a;
     }
     
     body { background-color: var(--soft-bg); }
 
-    /* --- STRICT SHARP DESIGN --- */
-    .mini-sidebar, .nav-icon-link, .wallet-card, .stat-card, .table-card, .btn-sharp, .badge, .opp-card {
-        border-radius: 0 !important;
+    .stat-card-inner, .table-card, .btn-action-curved, .badge {
+        border-radius: 20px !important;
     }
 
-    /* --- SIDEBAR LAYOUT --- */
     .dash-flex-wrapper {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         align-items: flex-start;
-        padding: 15px;
+        padding: 20px;
     }
 
-    .mini-sidebar {
-        width: 55px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 80px;
+    .stat-card-inner {
         background: white;
-        padding: 15px 5px;
-        box-shadow: 5px 0 15px rgba(0,0,0,0.03);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        padding: 25px;
         border: 1px solid #e2e8f0;
+        height: 100%;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
     }
+    
+    .stat-card-inner:hover { transform: translateY(-5px); }
 
-    .nav-icon-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: var(--midnight);
-        text-decoration: none;
-        margin-bottom: 12px;
-    }
-
-    .nav-icon-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-    }
-
-    .nav-label { display: none; }
-
-    @media (min-width: 992px) {
-        .mini-sidebar { width: 250px; align-items: stretch; padding: 25px; }
-        .nav-icon-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 18px; }
-        .nav-label { display: inline; margin-left: 15px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; }
-    }
-
-    /* --- WALLET SECTION --- */
-    .wallet-card {
-        background: var(--midnight);
-        padding: 30px;
-        color: white;
-        border-bottom: 8px solid var(--accent);
-        margin-bottom: 25px;
-    }
-
-    .vn-merged {
-        font-weight: 900;
-        color: var(--accent);
-        letter-spacing: -3px; 
-        font-style: italic;
-        margin-right: 5px;
-    }
-
-    /* --- TABLES & CARDS --- */
     .table-card {
         background: white;
         border: 1px solid #e2e8f0;
         padding: 25px;
-        margin-top: 25px;
+        margin-bottom: 30px;
     }
 
-    .stat-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        padding: 20px;
-        text-align: center;
+    .btn-action-curved {
+        border-radius: 30px !important;
+        font-weight: 700;
+        padding: 12px 25px;
     }
 
-    .opp-card {
-        background: #fff;
-        border: 2px solid var(--midnight);
-        padding: 15px;
-        text-decoration: none;
-        display: block;
-        transition: 0.2s;
+    .badge-pill-custom {
+        border-radius: 30px !important;
+        padding: 6px 12px;
+        font-weight: 800;
+        font-size: 0.65rem;
     }
 
-    .opp-card:hover {
-        transform: translate(-4px, -4px);
-        box-shadow: 8px 8px 0px var(--accent);
+    .user-pill {
+        background: #f1f5f9;
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--midnight);
+    }
+
+    @media (max-width: 991px) {
+        .dash-flex-wrapper { padding: 10px; gap: 10px; }
     }
 </style>
 
 <div class="container-fluid">
     <div class="dash-flex-wrapper">
         
-        <div class="mini-sidebar">
-            <a href="{% url 'dashboard' %}" class="nav-icon-link active">
-                <i class="bi bi-grid-fill"></i>
-                <span class="nav-label">Overview</span>
-            </a>
-            <a href="{% url 'marketplace' %}" class="nav-icon-link">
-                <i class="bi bi-shop"></i>
-                <span class="nav-label">Marketplace</span>
-            </a>
-            <a href="{% url 'referrals_page' %}" class="nav-icon-link">
-                <i class="bi bi-people-fill"></i>
-                <span class="nav-label">Referrals</span>
-            </a>
-            <a href="{% url 'edit_profile' %}" class="nav-icon-link">
-                <i class="bi bi-gear-fill"></i>
-                <span class="nav-label">Settings</span>
-            </a>
-            <hr class="w-100 border-dark my-3">
-            <a href="{% url 'logout' %}" class="nav-icon-link text-danger">
-                <i class="bi bi-power"></i>
-                <span class="nav-label">Sign Out</span>
-            </a>
-        </div>
+        {% include 'core/includes/_sidebar.html' %}
 
-        <div class="flex-grow-1">
+        <div class="flex-grow-1" style="min-width: 0;">
             
-            <div class="wallet-card shadow-sm">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h6 class="fw-bold opacity-50 small mb-1">TOTAL WITHDRAWABLE BALANCE</h6>
-                        <h1 class="fw-900 mb-0" style="font-size: 3.5rem;">
-                            <span class="vn-merged">VN</span>{{ available_balance|floatformat:2 }}
-                        </h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-900 mb-0">Marketer Hub</h2>
+                    <p class="text-muted mb-0">Monitoring your referred network and earnings</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'referrals_page' %}" class="btn btn-outline-dark btn-action-curved">
+                        <i class="bi bi-person-plus me-2"></i> INVITE
+                    </a>
+                    <a href="{% url 'request_payout' %}" class="btn btn-dark btn-action-curved shadow">
+                        <i class="bi bi-cash-stack me-2"></i> WITHDRAW ₦
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card-inner border-start border-5 border-success">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="small fw-bold text-muted text-uppercase">Naira Balance</span>
+                            <i class="bi bi-wallet2 text-success fs-5"></i>
+                        </div>
+                        <h2 class="fw-900 mb-0 text-dark">₦{{ available_balance|floatformat:2|intcomma }}</h2>
                     </div>
-                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="{% url 'request_payout' %}" class="btn btn-warning btn-sharp px-5 py-3 fw-900">WITHDRAW FUNDS</a>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card-inner border-start border-5 border-primary">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="small fw-bold text-muted text-uppercase">Total Network</span>
+                            <i class="bi bi-people-fill text-primary fs-5"></i>
+                        </div>
+                        <h2 class="fw-900 mb-0 text-dark">{{ request.user.referrals.count|default:"0" }}</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card-inner border-start border-5 border-warning">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="small fw-bold text-muted text-uppercase">Token Rewards</span>
+                            <i class="bi bi-coin text-warning fs-5"></i>
+                        </div>
+                        <h2 class="fw-900 mb-0 text-dark">{{ request.user.profile.token_rewards|floatformat:0 }}</h2>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <small class="fw-900 text-muted d-block">CLICKS</small>
-                        <h3 class="fw-900 mb-0">412</h3> </div>
+            <div class="table-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-900 mb-0">LIVE NETWORK FLOW</h5>
+                    <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Tracking Buyer-Seller Deals</span>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <small class="fw-900 text-muted d-block">PENDING</small>
-                        <h3 class="fw-900 mb-0 text-warning">₦2,400</h3> </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <small class="fw-900 text-muted d-block">SETTLED</small>
-                        <h3 class="fw-900 mb-0 text-success">₦18,950</h3> </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <small class="fw-900 text-muted d-block">NETWORK</small>
-                        <h3 class="fw-900 mb-0">{{ my_referrals.paginator.count|default:0 }}</h3>
-                    </div>
-                </div>
-            </div>
 
-            <div class="table-card shadow-sm mb-4">
-                <h5 class="fw-900 mb-4" style="letter-spacing: -1px;">ESCROW REFERRALS (PENDING)</h5>
                 <div class="table-responsive">
-                    <table class="table align-middle">
+                    <table class="table table-hover align-middle">
                         <thead class="bg-light">
                             <tr>
-                                <th class="border-0 small fw-900">ITEM</th>
-                                <th class="border-0 small fw-900">STATUS</th>
-                                <th class="border-0 small fw-900">YOUR COMMISSION</th>
-                                <th class="border-0 small fw-900 text-end">EXPECTED BY</th>
+                                <th>Transaction</th>
+                                <th>The Deal</th>
+                                <th>Status</th>
+                                <th class="text-end">Commission</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for order in referred_orders %}
-                            <tr>
-                                <td class="fw-bold">{{ order.item.name|upper }}</td>
+                            <tr class="order-row">
                                 <td>
-                                    {% if order.status == 'PAID' %}
-                                        <span class="badge bg-info text-white">ESCROW HELD</span>
+                                    <div class="fw-900 text-dark small">{{ order.item.name|upper }}</div>
+                                    <div class="extra-small text-muted fw-bold">{{ order.created_at|date:"M d, Y" }}</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="user-pill"><i class="bi bi-person me-1"></i> {{ order.buyer.username }} (Buyer)</span>
+                                        <span class="user-pill" style="background: #fff9e6;"><i class="bi bi-shop me-1"></i> {{ order.seller.username }} (Seller)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if order.status == 'COMPLETED' %}
+                                        <span class="badge badge-pill-custom bg-success bg-opacity-10 text-success">COMPLETED</span>
                                     {% elif order.status == 'SHIPPED' %}
-                                        <span class="badge bg-warning text-dark">IN TRANSIT</span>
+                                        <span class="badge badge-pill-custom bg-primary bg-opacity-10 text-primary">SHIPPED</span>
+                                    {% else %}
+                                        <span class="badge badge-pill-custom bg-warning bg-opacity-10 text-warning">IN ESCROW</span>
                                     {% endif %}
                                 </td>
-                                <td class="fw-900 text-success">₦{{ order.commission_earned|floatformat:2 }}</td>
-                                <td class="text-end text-muted small fw-bold">Upon PIN Entry</td>
+                                <td class="text-end fw-900">
+                                    <span class="{% if order.status == 'COMPLETED' %}text-success{% else %}text-muted{% endif %}">
+                                        ₦{{ order.commission_earned|intcomma }}
+                                    </span>
+                                    <div class="extra-small fw-bold text-uppercase" style="font-size: 0.6rem;">
+                                        {% if order.status == 'COMPLETED' %}Settled{% else %}Pending{% endif %}
+                                    </div>
+                                </td>
                             </tr>
                             {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted fw-bold small">No pending escrow commissions.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="table-card shadow-sm mb-5">
-                <h5 class="fw-900 mb-4" style="letter-spacing: -1px;">AGENCY & DIRECT LEADS</h5>
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="border-0 small fw-900">PRODUCT</th>
-                                <th class="border-0 small fw-900">CLICKS</th>
-                                <th class="border-0 small fw-900">TOTAL EARNED</th>
-                                <th class="border-0 small fw-900 text-end">LAST ACTIVITY</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for stat in my_click_stats %}
-                            <tr>
-                                <td class="fw-bold">{{ stat.item.name|upper }}</td>
-                                <td><span class="badge bg-dark px-3">{{ stat.clicks }}</span></td>
-                                <td class="fw-900 text-success">₦{% widthratio stat.clicks 1 stat.item.commission_naira %}</td>
-                                <td class="text-end text-muted small fw-bold">{{ stat.last_click|date:"M d, H:i" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted fw-bold small">Share a link from the Marketplace to start earning.</td>
-                            </tr>
+                            <tr><td colspan="4" class="text-center py-5 text-muted fw-bold">No network activity detected yet.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>

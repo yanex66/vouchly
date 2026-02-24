@@ -20,7 +20,6 @@
 
     .fw-900 { font-weight: 900; }
     
-    /* BACK BUTTON STYLE */
     .back-btn {
         display: inline-flex;
         align-items: center;
@@ -38,7 +37,6 @@
         transform: translateX(-5px);
     }
 
-    /* CLICKABLE IMAGE WRAPPER */
     .detail-img-wrapper {
         border: 1px solid rgba(0,0,0,0.05);
         background: white;
@@ -136,6 +134,27 @@
         background: #f8fafc;
         font-weight: 600;
     }
+
+    /* RELATED ITEMS CUSTOM STYLE */
+    .r-card {
+        background: white;
+        transition: 0.3s;
+        border-radius: 20px !important;
+        overflow: hidden;
+        position: relative;
+    }
+    .r-card:hover { transform: translateY(-5px); }
+
+    .r-title-clamp {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--midnight);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 </style>
 
 <div class="container py-5 mt-3">
@@ -176,7 +195,11 @@
                 </span>
             </div>
 
-            <h2 class="fw-900 mb-4" style="color: #16a34a; font-size: 2.2rem;">₦{{ item.price|intcomma }}</h2>
+            {% if item.price > 0 %}
+                <h2 class="fw-900 mb-4" style="color: #16a34a; font-size: 2.2rem;">₦{{ item.price|intcomma }}</h2>
+            {% else %}
+                <h2 class="fw-900 mb-4 text-muted" style="font-size: 1.8rem;">PROMO DEAL</h2>
+            {% endif %}
             
             <p class="text-secondary mb-5 fw-500" style="line-height: 1.8; font-size: 1.1rem;">
                 {{ item.description }}
@@ -189,7 +212,8 @@
                     </a>
                 {% else %}
                     <a id="mainActionButton" href="{{ referral_link }}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
-                        <i class="bi bi-box-arrow-up-right me-2"></i> VISIT OFFICIAL SITE
+                        <i class="bi bi-box-arrow-up-right me-2"></i> 
+                        {% if item.price > 0 %}VISIT OFFICIAL SITE{% else %}GET STARTED NOW{% endif %}
                     </a>
                 {% endif %}
 
@@ -211,30 +235,17 @@
 
             {% if user.is_authenticated and user.profile.user_type == 'MARKETER' %}
             <div id="promoteArea" class="promote-card shadow-sm mb-4">
-                <div class="promote-header">
-                    Marketer Rewards Hub
-                </div>
+                <div class="promote-header">Marketer Rewards Hub</div>
                 <div class="p-4 bg-white">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-warning p-3 me-3" style="border-radius: 15px;">
-                            <i class="bi bi-percent text-midnight fs-4"></i> </div>
+                            <i class="bi bi-percent text-midnight fs-4"></i> 
+                        </div>
                         <div>
                             <div class="small fw-700 text-muted text-uppercase">Commission Rate</div>
-                            <div class="h4 mb-0 fw-900">
-                                {{ item.commission_percentage|default:"0" }}% <span class="fs-6 opacity-50">/ Sale</span>
-                            </div>
+                            <div class="h4 mb-0 fw-900">{{ item.commission_percentage|default:"0" }}% <span class="fs-6 opacity-50">/ Sale</span></div>
                         </div>
                     </div>
-
-                    {% if not item.is_escrow_required %}
-                    <div class="p-3 mb-4 bg-light border-start border-4 border-warning" style="border-radius: 12px;">
-                        <p class="small fw-600 text-midnight mb-0">
-                            <i class="bi bi-info-circle-fill me-2 text-warning"></i> 
-                            <strong>Note:</strong> Final commission depends on the specific plan chosen on the partner site.
-                        </p>
-                    </div>
-                    {% endif %}
-                    
                     <label class="small fw-800 text-muted mb-2 ps-1">SHAREABLE LINK</label>
                     <div class="d-flex p-1 bg-light" style="border-radius: 50px;">
                         <input type="text" class="form-control border-0 bg-transparent fw-bold" value="{{ referral_link }}" id="refLink" readonly>
@@ -274,13 +285,74 @@
     </div>
 </div>
 
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h4 class="fw-800 text-midnight mb-4">Community Vouches ({{ item.reviews.count }})</h4>
+            
+            {% for review in item.reviews.all %}
+                <div class="card border-0 shadow-sm p-4 mb-3" style="border-radius: 20px !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning text-midnight fw-bold d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-radius: 12px;">
+                                {{ review.rating }}★
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-800">{{ review.title }}</h6>
+                                <small class="text-muted">by {{ review.author.username }} • {{ review.created_at|timesince }} ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-secondary mb-0 mt-2" style="line-height: 1.6;">{{ review.content }}</p>
+                </div>
+            {% empty %}
+                <div class="text-center py-5 bg-white shadow-sm" style="border-radius: 24px;">
+                    <i class="bi bi-chat-heart text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 fw-bold">No vouches yet. Be the first to vouch for this!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<hr class="my-5 opacity-0">
+<div class="container pb-5">
+    <h3 class="fw-800 text-midnight mb-4">You Might Also Vouch For</h3>
+    <div class="row g-4">
+        {% for r_item in related_items %}
+        <div class="col-6 col-md-3">
+            <div class="r-card h-100 shadow-sm border-0">
+                <div style="height: 150px; overflow: hidden; margin: 8px; border-radius: 15px;">
+                    {% if r_item.image %}
+                        <img src="{{ r_item.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light w-100 h-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="p-3 pt-0">
+                    <h6 class="r-title-clamp mb-1">{{ r_item.name }}</h6>
+                    <div class="fw-900" style="color: #16a34a; font-size: 0.9rem;">
+                        {% if r_item.price > 0 %}₦{{ r_item.price|intcomma }}{% else %}PROMO{% endif %}
+                    </div>
+                    <a href="{% url 'item_detail' r_item.slug %}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted small ps-3">Explore more categories for similar deals!</p>
+        {% endfor %}
+    </div>
+</div>
+
 <script>
     function copyRef() {
         var copyText = document.getElementById("refLink");
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyText.value);
-        alert("Referral Link Copied! Share this to earn commission on every sale.");
+        alert("Referral Link Copied!");
     }
 
     function scrollToPromote() {

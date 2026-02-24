@@ -1,94 +1,133 @@
 {% load static %}
 <style>
-    /* High-Contrast Sidebar Overrides */
-    .dash-sidebar {
-        background: #ffffff !important;
-        border: 1px solid rgba(15, 23, 42, 0.1) !important;
-        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12) !important;
+    /* --- SHARED SIDEBAR STYLES (Curved) --- */
+    .side-nav {
+        width: 60px; 
+        flex-shrink: 0;
+        position: sticky;
+        top: 90px;
+        background: white;
+        border-radius: 25px !important; /* Unified curves */
+        padding: 20px 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #f1f5f9;
+        z-index: 99;
     }
 
-    .dash-nav .nav-link {
-        color: #334155 !important; /* Dark Slate - Much clearer than the previous grey */
-        font-weight: 700 !important;
-        opacity: 1 !important;
-        padding: 12px 18px !important;
-        margin-bottom: 5px !important;
+    /* Sidebar Header (Profile Area) */
+    .sidebar-header { display: none; } /* Hidden on mobile mini-sidebar */
+
+    .nav-item-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: var(--midnight);
+        text-decoration: none;
+        border-radius: 12px !important; 
+        margin-bottom: 10px;
+        transition: 0.2s;
+        position: relative;
     }
 
-    .dash-nav .nav-link i {
-        color: #64748b !important; /* Visible Slate-Blue for icons */
-        margin-right: 12px !important;
-        font-size: 1.1rem !important;
+    .nav-item-link:hover {
+        background-color: #f1f5f9;
+        transform: translateY(-2px);
     }
 
-    /* Active State Override */
-    .dash-nav .nav-link.active {
-        background-color: #0f172a !important; /* Deep Midnight */
-        color: #ffffff !important;
-        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.3) !important;
+    .nav-item-link.active {
+        background: var(--midnight);
+        color: var(--accent);
+        box-shadow: 0 5px 15px rgba(15, 23, 42, 0.2);
     }
 
-    .dash-nav .nav-link.active i {
-        color: #ffc107 !important; /* Gold icons on active state */
+    .nav-text { display: none; }
+
+    @media (min-width: 992px) {
+        .side-nav { width: 260px; align-items: stretch; padding: 25px; }
+        .sidebar-header { display: block; text-align: center; margin-bottom: 30px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; }
+        .nav-item-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 20px; }
+        .nav-text { display: inline; margin-left: 15px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
     }
 
-    .dash-nav .nav-link:hover:not(.active) {
-        background-color: #f1f5f9 !important;
-        color: #0f172a !important;
+    .profile-img-sidebar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent);
+        margin-bottom: 10px;
+    }
+
+    .role-badge {
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        padding: 5px 12px;
+        border-radius: 50px;
+        background: var(--midnight);
+        color: var(--accent);
+        display: inline-block;
     }
 </style>
 
-<div class="dash-sidebar mb-4 text-center">
-    <div class="mb-4">
+<div class="side-nav">
+    <div class="sidebar-header">
         <div class="position-relative d-inline-block">
-             {% if user.profile.image %}
-                <img src="{{ user.profile.image.url }}" class="rounded-circle border border-4 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-             {% else %}
-                <div class="rounded-circle border border-4 border-white shadow-sm bg-light d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                    <i class="bi bi-person-fill text-muted fs-1"></i>
-                </div>
-             {% endif %}
+            {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}" class="profile-img-sidebar shadow-sm">
+            {% elif request.user.profile.image %}
+                <img src="{{ request.user.profile.image.url }}" class="profile-img-sidebar shadow-sm">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0f172a&color=ffc107&bold=true" class="profile-img-sidebar shadow-sm">
+            {% endif %}
         </div>
-        
-        <h5 class="fw-800 mt-3 mb-0" style="color: #0f172a;">{{ user.username|upper }}</h5>
-        
-        <span class="badge {% if user.profile.user_type == 'ADVERTISER' %}bg-dark text-warning{% else %}bg-primary{% endif %} small fw-bold mt-1">
-            {{ user.profile.user_type }}
-        </span>
+        <h6 class="fw-900 mb-1 text-dark">{{ request.user.username|upper }}</h6>
+        <div class="role-badge">{{ request.user.profile.user_type|default:"MEMBER" }}</div>
     </div>
-    
-    <nav class="nav flex-column dash-nav text-start">
-        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
-            <i class="bi {% if user.profile.user_type == 'ADVERTISER' %}bi-grid-fill{% else %}bi-wallet2{% endif %}"></i> 
-            {% if user.profile.user_type == 'ADVERTISER' %}OVERVIEW{% else %}MY EARNINGS{% endif %}
-        </a>
 
-        {% if user.profile.user_type == 'ADVERTISER' %}
-            <a class="nav-link {% if request.resolver_match.url_name == 'ad_analytics' %}active{% endif %}" href="{% url 'ad_analytics' %}">
-                <i class="bi bi-graph-up-arrow"></i> AD ANALYTICS
-            </a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'promote_request' %}active{% endif %}" href="{% url 'promote_request' %}">
-                <i class="bi bi-megaphone-fill"></i> LIST PRODUCT
-            </a>
-        {% else %}
-            <a class="nav-link {% if request.resolver_match.url_name == 'referrals_page' %}active{% endif %}" href="{% url 'referrals_page' %}">
-                <i class="bi bi-people-fill"></i> ACCOUNT REFERRALS
-            </a>
-            <a class="nav-link" href="{% url 'home' %}">
-                <i class="bi bi-shop"></i> BROWSE PRODUCTS
-            </a>
-        {% endif %}
+    <a href="{% url 'dashboard' %}" class="nav-item-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="Overview">
+        <i class="bi bi-grid-fill"></i>
+        <span class="nav-text">Overview</span>
+    </a>
 
-        <a class="nav-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">
-            <i class="bi bi-person-gear"></i> SETTINGS
+    {% if request.user.profile.user_type == 'ADVERTISER' %}
+        <a href="{% url 'checkout_desk' %}" class="nav-item-link {% if request.resolver_match.url_name == 'checkout_desk' %}active{% endif %}" title="Orders">
+            <i class="bi bi-box-seam"></i>
+            <span class="nav-text">Checkout Desk</span>
         </a>
-        
-        <hr class="opacity-10 my-3">
-        <form action="{% url 'logout' %}" method="post" id="logout-form" style="display: none;">
-            {% csrf_token %}
-        </form>
-        <a class="nav-link text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="bi bi-power"></i> LOGOUT
+        <a href="{% url 'ad_analytics' %}" class="nav-item-link {% if request.resolver_match.url_name == 'ad_analytics' %}active{% endif %}" title="Analytics">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span class="nav-text">Analytics</span>
         </a>
-    </nav>
+        <a href="{% url 'promote_request' %}" class="nav-item-link {% if request.resolver_match.url_name == 'promote_request' %}active{% endif %}" title="Promote">
+            <i class="bi bi-megaphone-fill"></i>
+            <span class="nav-text">Promote</span>
+        </a>
+    {% else %}
+        <a href="{% url 'referrals_page' %}" class="nav-item-link {% if request.resolver_match.url_name == 'referrals_page' %}active{% endif %}" title="Referrals">
+            <i class="bi bi-people-fill"></i>
+            <span class="nav-text">Referrals</span>
+        </a>
+        <a href="{% url 'marketplace' %}" class="nav-item-link {% if request.resolver_match.url_name == 'marketplace' %}active{% endif %}" title="Browse">
+            <i class="bi bi-shop"></i>
+            <span class="nav-text">Marketplace</span>
+        </a>
+    {% endif %}
+
+    <a href="{% url 'edit_profile' %}" class="nav-item-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" title="Settings">
+        <i class="bi bi-gear-fill"></i>
+        <span class="nav-text">Settings</span>
+    </a>
+
+    <hr class="my-2 border-secondary opacity-25">
+
+    <a href="{% url 'logout' %}" class="nav-item-link text-danger" onclick="return confirm('Sign out?')" title="Sign Out">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="nav-text">Sign Out</span>
+    </a>
 </div>
