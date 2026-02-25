@@ -30,8 +30,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 # --- 2. APPS ---
 INSTALLED_APPS = [
-    # Cloudinary MUST be above django.contrib.staticfiles
-    'cloudinary_storage',
+    'cloudinary_storage', # Must be above staticfiles
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,8 +44,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django.contrib.humanize',
-    
-    # CORE APP CONFIG (Ensures signals.py is loaded)
     'core.apps.CoreConfig',
 ]
 
@@ -55,7 +52,7 @@ SITE_ID = 1
 # --- 3. MIDDLEWARE ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Essential for Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -101,14 +98,15 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# WhiteNoise storage
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# FIXED: Using CompressedStaticFilesStorage to avoid CSS manifest errors on Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Cloudinary Media Configuration
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
     'API_KEY': env('CLOUDINARY_API_KEY', default=''),
     'API_SECRET': env('CLOUDINARY_API_SECRET', default=''),
+    'SECURE': True, # FIXED: Forces HTTPS to prevent Mixed Content errors
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
