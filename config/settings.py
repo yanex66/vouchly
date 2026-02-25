@@ -100,8 +100,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Pointing only to the root 'static' folder. 
 # This removes the W004 warning because 'core' is already inside 'static'.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+os.path.join(BASE_DIR, 'static'),]
 
 # WhiteNoise storage for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
