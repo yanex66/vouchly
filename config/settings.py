@@ -93,21 +93,26 @@ DATABASES = {
     )
 }
 
-# --- 6. STATIC & MEDIA ---
+# --- 6. STATIC & MEDIA (Django 6.0 Optimized) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Using the Path object (/) is more reliable on Render than os.path.join
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Ensure WhiteNoise is handling the storage
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-# Cloudinary Media Configuration
+# This replaces the legacy DEFAULT_FILE_STORAGE and STATICFILES_STORAGE settings
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
+# Ensure WhiteNoise looks for files in STATICFILES_DIRS if manifest is empty
 WHITENOISE_USE_FINDERS = True
-
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
@@ -116,9 +121,8 @@ CLOUDINARY_STORAGE = {
     'SECURE': True, 
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # --- 7. EMAIL SETTINGS ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
