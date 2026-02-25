@@ -93,7 +93,7 @@ DATABASES = {
     )
 }
 
-# --- 6. STATIC & MEDIA (Django 6.0 Optimized) ---
+# --- 6. STATIC & MEDIA (Django 6.0 & Compatibility Fix) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -101,7 +101,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# This replaces the legacy DEFAULT_FILE_STORAGE and STATICFILES_STORAGE settings
+# MODERN DJANGO 6 STORAGE SETTINGS
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -111,7 +111,10 @@ STORAGES = {
     },
 }
 
-# Ensure WhiteNoise looks for files in STATICFILES_DIRS if manifest is empty
+# COMPATIBILITY ALIASES (Fixes AttributeError for django-cloudinary-storage)
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
 WHITENOISE_USE_FINDERS = True
 
 CLOUDINARY_STORAGE = {
