@@ -94,17 +94,16 @@ DATABASES = {
 }
 
 # --- 6. STATIC & MEDIA ---
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Pointing only to the root 'static' folder. 
-# This removes the W004 warning because 'core' is already inside 'static'.
+# Using the Path object (/) is more reliable on Render than os.path.join
 STATICFILES_DIRS = [
-os.path.join(BASE_DIR, 'static'),]
+    BASE_DIR / 'static',
+]
 
-# WhiteNoise storage for production
+# Ensure WhiteNoise is handling the storage
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 # Cloudinary Media Configuration
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
