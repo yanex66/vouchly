@@ -93,7 +93,7 @@ DATABASES = {
     )
 }
 
-# --- 6. STATIC & MEDIA (Django 6.0 & Compatibility Fix) ---
+# --- 6. STATIC & MEDIA (Final Stability Fix) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -107,13 +107,14 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        # Changed to StaticFilesStorage to prevent build crashes
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
 
-# COMPATIBILITY ALIASES (Fixes AttributeError for django-cloudinary-storage)
+# COMPATIBILITY ALIASES (Satisfies django-cloudinary-storage requirements)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 WHITENOISE_USE_FINDERS = True
 
