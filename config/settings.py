@@ -96,8 +96,11 @@ DATABASES = {
 # --- 6. STATIC & MEDIA ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    # This line below is the missing piece for Render to see the 'core' subfolder
+    os.path.join(BASE_DIR, 'core/static'), 
+]
 # FIXED: Using CompressedStaticFilesStorage to avoid CSS manifest errors on Render
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
