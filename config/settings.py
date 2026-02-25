@@ -97,11 +97,13 @@ DATABASES = {
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Pointing only to the root 'static' folder. 
+# This removes the W004 warning because 'core' is already inside 'static'.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'core', 'static'), 
 ]
-# FIXED: Using CompressedStaticFilesStorage to avoid CSS manifest errors on Render
+
+# WhiteNoise storage for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Cloudinary Media Configuration
@@ -109,14 +111,14 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
     'API_KEY': env('CLOUDINARY_API_KEY', default=''),
     'API_SECRET': env('CLOUDINARY_API_SECRET', default=''),
-    'SECURE': True, # FIXED: Forces HTTPS to prevent Mixed Content errors
+    'SECURE': True, 
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# --- 7. EMAIL SETTINGS (GMAIL SMTP) ---
+# --- 7. EMAIL SETTINGS ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -178,5 +180,3 @@ FLUTTERWAVE_SECRET_KEY = env('FLUTTERWAVE_SECRET_KEY', default='')
 FLUTTERWAVE_ENCRYPTION_KEY = env('FLUTTERWAVE_ENCRYPTION_KEY', default='')
 
 MINIMUM_WITHDRAWAL_AMOUNT = 1000
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
