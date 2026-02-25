@@ -105,6 +105,10 @@ STATICFILES_DIRS = [
 # Ensure WhiteNoise is handling the storage
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Cloudinary Media Configuration
+
+WHITENOISE_USE_FINDERS = True
+
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_NAME', default=''),
     'API_KEY': env('CLOUDINARY_API_KEY', default=''),
