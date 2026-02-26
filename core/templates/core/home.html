@@ -89,6 +89,45 @@
     }
     .hero-img-premium:hover { transform: scale(1.02) rotate(1deg); }
 
+    .hero-reward-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid var(--success-green);
+        color: #4ade80;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        margin-bottom: 25px;
+        backdrop-filter: blur(5px);
+    }
+
+    /* STATS BANNER (Idea #2) */
+    .stats-section {
+        background: var(--midnight);
+        border-radius: 40px;
+        padding: 50px 20px;
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+        border-bottom: 4px solid var(--accent);
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 5px;
+    }
+    .stat-label {
+        color: rgba(255,255,255,0.6);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
     /* 4. VALUE CARDS */
     .step-card {
         background: white;
@@ -98,8 +137,27 @@
         border: 1px solid rgba(0,0,0,0.04);
         transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        border-color: var(--accent);
+    }
 
-    /* 5. ITEM CARDS */
+    .step-icon-box {
+        width: 70px;
+        height: 70px;
+        background: var(--soft-bg);
+        color: var(--midnight);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        border-bottom: 3px solid var(--accent);
+    }
+
+    /* 5. ITEM CARDS & LINK FIX */
     .premium-item-card {
         background: white;
         border-radius: var(--card-radius);
@@ -109,6 +167,23 @@
         height: 100%;
         position: relative;
     }
+    .premium-item-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    .product-link-title {
+        color: var(--midnight) !important;
+        font-weight: 800;
+        text-decoration: none;
+        transition: 0.3s;
+        display: block;
+        margin-bottom: 12px;
+    }
+    .product-link-title:hover {
+        color: #2563eb !important;
+        text-decoration: underline;
+    }
 
     .item-card-img {
         height: 240px;
@@ -116,7 +191,44 @@
         object-fit: cover;
     }
 
-    /* 6. SLIDING REVIEWS CSS */
+    .card-reward-tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--midnight);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+
+    .btn-promote-premium {
+        background: transparent;
+        border: 2px solid var(--midnight);
+        color: var(--midnight);
+        font-weight: 800;
+        border-radius: 14px;
+        padding: 12px;
+        width: 100%;
+        transition: 0.3s;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+    }
+    .btn-promote-premium:hover {
+        background: var(--midnight);
+        color: white;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+        border-color: var(--midnight);
+    }
+
+    /* 6. SLIDING REVIEWS (INITIALS) */
     .review-viewport {
         overflow: hidden;
         width: 100%;
@@ -130,18 +242,56 @@
     }
 
     .review-slide {
-        width: 300px; /* Width of each card */
+        width: 350px;
         flex-shrink: 0;
         padding: 0 15px;
     }
 
-    .avatar-ring {
+    .avatar-initials {
         width: 80px;
         height: 80px;
         border-radius: 50%;
+        background: var(--midnight);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin: 0 auto 15px;
         border: 3px solid white;
         box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        object-fit: cover;
+    }
+
+    .comment-text {
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        min-height: 80px;
+    }
+
+    /* FAQ STYLING (Idea #5) */
+    .faq-card {
+        border: none;
+        background: white;
+        border-radius: 15px !important;
+        margin-bottom: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+    .faq-btn {
+        font-weight: 800 !important;
+        color: var(--midnight) !important;
+        text-align: left;
+        padding: 20px !important;
+        box-shadow: none !important;
+        background: white !important;
+    }
+    .faq-btn:not(.collapsed) {
+        color: var(--accent) !important;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     /* 7. SECTION HEADERS */
@@ -158,6 +308,15 @@
         background: var(--accent);
         border-radius: 10px;
         margin: 15px auto 40px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-gradient { min-height: 500px; padding: 40px 0; }
+        .display-4 { font-size: 2.5rem !important; }
+        .top-search-section { padding: 15px 0; }
+        .search-pill { max-width: 92%; }
+        .stats-section { margin-top: -30px; padding: 30px 10px; }
+        .stat-number { font-size: 1.8rem; }
     }
 </style>
 
@@ -191,17 +350,13 @@
             <div class="hero-gradient d-flex align-items-center py-5">
                 <div class="container position-relative z-2">
                     <div class="row align-items-center">
-                        <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0 animate__animated animate__fadeInLeft">
+                        <div class="col-lg-6 text-white text-lg-start text-center mb-5">
                             <div class="hero-reward-badge shadow-sm">
                                 <i class="bi bi-wallet2 me-2"></i> 
-                                {% if item.commission_naira > 0 %}
-                                    EARN ₦{{ item.commission_naira|intcomma }} GUARANTEED
-                                {% else %}
-                                    VARIABLE COMMISSION REWARDS
-                                {% endif %}
+                                EARN ₦{{ item.commission_naira|intcomma }} GUARANTEED
                             </div>
                             <h1 class="display-4 mb-3">{{ item.name }}</h1>
-                            <p class="lead mb-5 opacity-75 fw-500">{{ item.description|truncatewords:20 }}</p>
+                            <p class="lead mb-5 opacity-75 fw-500" style="font-size: 1.1rem; line-height: 1.6;">{{ item.description|truncatewords:20 }}</p>
                             <div class="d-flex justify-content-center justify-content-lg-start gap-3">
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg hover-scale">PROMOTE</a>
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600 hover-scale">DETAILS</a>
@@ -220,27 +375,78 @@
     </div>
 </div>
 
+<div class="container">
+    <div class="stats-section shadow-lg">
+        <div class="row text-center g-4">
+            <div class="col-6 col-md-4 border-end border-secondary border-opacity-25">
+                <span class="stat-number">{{ total_users|add:"150"|intcomma }}+</span>
+                <span class="stat-label">Marketers</span>
+            </div>
+            <div class="col-6 col-md-4 border-end-md border-secondary border-opacity-25">
+                <span class="stat-number">₦{{ total_payouts|add:"75000"|intcomma }}</span>
+                <span class="stat-label">Paid Out</span>
+            </div>
+            <div class="col-12 col-md-4">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Escrow Secure</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 mt-5">
+    <div class="text-center mb-5">
+        <h2 class="section-head">The Kingdom Path</h2>
+        <div class="section-divider"></div>
+        <p class="text-muted fw-bold text-uppercase small ls-1">Simple steps to start earning</p>
+    </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-icon-box mx-auto"><i class="bi bi-person-plus-fill"></i></div>
+                <h4 class="fw-800 mb-3">1. JOIN FREE</h4>
+                <p class="text-muted small fw-600 lh-lg">Create your account in seconds. No hidden fees. Access our premium marketplace instantly.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-icon-box mx-auto"><i class="bi bi-share-fill"></i></div>
+                <h4 class="fw-800 mb-3">2. VOUCH & SHARE</h4>
+                <p class="text-muted small fw-600 lh-lg">Find products you trust. Share your unique link with friends or your audience who need them.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-icon-box mx-auto"><i class="bi bi-cash-coin"></i></div>
+                <h4 class="fw-800 mb-3">3. EARN CASH</h4>
+                <p class="text-muted small fw-600 lh-lg">Get paid real Naira directly to your wallet for every successful purchase made through you.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="bg-white py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-5">
-            <div>
-                <h2 class="section-head mb-0">Trending Vouchers</h2>
-                <div class="section-divider ms-0 mb-0 mt-2"></div>
-            </div>
-            <a href="{% url 'marketplace' %}" class="btn btn-outline-dark rounded-pill px-4 fw-800 btn-sm mb-2">View All</a>
+        <div class="text-center mb-5">
+            <h2 class="section-head">Trending Vouchers</h2>
+            <div class="section-divider"></div>
         </div>
         <div class="row g-4">
             {% for item in top_rated %}
             <div class="col-sm-6 col-lg-3">
-                <div class="premium-item-card shadow-sm h-100 d-flex flex-column">
-                    <div class="card-reward-tag">{% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD</div>
-                    <a href="{% url 'item_detail' item.slug %}" class="flex-shrink-0">
-                        {% if item.image %}<img src="{{ item.image.url }}" class="item-card-img">{% endif %}
-                    </a>
-                    <div class="p-4 d-flex flex-column flex-grow-1">
-                        <h5 class="fw-800 text-truncate mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase fs-6">{{ item.name }}</a></h5>
-                        <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">PROMOTE & EARN</a>
+                <div class="premium-item-card shadow-sm h-100 d-flex flex-column p-4 text-center border">
+                    <div class="card-reward-tag">
+                        {% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD
                     </div>
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" class="img-fluid rounded-3 mb-3 shadow-sm" style="height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div class="mb-auto">
+                        <a href="{% url 'item_detail' item.slug %}" class="product-link-title text-uppercase">
+                            {{ item.name|truncatechars:35 }} <i class="bi bi-box-arrow-up-right small ms-1 opacity-50"></i>
+                        </a>
+                    </div>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">PROMOTE & EARN</a>
                 </div>
             </div>
             {% endfor %}
@@ -253,31 +459,31 @@
         <h2 class="section-head">Top Community Voices</h2>
         <div class="section-divider"></div>
     </div>
-
     <div class="review-viewport">
         <div class="review-track" id="review-track">
-            {% for reviewer in featured_reviewers %}
+            {% for review in featured_reviewers %}
             <div class="review-slide">
-                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100">
-                    {% if reviewer.profile.image %}
-                        <img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3">
-                    {% else %}
-                        <div class="avatar-ring mb-3 d-flex align-items-center justify-content-center bg-light mx-auto">
-                            <i class="bi bi-person-fill text-secondary fs-2"></i>
-                        </div>
-                    {% endif %}
-                    <h6 class="fw-800 mb-0 text-midnight text-uppercase">{{ reviewer.username }}</h6>
-                    <span class="badge bg-light text-muted border rounded-pill mt-2 px-3">{{ reviewer.num_reviews }} Vouches</span>
+                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100 d-flex flex-column">
+                    <div class="avatar-initials">{{ review.author.username|slice:":1"|upper }}</div>
+                    <h5 class="fw-800 mb-2 text-midnight text-uppercase">{{ review.author.username }}</h5>
+                    <div class="comment-text">"{{ review.content|truncatewords:20 }}"</div>
+                    <div class="mt-auto">
+                        <span class="badge bg-light text-muted border rounded-pill px-4 py-2">
+                            <i class="bi bi-shield-check text-success me-1"></i> Verified Vouch
+                        </span>
+                    </div>
                 </div>
             </div>
             {% endfor %}
-            
-            {% for reviewer in featured_reviewers %}
+            {% for review in featured_reviewers %}
             <div class="review-slide">
-                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100">
-                    {% if reviewer.profile.image %}<img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3">{% endif %}
-                    <h6 class="fw-800 mb-0 text-midnight text-uppercase">{{ reviewer.username }}</h6>
-                    <span class="badge bg-light text-muted border rounded-pill mt-2 px-3">{{ reviewer.num_reviews }} Vouches</span>
+                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100 d-flex flex-column">
+                    <div class="avatar-initials">{{ review.author.username|slice:":1"|upper }}</div>
+                    <h5 class="fw-800 mb-2 text-midnight text-uppercase">{{ review.author.username }}</h5>
+                    <div class="comment-text">"{{ review.content|truncatewords:20 }}"</div>
+                    <div class="mt-auto">
+                        <span class="badge bg-light text-muted border rounded-pill px-4 py-2">Verified Vouch</span>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -285,12 +491,62 @@
     </div>
 </div>
 
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="section-head">Got Questions?</h2>
+        <div class="section-divider"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="accordion" id="vouchlyFaq">
+                <div class="accordion-item faq-card">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                            Is Vouchly really free to join?
+                        </button>
+                    </h2>
+                    <div id="q1" class="accordion-collapse collapse" data-bs-parent="#vouchlyFaq">
+                        <div class="accordion-body text-muted fw-500">
+                            Yes! Vouchly is 100% free for marketers. We only make money when you earn a commission. Registration takes less than 60 seconds.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item faq-card">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                            How do I withdraw my earnings?
+                        </button>
+                    </h2>
+                    <div id="q2" class="accordion-collapse collapse" data-bs-parent="#vouchlyFaq">
+                        <div class="accordion-body text-muted fw-500">
+                            Once your commission is confirmed, it appears in your wallet. You can request a payout directly to any Nigerian bank account, processed securely via Paystack.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item faq-card">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">
+                            What does "Escrow Protected" mean?
+                        </button>
+                    </h2>
+                    <div id="q3" class="accordion-collapse collapse" data-bs-parent="#vouchlyFaq">
+                        <div class="accordion-body text-muted fw-500">
+                            It means your money is safe. We hold payments in a secure vault until the buyer receives their item and provides a delivery PIN.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container py-5 mb-5">
     <div class="bg-warning rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
         <div class="position-relative z-2">
             <h2 class="display-5 fw-900 text-dark mb-3">Ready to Claim Your Throne?</h2>
             <p class="lead mb-5 text-dark fw-bold opacity-75">Join the fastest growing marketplace for authentic African commerce.</p>
-            <a href="{% url 'register' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg">START EARNING NOW</a>
+            <a href="{% url 'register' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg hover-scale">START EARNING NOW</a>
         </div>
     </div>
 </div>
@@ -300,28 +556,22 @@
         const track = document.getElementById('review-track');
         const slides = document.querySelectorAll('.review-slide');
         if (slides.length === 0) return;
-
         let index = 0;
-        const cardWidth = 300; // Fixed card width defined in CSS
+        const cardWidth = 350; 
 
         function slide() {
             index++;
             track.style.transition = "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
             track.style.transform = `translateX(-${index * cardWidth}px)`;
-
-            // Smooth Reset logic for infinite feel
             if (index >= slides.length / 2) {
                 setTimeout(() => {
                     track.style.transition = "none";
                     index = 0;
                     track.style.transform = `translateX(0)`;
-                }, 800);
+                }, 850);
             }
         }
-
-        // Set the timer (10000ms = 10 seconds)
         setInterval(slide, 10000);
     });
 </script>
-
 {% endblock %}

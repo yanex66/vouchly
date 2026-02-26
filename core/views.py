@@ -51,12 +51,20 @@ def home(request):
     hero_items = Item.objects.filter(is_featured=True)
     top_rated = Item.objects.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')[:4]
     latest_items = Item.objects.order_by('-created_at')[:4]
-    featured_reviewers = User.objects.annotate(num_reviews=Count('reviews')).filter(num_reviews__gt=0).order_by('-num_reviews')[:4]
+    
+    # 1. FETCH REVIEWS: Pulls actual comment content and user profile data in one query
+    featured_reviewers = Review.objects.select_related('author', 'author__profile', 'item').order_by('-created_at')[:10]
+    
     featured_review = Review.objects.filter(is_featured=True).first()
     
-    # Calculate Early Bird Slots
+    # 2. CALCULATE TRUST STATS: For the new dark banner section
     total_users = User.objects.count()
-    free_slots_left = max(0, 50 - total_users)
+    # Sum of all payout requests that have been marked as 'PAID'
+    total_payouts = PayoutRequest.objects.filter(status='PAID').aggregate(Sum('amount'))['amount__sum'] or 0
+    
+   # EARLY BIRD LOGIC (Advertisers Only)
+    total_advertisers = Profile.objects.filter(user_type='ADVERTISER').count()
+    free_slots_left = max(0, 50 - total_advertisers)
 
     context = {
         'hero_items': hero_items, 
@@ -65,6 +73,8 @@ def home(request):
         'featured_review': featured_review,
         'featured_reviewers': featured_reviewers,
         'is_authenticated': request.user.is_authenticated,
+        'total_users': total_users,     # Needed for Stats Counter
+        'total_payouts': total_payouts, # Needed for Stats Counter
         'free_slots_left': free_slots_left,
     }
     return render(request, 'core/home.html', context)
@@ -392,8 +402,10 @@ def promote_request(request):
             promo.seller = request.user
             promo.duration_days = 30
             
-            # EARLY BIRD LOGIC (Changed from Founder to Early Bird)
-            if User.objects.count() <= 50:
+            # EARLY BIRD LOGIC (Advertisers Only)
+            total_advertisers = Profile.objects.filter(user_type='ADVERTISER').count()
+            
+            if total_advertisers <= 50:
                 expiry = timezone.now() + timedelta(days=30)
                 promo.is_paid = True
                 promo.subscription_expiry = expiry
@@ -411,6 +423,7 @@ def promote_request(request):
         form = PromotionRequestForm()
     return render(request, 'core/promote_request.html', {'form': form})
 
+
 def promotion_payment(request, pk):
     promo = get_object_or_404(PromotionPlan, pk=pk)
     price_setting = SubscriptionPrice.objects.filter(duration_days=promo.duration_days).first()
@@ -424,7 +437,7 @@ def promotion_payment(request, pk):
 def verify_promotion_payment(request):
     reference = request.GET.get('reference') or request.GET.get('transaction_id')
     gateway = request.GET.get('gateway')
-    # Payment verification logic...
+    # Verification Logic
     return redirect('dashboard')
 
 @login_required(login_url='/login/')

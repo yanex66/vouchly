@@ -156,6 +156,36 @@
             border: 2px solid var(--accent);
         }
 
+        /* --- AI VOICE VISUALIZER --- */
+        .voice-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--midnight);
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: none; 
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            border: 1px solid var(--accent);
+        }
+
+        .voice-dot {
+            width: 4px; height: 15px;
+            background: var(--accent);
+            margin: 0 2px;
+            border-radius: 10px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        .voice-dot:nth-child(2) { animation-delay: 0.2s; }
+        .voice-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 5px; }
+            50% { height: 20px; }
+        }
+
         main { flex: 1; }
 
         @media (max-width: 991px) {
@@ -221,7 +251,7 @@
                     </div>
                 {% else %}
                     <a class="nav-link d-none d-lg-inline-block" href="{% url 'login' %}">Login</a>
-                    <a class="nav-link btn-auth d-none d-lg-block me-3 text-center shadow-sm" href="{% url 'register' %}">Join Now</a>
+                    <a class="nav-link btn-auth d-none d-lg-block me-3 text-center shadow-sm" href="{% url 'register' %}" id="joinNowBtn">Join Now</a>
                 {% endif %}
 
                 <button class="navbar-toggler border-0 p-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
@@ -257,6 +287,13 @@
                 {% endif %}
             </ul>
         </div>
+    </div>
+
+    <div id="voiceUI" class="voice-indicator">
+        <div class="voice-dot"></div>
+        <div class="voice-dot"></div>
+        <div class="voice-dot"></div>
+        <span class="ms-2 small fw-bold text-white">AI WELCOME</span>
     </div>
 
     <main>
@@ -305,11 +342,71 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function confirmLogout(event) {
             event.preventDefault();
-            if (confirm("Sign out of Vouchly?")) { document.getElementById('logout-form').submit(); }
+            if (confirm("Sign out of Vouchly?")) { 
+                sessionStorage.removeItem('hasBeenGreeted');
+                document.getElementById('logout-form').submit(); 
+            }
         }
+
+        /* --- DEEP TONE LADY AI VOICE LOGIC --- */
+        const isAuth = "{{ user.is_authenticated|yesno:'true,false' }}";
+        const userType = "{{ user.profile.user_type|default:'' }}";
+
+        function speakVouchlyWelcome() {
+            if ('speechSynthesis' in window && isAuth === 'true' && !sessionStorage.getItem('hasBeenGreeted')) {
+                
+                window.speechSynthesis.cancel(); 
+
+                const msg = new SpeechSynthesisUtterance();
+                let roleExplanation = "";
+                let closingPhrase = "This is your dashboard.";
+
+                if (userType === 'MARKETER') {
+                    roleExplanation = "As a Marketer, your job is to find quality products, vouch for them, and share your unique link to earn commissions.";
+                } else if (userType === 'ADVERTISER') {
+                    roleExplanation = "As an Advertiser, you can list your own products and services for our community of marketers to promote for you.";
+                } else if (userType === 'BUYER') {
+                    roleExplanation = "As a Buyer, you can explore verified deals and make secure purchases protected by our escrow system.";
+                    closingPhrase = "This is your checkout desk.";
+                }
+
+                msg.text = "Vouchers, welcome to Vouchly! We are glad you are here. You are signed in as a " + userType.toLowerCase() + ". " + roleExplanation + " " + closingPhrase;
+                
+                // --- DEEPER & MATURE TONE SETTINGS ---
+                msg.volume = 1;
+                msg.rate = 0.9;  // Slightly slower for maturity
+                msg.pitch = 0.7; // DEEPER (Standard is 1.0)
+
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    const ladyVoice = voices.find(v => 
+                        v.name.includes('Female') || 
+                        v.name.includes('Lady') || 
+                        v.name.includes('Google UK English Female') || 
+                        v.name.includes('Samantha') ||
+                        v.name.includes('Zira')
+                    );
+                    if (ladyVoice) msg.voice = ladyVoice;
+                }
+
+                const voiceUI = document.getElementById('voiceUI');
+                msg.onstart = () => { if(voiceUI) voiceUI.style.display = 'flex'; };
+                msg.onend = () => { if(voiceUI) voiceUI.style.display = 'none'; };
+
+                window.speechSynthesis.speak(msg);
+                sessionStorage.setItem('hasBeenGreeted', 'true');
+            }
+        }
+
+        window.speechSynthesis.onvoiceschanged = () => {};
+
+        document.addEventListener('click', function() {
+            speakVouchlyWelcome();
+        }, { once: true });
     </script>
 </body>
 </html>

@@ -44,16 +44,16 @@
         overflow: hidden;
         box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
         position: relative;
-        cursor: pointer;
+        /* Image is no longer clickable */
+        cursor: default;
     }
 
     .detail-img-wrapper img {
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Removed transform transitions to keep image static */
+        border-radius: var(--v-radius) !important;
     }
 
-    .detail-img-wrapper:hover img {
-        transform: scale(1.05);
-    }
+    /* Removed .detail-img-wrapper:hover scale effect */
 
     .escrow-badge, .agency-badge {
         font-size: 0.7rem;
@@ -123,7 +123,7 @@
 
     <div class="row g-5">
         <div class="col-md-6 mb-4">
-            <div class="detail-img-wrapper" onclick="document.getElementById('mainActionButton').click()">
+            <div class="detail-img-wrapper">
                 {% if item.image %}
                     <img src="{{ item.image.url }}" class="img-fluid w-100" alt="{{ item.name }}" style="height: 550px; object-fit: cover;">
                 {% else %}
