@@ -14,7 +14,7 @@
         --card-radius: 24px;
     }
 
-    body { background-color: var(--soft-bg); }
+    body { background-color: var(--soft-bg); overflow-x: hidden; }
 
     /* 1. URGENCY BANNER (EARLY BIRD) */
     .early-bird-alert {
@@ -89,20 +89,6 @@
     }
     .hero-img-premium:hover { transform: scale(1.02) rotate(1deg); }
 
-    .hero-reward-badge {
-        display: inline-flex;
-        align-items: center;
-        background: rgba(34, 197, 94, 0.15);
-        border: 1px solid var(--success-green);
-        color: #4ade80;
-        padding: 8px 18px;
-        border-radius: 50px;
-        font-weight: 800;
-        font-size: 0.85rem;
-        margin-bottom: 25px;
-        backdrop-filter: blur(5px);
-    }
-
     /* 4. VALUE CARDS */
     .step-card {
         background: white;
@@ -111,25 +97,6 @@
         height: 100%;
         border: 1px solid rgba(0,0,0,0.04);
         transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .step-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-        border-color: var(--accent);
-    }
-
-    .step-icon-box {
-        width: 70px;
-        height: 70px;
-        background: var(--soft-bg);
-        color: var(--midnight);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        margin-bottom: 20px;
-        border-bottom: 3px solid var(--accent);
     }
 
     /* 5. ITEM CARDS */
@@ -142,10 +109,6 @@
         height: 100%;
         position: relative;
     }
-    .premium-item-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
-    }
 
     .item-card-img {
         height: 240px;
@@ -153,54 +116,33 @@
         object-fit: cover;
     }
 
-    .card-reward-tag {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--midnight);
-        color: var(--accent);
-        padding: 6px 14px;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 0.75rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        z-index: 2;
-    }
-
-    .btn-promote-premium {
-        background: transparent;
-        border: 2px solid var(--midnight);
-        color: var(--midnight);
-        font-weight: 800;
-        border-radius: 14px;
-        padding: 12px;
+    /* 6. SLIDING REVIEWS CSS */
+    .review-viewport {
+        overflow: hidden;
         width: 100%;
-        transition: 0.3s;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        text-align: center;
-        display: block;
-        text-decoration: none;
-    }
-    .btn-promote-premium:hover {
-        background: var(--midnight);
-        color: white;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
-        border-color: var(--midnight);
+        padding: 20px 0;
     }
 
-    /* 6. LEADERBOARD AVATARS */
+    .review-track {
+        display: flex;
+        transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        width: max-content;
+    }
+
+    .review-slide {
+        width: 300px; /* Width of each card */
+        flex-shrink: 0;
+        padding: 0 15px;
+    }
+
     .avatar-ring {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         border: 3px solid white;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         object-fit: cover;
-        transition: 0.3s;
     }
-    .avatar-ring:hover { transform: scale(1.1); border-color: var(--accent); }
 
     /* 7. SECTION HEADERS */
     .section-head {
@@ -216,13 +158,6 @@
         background: var(--accent);
         border-radius: 10px;
         margin: 15px auto 40px;
-    }
-
-    @media (max-width: 768px) {
-        .hero-gradient { min-height: 500px; padding: 40px 0; }
-        .display-4 { font-size: 2.5rem !important; }
-        .top-search-section { padding: 15px 0; }
-        .search-pill { max-width: 92%; }
     }
 </style>
 
@@ -254,9 +189,6 @@
         {% for item in hero_items %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="6000">
             <div class="hero-gradient d-flex align-items-center py-5">
-                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(255, 193, 7, 0.1); border-radius: 50%; filter: blur(80px);"></div>
-                <div style="position: absolute; bottom: -50px; left: -50px; width: 300px; height: 300px; background: rgba(37, 99, 235, 0.1); border-radius: 50%; filter: blur(80px);"></div>
-
                 <div class="container position-relative z-2">
                     <div class="row align-items-center">
                         <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0 animate__animated animate__fadeInLeft">
@@ -269,8 +201,7 @@
                                 {% endif %}
                             </div>
                             <h1 class="display-4 mb-3">{{ item.name }}</h1>
-                            <p class="lead mb-5 opacity-75 fw-500" style="font-size: 1.1rem; line-height: 1.6;">{{ item.description|truncatewords:20 }}</p>
-                            
+                            <p class="lead mb-5 opacity-75 fw-500">{{ item.description|truncatewords:20 }}</p>
                             <div class="d-flex justify-content-center justify-content-lg-start gap-3">
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg hover-scale">PROMOTE</a>
                                 <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600 hover-scale">DETAILS</a>
@@ -289,38 +220,6 @@
     </div>
 </div>
 
-<div class="container py-5 mt-5">
-    <div class="text-center mb-5">
-        <h2 class="section-head">The Kingdom Path</h2>
-        <div class="section-divider"></div>
-        <p class="text-muted fw-bold text-uppercase small ls-1">Simple steps to start earning</p>
-    </div>
-
-    <div class="row g-4 text-center">
-        <div class="col-md-4">
-            <div class="step-card">
-                <div class="step-icon-box mx-auto"><i class="bi bi-person-plus-fill"></i></div>
-                <h4 class="fw-800 mb-3">1. JOIN FREE</h4>
-                <p class="text-muted small fw-600 lh-lg">Create your account in seconds. No hidden fees. Access our premium marketplace instantly.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="step-card">
-                <div class="step-icon-box mx-auto"><i class="bi bi-share-fill"></i></div>
-                <h4 class="fw-800 mb-3">2. VOUCH & SHARE</h4>
-                <p class="text-muted small fw-600 lh-lg">Find products you trust. Share your unique link with friends or your audience who need them.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="step-card">
-                <div class="step-icon-box mx-auto"><i class="bi bi-cash-coin"></i></div>
-                <h4 class="fw-800 mb-3">3. EARN CASH</h4>
-                <p class="text-muted small fw-600 lh-lg">Get paid real Naira directly to your wallet for every successful purchase made through you.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="bg-white py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-5">
@@ -328,30 +227,18 @@
                 <h2 class="section-head mb-0">Trending Vouchers</h2>
                 <div class="section-divider ms-0 mb-0 mt-2"></div>
             </div>
-            <a href="{% url 'marketplace' %}" class="btn btn-outline-dark rounded-pill px-4 fw-800 btn-sm mb-2">
-                View All <i class="bi bi-arrow-right"></i>
-            </a>
+            <a href="{% url 'marketplace' %}" class="btn btn-outline-dark rounded-pill px-4 fw-800 btn-sm mb-2">View All</a>
         </div>
-
         <div class="row g-4">
             {% for item in top_rated %}
             <div class="col-sm-6 col-lg-3">
                 <div class="premium-item-card shadow-sm h-100 d-flex flex-column">
-                    <div class="card-reward-tag">
-                        {% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD
-                    </div>
-                    
+                    <div class="card-reward-tag">{% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD</div>
                     <a href="{% url 'item_detail' item.slug %}" class="flex-shrink-0">
-                        {% if item.image %}
-                        <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
-                        {% endif %}
+                        {% if item.image %}<img src="{{ item.image.url }}" class="item-card-img">{% endif %}
                     </a>
                     <div class="p-4 d-flex flex-column flex-grow-1">
-                        <div class="mb-auto">
-                            <h5 class="fw-800 text-truncate mb-1">
-                                <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase fs-6">{{ item.name }}</a>
-                            </h5>
-                        </div>
+                        <h5 class="fw-800 text-truncate mb-1"><a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase fs-6">{{ item.name }}</a></h5>
                         <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">PROMOTE & EARN</a>
                     </div>
                 </div>
@@ -367,35 +254,74 @@
         <div class="section-divider"></div>
     </div>
 
-    <div class="row justify-content-center">
-        {% for reviewer in featured_reviewers %}
-        <div class="col-6 col-md-3 col-lg-2 text-center mb-4">
-            <img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3" alt="{{ reviewer.username }}">
-            <h6 class="fw-800 mb-0 text-midnight">{{ reviewer.username }}</h6>
-            <span class="badge bg-light text-muted border rounded-pill mt-2">{{ reviewer.num_reviews }} Vouches</span>
+    <div class="review-viewport">
+        <div class="review-track" id="review-track">
+            {% for reviewer in featured_reviewers %}
+            <div class="review-slide">
+                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100">
+                    {% if reviewer.profile.image %}
+                        <img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3">
+                    {% else %}
+                        <div class="avatar-ring mb-3 d-flex align-items-center justify-content-center bg-light mx-auto">
+                            <i class="bi bi-person-fill text-secondary fs-2"></i>
+                        </div>
+                    {% endif %}
+                    <h6 class="fw-800 mb-0 text-midnight text-uppercase">{{ reviewer.username }}</h6>
+                    <span class="badge bg-light text-muted border rounded-pill mt-2 px-3">{{ reviewer.num_reviews }} Vouches</span>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% for reviewer in featured_reviewers %}
+            <div class="review-slide">
+                <div class="p-4 bg-white rounded-4 shadow-sm border text-center h-100">
+                    {% if reviewer.profile.image %}<img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3">{% endif %}
+                    <h6 class="fw-800 mb-0 text-midnight text-uppercase">{{ reviewer.username }}</h6>
+                    <span class="badge bg-light text-muted border rounded-pill mt-2 px-3">{{ reviewer.num_reviews }} Vouches</span>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </div>
 
 <div class="container py-5 mb-5">
     <div class="bg-warning rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
-        
         <div class="position-relative z-2">
             <h2 class="display-5 fw-900 text-dark mb-3">Ready to Claim Your Throne?</h2>
             <p class="lead mb-5 text-dark fw-bold opacity-75">Join the fastest growing marketplace for authentic African commerce.</p>
-            
-            {% if not user.is_authenticated %}
-            <a href="{% url 'register' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg hover-scale">
-                START EARNING NOW <i class="bi bi-arrow-right ms-2"></i>
-            </a>
-            {% else %}
-            <a href="{% url 'dashboard' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg hover-scale">
-                GO TO DASHBOARD
-            </a>
-            {% endif %}
+            <a href="{% url 'register' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg">START EARNING NOW</a>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const track = document.getElementById('review-track');
+        const slides = document.querySelectorAll('.review-slide');
+        if (slides.length === 0) return;
+
+        let index = 0;
+        const cardWidth = 300; // Fixed card width defined in CSS
+
+        function slide() {
+            index++;
+            track.style.transition = "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
+            track.style.transform = `translateX(-${index * cardWidth}px)`;
+
+            // Smooth Reset logic for infinite feel
+            if (index >= slides.length / 2) {
+                setTimeout(() => {
+                    track.style.transition = "none";
+                    index = 0;
+                    track.style.transform = `translateX(0)`;
+                }, 800);
+            }
+        }
+
+        // Set the timer (10000ms = 10 seconds)
+        setInterval(slide, 10000);
+    });
+</script>
+
 {% endblock %}
