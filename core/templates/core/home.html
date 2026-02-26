@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% load humanize %}
 
 {% block content %}
@@ -15,14 +16,14 @@
 
     body { background-color: var(--soft-bg); }
 
-    /* 1. URGENCY BANNER */
-    .founder-alert {
+    /* 1. URGENCY BANNER (EARLY BIRD) */
+    .early-bird-alert {
         background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
         border: 1px solid #fcd34d;
         border-radius: 50px;
         transition: transform 0.3s;
     }
-    .founder-alert:hover { transform: scale(1.02); }
+    .early-bird-alert:hover { transform: scale(1.02); }
 
     /* 2. COMPACT SEARCH */
     .top-search-section {
@@ -227,10 +228,10 @@
 
 {% if free_slots_left > 0 %}
 <div class="container mt-3">
-    <div class="founder-alert d-flex align-items-center justify-content-center py-3 px-4 shadow-sm animate__animated animate__fadeInDown">
-        <span class="badge bg-danger rounded-pill me-3 animate__animated animate__pulse animate__infinite shadow-sm">URGENT</span>
+    <div class="early-bird-alert d-flex align-items-center justify-content-center py-3 px-4 shadow-sm animate__animated animate__fadeInDown">
+        <span class="badge bg-danger rounded-pill me-3 animate__animated animate__pulse animate__infinite shadow-sm">LIMITED</span>
         <div class="fw-bold text-dark small-md">
-            🚀 <span class="text-primary fw-800">FOUNDER OFFER:</span> Only <span class="fs-5 text-danger fw-900 mx-1">{{ free_slots_left }}</span> free hosting slots left! 
+            🚀 <span class="text-primary fw-800">EARLY BIRD OFFER:</span> Only <span class="fs-5 text-danger fw-900 mx-1">{{ free_slots_left }}</span> free hosting slots left! 
             <a href="{% url 'register' %}" class="text-decoration-underline ms-2 text-dark fw-800">Claim yours now</a>
         </div>
     </div>
@@ -286,14 +287,6 @@
         </div>
         {% endfor %}
     </div>
-    {% if hero_items|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-    </button>
-    {% endif %}
 </div>
 
 <div class="container py-5 mt-5">
@@ -351,10 +344,6 @@
                     <a href="{% url 'item_detail' item.slug %}" class="flex-shrink-0">
                         {% if item.image %}
                         <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
-                        {% else %}
-                        <div class="bg-light text-muted d-flex align-items-center justify-content-center item-card-img">
-                            <i class="bi bi-image fs-1"></i>
-                        </div>
                         {% endif %}
                     </a>
                     <div class="p-4 d-flex flex-column flex-grow-1">
@@ -362,18 +351,8 @@
                             <h5 class="fw-800 text-truncate mb-1">
                                 <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase fs-6">{{ item.name }}</a>
                             </h5>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-warning fw-800 small">
-                                    {{ item.avg_rating|default:"5.0"|floatformat:1 }} <i class="bi bi-star-fill"></i>
-                                </span>
-                                <span class="fw-900 text-success small">
-                                    {% if item.price > 0 %}₦{{ item.price|intcomma }}{% else %}PROMO{% endif %}
-                                </span>
-                            </div>
                         </div>
-                        <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">
-                            PROMOTE & EARN
-                        </a>
+                        <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">PROMOTE & EARN</a>
                     </div>
                 </div>
             </div>
@@ -397,24 +376,6 @@
         </div>
         {% endfor %}
     </div>
-
-    {% if featured_review %}
-    <div class="row justify-content-center mt-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-lg bg-dark text-white p-5 text-center" style="border-radius: 30px; background: linear-gradient(145deg, #0f172a, #1e293b);">
-                <i class="bi bi-quote fs-1 text-warning mb-3 d-block"></i>
-                <h4 class="fw-bold fst-italic mb-4">"{{ featured_review.content|truncatewords:30 }}"</h4>
-                <div class="d-flex align-items-center justify-content-center gap-3">
-                    <img src="{{ featured_review.author.profile.image.url }}" class="rounded-circle border border-2 border-warning" width="50" height="50">
-                    <div class="text-start">
-                        <div class="fw-800 text-warning">{{ featured_review.author.username }}</div>
-                        <div class="small opacity-75">Vouched for {{ featured_review.item.name }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 </div>
 
 <div class="container py-5 mb-5">

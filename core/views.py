@@ -54,6 +54,7 @@ def home(request):
     featured_reviewers = User.objects.annotate(num_reviews=Count('reviews')).filter(num_reviews__gt=0).order_by('-num_reviews')[:4]
     featured_review = Review.objects.filter(is_featured=True).first()
     
+    # Calculate Early Bird Slots
     total_users = User.objects.count()
     free_slots_left = max(0, 50 - total_users)
 
@@ -391,7 +392,7 @@ def promote_request(request):
             promo.seller = request.user
             promo.duration_days = 30
             
-            # Founders Promotion
+            # EARLY BIRD LOGIC (Changed from Founder to Early Bird)
             if User.objects.count() <= 50:
                 expiry = timezone.now() + timedelta(days=30)
                 promo.is_paid = True
@@ -401,7 +402,7 @@ def promote_request(request):
                     category=promo.category, owner=promo.seller, name=promo.product_name,
                     price=promo.product_price, expiry_date=expiry, is_featured=True
                 )
-                messages.success(request, "Founder Member: Free month active!")
+                messages.success(request, "🎉 CONGRATS! You secured an Early Bird slot. Your first month of hosting is FREE!")
                 return redirect('dashboard')
 
             promo.save()
@@ -423,7 +424,7 @@ def promotion_payment(request, pk):
 def verify_promotion_payment(request):
     reference = request.GET.get('reference') or request.GET.get('transaction_id')
     gateway = request.GET.get('gateway')
-    # Verification logic remains as before
+    # Payment verification logic...
     return redirect('dashboard')
 
 @login_required(login_url='/login/')
@@ -466,7 +467,6 @@ def verify_bank_account(request):
 
 @login_required
 def verify_identity(request):
-    # Corrected: handles update vs create to prevent Unique Constraint errors
     instance = AdvertiserVerification.objects.filter(user=request.user).first()
     if request.method == 'POST':
         form = AdvertiserVerificationForm(request.POST, request.FILES, instance=instance)
