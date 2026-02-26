@@ -54,6 +54,11 @@ def home(request):
     featured_reviewers = User.objects.annotate(num_reviews=Count('reviews')).filter(num_reviews__gt=0).order_by('-num_reviews')[:4]
     featured_review = Review.objects.filter(is_featured=True).first()
     
+    # --- EARLY BIRD COUNTER ---
+    # Calculate how many "Free Founder Slots" are left
+    total_users = User.objects.count()
+    free_slots_left = max(0, 50 - total_users)
+
     context = {
         'hero_items': hero_items, 
         'top_rated': top_rated,
@@ -61,12 +66,17 @@ def home(request):
         'featured_review': featured_review,
         'featured_reviewers': featured_reviewers,
         'is_authenticated': request.user.is_authenticated,
+        'free_slots_left': free_slots_left, # Use this in your template for the alert
     }
     return render(request, 'core/home.html', context)
 
 # 2. THE MARKETPLACE STOREFRONT
 def marketplace(request):
-    items = Item.objects.all().order_by('-created_at')
+    # Only show items that haven't expired
+    items = Item.objects.filter(
+        Q(expiry_date__gt=timezone.now()) | Q(expiry_date__isnull=True)
+    ).order_by('-is_featured', '-created_at')
+    
     categories = Category.objects.filter(parent=None)
     
     paginator = Paginator(items, 12)
@@ -83,7 +93,12 @@ def category_list(request):
 
 def category_detail(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    items = Item.objects.filter(category=category).order_by('-created_at')
+    items = Item.objects.filter(
+        category=category
+    ).filter(
+        Q(expiry_date__gt=timezone.now()) | Q(expiry_date__isnull=True)
+    ).order_by('-created_at')
+    
     categories = Category.objects.filter(parent=None)
     return render(request, 'core/marketplace.html', {
         'category': category, 
@@ -332,23 +347,40 @@ def request_payout(request):
 # 7. AUTHENTICATION & PROFILE
 def register(request):
     is_forced_buyer = request.session.get('force_buyer_mode', False)
+    
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
+            # 1. Create the User (Signal creates default MARKETER profile)
             user = form.save(commit=False)
             user.save() 
-            if is_forced_buyer:
-                if hasattr(user, 'profile'):
+            
+            # 2. Grab the User Type selection from the form
+            selected_role = form.cleaned_data.get('user_type')
+            
+            # 3. Update the Profile based on form selection
+            if hasattr(user, 'profile'):
+                if is_forced_buyer:
                     user.profile.user_type = 'BUYER'
-                    user.profile.save()
+                elif selected_role in ['MARKETER', 'ADVERTISER']:
+                    user.profile.user_type = selected_role
+                
+                user.profile.save()
+            
+            # 4. Login
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            
+            # 5. Redirect Logic
             next_url = request.session.pop('next_url', None)
             request.session.pop('force_buyer_mode', None)
+            
             if next_url: return redirect(next_url) 
-            messages.success(request, 'Account created! Welcome.')
+            
+            messages.success(request, f'Account created! Welcome, {user.profile.get_user_type_display()}.')
             return redirect('dashboard')
     else:
         form = UserRegisterForm()
+    
     return render(request, 'core/register.html', {'form': form, 'is_forced_buyer': is_forced_buyer})
 
 def set_role_session(request):
@@ -390,12 +422,40 @@ def promote_request(request):
     if request.user.profile.verification_status != 'VERIFIED':
         messages.warning(request, "Verify your identity first.")
         return redirect('verify_identity')
+    
     if request.method == 'POST':
         form = PromotionRequestForm(request.POST, request.FILES)
         if form.is_valid():
             promo = form.save(commit=False)
             promo.seller = request.user
-            promo.duration_days = 30
+            promo.duration_days = 30 # Default to 30 days
+            
+            # --- START EARLY BIRD LOGIC ---
+            first_50_ids = User.objects.order_by('date_joined').values_list('id', flat=True)[:50]
+            
+            if request.user.id in first_50_ids:
+                expiry_date = timezone.now() + timedelta(days=30)
+                promo.is_paid = True
+                promo.payment_reference = f"FOUNDER-FREE-{random.randint(10000, 99999)}"
+                promo.subscription_expiry = expiry_date
+                promo.save()
+                
+                Item.objects.create(
+                    category=promo.category,
+                    owner=promo.seller,
+                    name=promo.product_name,
+                    description=promo.description,
+                    image=promo.product_image,
+                    price=promo.product_price,
+                    commission_naira=(promo.product_price * promo.commission_percentage) / 100,
+                    expiry_date=expiry_date,
+                    is_featured=True
+                )
+                
+                messages.success(request, "🎉 CONGRATS! You are a Top 50 Founder Member. Your first month of hosting is FREE!")
+                return redirect('dashboard')
+            # --- END EARLY BIRD LOGIC ---
+
             promo.save()
             return redirect('promotion_payment', pk=promo.pk)
     else:
@@ -486,16 +546,27 @@ def verify_bank_account(request):
 
 @login_required
 def verify_identity(request):
+    # FIX: Check if a verification record already exists for this user
+    instance = AdvertiserVerification.objects.filter(user=request.user).first()
+
     if request.method == 'POST':
-        form = AdvertiserVerificationForm(request.POST, request.FILES)
+        # Pass 'instance' to form. If it exists, Django updates it. If None, Django creates new.
+        form = AdvertiserVerificationForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             v = form.save(commit=False)
             v.user = request.user
             v.save()
+            
+            # Update Profile Status
             request.user.profile.verification_status = 'PENDING'
             request.user.profile.save()
+            
+            messages.success(request, "Identity verification submitted successfully.")
             return redirect('dashboard')
-    else: form = AdvertiserVerificationForm()
+    else:
+        # Pre-fill form if editing
+        form = AdvertiserVerificationForm(instance=instance)
+        
     return render(request, 'core/verify_identity.html', {'form': form})
 
 def search(request):

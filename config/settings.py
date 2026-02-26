@@ -5,10 +5,19 @@ import dj_database_url
 
 # --- 1. INITIALIZATION & ENV LOAD ---
 env = environ.Env(DEBUG=(bool, False))
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Read .env file locally
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# FIX: Explicitly load the .env file from the root directory
+env_file = BASE_DIR / '.env'
+
+if env_file.exists():
+    environ.Env.read_env(env_file)
+    # Optional: Print to console to confirm it loaded (remove in production)
+    print(f"✅ Loaded .env file from: {env_file}")
+else:
+    print(f"❌ WARNING: .env file NOT found at: {env_file}")
 
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-default-key')
 DEBUG = env.bool('DEBUG', default=False) 
@@ -191,3 +200,7 @@ FLUTTERWAVE_SECRET_KEY = env('FLUTTERWAVE_SECRET_KEY', default='')
 FLUTTERWAVE_ENCRYPTION_KEY = env('FLUTTERWAVE_ENCRYPTION_KEY', default='')
 
 MINIMUM_WITHDRAWAL_AMOUNT = 1000
+
+# --- 12. AFFILIATE SYSTEM SETTINGS ---
+DEFAULT_AFFILIATE_COMMISSION = 10  # This represents 10%
+REFERRAL_LINK_PARAM = 'ref'        # The URL part like ?ref=yanex66

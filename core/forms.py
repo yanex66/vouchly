@@ -72,7 +72,6 @@ class PromotionRequestForm(forms.ModelForm):
 
 # --- 2. PROFILE UPDATE FORM ---
 class ProfileUpdateForm(forms.ModelForm):
-    # Explicit email field to sync with the User model
     email = forms.EmailField(
         required=False,
         label="EMAIL ADDRESS",
@@ -81,10 +80,8 @@ class ProfileUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        # 'image' is the field name in your Model; ensure this matches the template 'name="image"'
         fields = ['image', 'whatsapp_number', 'bank_name', 'account_number', 'account_name']
         widgets = {
-            # FileInput is required to handle actual file data
             'image': forms.FileInput(attrs={'id': 'id_image'}), 
             'whatsapp_number': forms.TextInput(attrs={'placeholder': 'E.G. 08031234567'}),
             'bank_name': forms.Select(), 
@@ -94,13 +91,11 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Pre-fill email from the User model instance
         if self.instance and self.instance.user:
             self.fields['email'].initial = self.instance.user.email
 
         for field in self.fields:
             current_widget = self.fields[field].widget
-            # Apply consistent styling to all fields
             css_class = 'form-select' if isinstance(current_widget, forms.Select) else 'form-control'
             current_widget.attrs.update({'class': f'{css_class} fw-bold border-2 rounded-4'})
 
@@ -124,26 +119,40 @@ class ReviewForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control fw-bold border-2 rounded-4', 'rows': 4}),
         }
 
-# --- 4. REGISTRATION FORM ---
+# --- 4. REGISTRATION FORM (FIXED) ---
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control fw-bold border-2 rounded-4'}))
+    
+    # Explicitly defining user_type ensures it's cleaned and available for the view
     user_type = forms.ChoiceField(
-        choices=Profile.USER_TYPES, 
-        widget=forms.Select(attrs={'class': 'form-select fw-bold border-2 rounded-4'})
+        choices=[('MARKETER', 'Marketer'), ('ADVERTISER', 'Advertiser')], # Directly defining choices prevents import loops
+        widget=forms.Select(attrs={'class': 'form-select fw-bold border-2 rounded-4'}),
+        required=True,
+        label="Account Role"
     )
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email'] # Password fields are added by UserCreationForm automatically
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'class': 'form-control fw-bold border-2 rounded-4'})
+        # UserCreationForm adds password fields, we style them here
+        if 'password' in self.fields: # Some versions of Django name it differently, usually 'password' is built-in
+             pass 
+             
+    # We override save just in case, but the View Logic should handle it primarily
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
         if commit:
             user.save()
-            profile = user.profile
-            profile.user_type = self.cleaned_data.get('user_type')
-            profile.save()
+            # If the view doesn't handle it, this is a fallback
+            if hasattr(user, 'profile'):
+                profile = user.profile
+                profile.user_type = self.cleaned_data.get('user_type')
+                profile.save()
         return user
 
 # --- 5. PAYOUT FORM ---

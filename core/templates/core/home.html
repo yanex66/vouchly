@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -9,56 +10,69 @@
         --soft-bg: #f8fafc;
         --text-muted: #64748b;
         --success-green: #22c55e;
+        --card-radius: 24px;
     }
 
-    /* 1. COMPACT Top Search Bar */
+    body { background-color: var(--soft-bg); }
+
+    /* 1. URGENCY BANNER */
+    .founder-alert {
+        background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1px solid #fcd34d;
+        border-radius: 50px;
+        transition: transform 0.3s;
+    }
+    .founder-alert:hover { transform: scale(1.02); }
+
+    /* 2. COMPACT SEARCH */
     .top-search-section {
         background: white;
-        padding: 15px 0;
+        padding: 20px 0;
         border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
     .search-pill {
-        max-width: 550px;
+        max-width: 600px;
         margin: 0 auto;
         background: var(--soft-bg);
         border-radius: 50px;
-        padding: 3px;
-        border: 2px solid #f1f5f9;
+        padding: 5px;
+        border: 2px solid #e2e8f0;
         transition: 0.3s;
     }
 
     .search-pill:focus-within {
-        border-color: var(--accent);
+        border-color: var(--midnight);
         background: white;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
 
     .search-input-premium {
         background: transparent !important;
         border: none !important;
-        padding: 8px 20px !important;
+        padding: 10px 25px !important;
         font-weight: 600;
-        font-size: 0.9rem;
         color: var(--midnight);
     }
 
     .btn-search-premium {
         background: var(--midnight);
-        color: var(--accent);
+        color: white;
         border-radius: 50px !important;
-        padding: 8px 25px !important;
+        padding: 10px 30px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         letter-spacing: 1px;
     }
 
-    /* 2. Premium Hero Carousel */
+    /* 3. HERO CAROUSEL */
     .hero-gradient {
         background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
-        min-height: 550px;
+        min-height: 580px;
         border-bottom: 5px solid var(--accent);
+        position: relative;
+        overflow: hidden;
     }
 
     .display-4 {
@@ -72,88 +86,83 @@
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         transition: transform 0.5s ease;
     }
+    .hero-img-premium:hover { transform: scale(1.02) rotate(1deg); }
 
-    .hero-img-premium:hover { transform: scale(1.02); }
-
-    /* REWARD BADGE ON HERO */
     .hero-reward-badge {
         display: inline-flex;
         align-items: center;
-        background: rgba(34, 197, 94, 0.2);
+        background: rgba(34, 197, 94, 0.15);
         border: 1px solid var(--success-green);
         color: #4ade80;
-        padding: 8px 15px;
-        border-radius: 12px;
+        padding: 8px 18px;
+        border-radius: 50px;
         font-weight: 800;
-        font-size: 0.9rem;
-        margin-bottom: 20px;
+        font-size: 0.85rem;
+        margin-bottom: 25px;
+        backdrop-filter: blur(5px);
     }
 
-    /* 3. "How it Works" Value Cards */
+    /* 4. VALUE CARDS */
     .step-card {
         background: white;
-        border-radius: 28px;
-        padding: 45px 30px;
+        border-radius: var(--card-radius);
+        padding: 40px 30px;
         height: 100%;
         border: 1px solid rgba(0,0,0,0.04);
         transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-
     .step-card:hover {
-        transform: translateY(-12px);
+        transform: translateY(-10px);
         box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
         border-color: var(--accent);
     }
 
     .step-icon-box {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
         background: var(--soft-bg);
         color: var(--midnight);
         border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.2rem;
-        margin: 0 auto 25px;
-        border-bottom: 4px solid var(--accent);
+        font-size: 2rem;
+        margin-bottom: 20px;
+        border-bottom: 3px solid var(--accent);
     }
 
-    /* 4. Item Cards */
+    /* 5. ITEM CARDS */
     .premium-item-card {
         background: white;
-        border-radius: 28px;
+        border-radius: var(--card-radius);
         border: 1px solid rgba(0,0,0,0.04);
         overflow: hidden;
         transition: all 0.4s ease;
         height: 100%;
         position: relative;
     }
-
     .premium-item-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
         box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
-        border-color: var(--accent);
     }
 
     .item-card-img {
-        height: 230px;
+        height: 240px;
         width: 100%;
         object-fit: cover;
     }
 
-    /* CARD REWARD TAG */
     .card-reward-tag {
         position: absolute;
         top: 15px;
         right: 15px;
-        background: var(--accent);
-        color: var(--midnight);
-        padding: 5px 12px;
-        border-radius: 10px;
+        background: var(--midnight);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 12px;
         font-weight: 800;
         font-size: 0.75rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         z-index: 2;
     }
 
@@ -162,54 +171,78 @@
         border: 2px solid var(--midnight);
         color: var(--midnight);
         font-weight: 800;
-        border-radius: 12px;
-        padding: 10px;
+        border-radius: 14px;
+        padding: 12px;
         width: 100%;
         transition: 0.3s;
         text-transform: uppercase;
         font-size: 0.8rem;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         text-align: center;
         display: block;
         text-decoration: none;
     }
-
     .btn-promote-premium:hover {
         background: var(--midnight);
-        color: var(--accent);
-        box-shadow: 0 8px 15px rgba(15, 23, 42, 0.2);
+        color: white;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+        border-color: var(--midnight);
     }
 
-    /* 6. Section Titles */
+    /* 6. LEADERBOARD AVATARS */
+    .avatar-ring {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        object-fit: cover;
+        transition: 0.3s;
+    }
+    .avatar-ring:hover { transform: scale(1.1); border-color: var(--accent); }
+
+    /* 7. SECTION HEADERS */
     .section-head {
-        font-weight: 800;
+        font-weight: 900;
         color: var(--midnight);
         letter-spacing: -1px;
         text-transform: uppercase;
+        font-size: 1.8rem;
     }
-
     .section-divider {
         width: 60px;
-        height: 4px;
+        height: 5px;
         background: var(--accent);
-        border-radius: 2px;
-        margin: 15px auto 30px;
+        border-radius: 10px;
+        margin: 15px auto 40px;
     }
 
     @media (max-width: 768px) {
-        .hero-gradient { min-height: 450px; padding: 40px 0; }
-        .display-4 { font-size: 2.2rem !important; }
-        .top-search-section { padding: 10px 0; }
-        .search-pill { max-width: 90%; }
+        .hero-gradient { min-height: 500px; padding: 40px 0; }
+        .display-4 { font-size: 2.5rem !important; }
+        .top-search-section { padding: 15px 0; }
+        .search-pill { max-width: 92%; }
     }
 </style>
 
-<div class="top-search-section">
+{% if free_slots_left > 0 %}
+<div class="container mt-3">
+    <div class="founder-alert d-flex align-items-center justify-content-center py-3 px-4 shadow-sm animate__animated animate__fadeInDown">
+        <span class="badge bg-danger rounded-pill me-3 animate__animated animate__pulse animate__infinite shadow-sm">URGENT</span>
+        <div class="fw-bold text-dark small-md">
+            🚀 <span class="text-primary fw-800">FOUNDER OFFER:</span> Only <span class="fs-5 text-danger fw-900 mx-1">{{ free_slots_left }}</span> free hosting slots left! 
+            <a href="{% url 'register' %}" class="text-decoration-underline ms-2 text-dark fw-800">Claim yours now</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="top-search-section sticky-top" style="z-index: 999; top: 0;">
     <div class="container">
         <form action="{% url 'search' %}" method="GET" class="search-pill d-flex shadow-sm">
-            <input type="text" name="query" class="form-control search-input-premium" placeholder="Search products or services..." required>
+            <input type="text" name="query" class="form-control search-input-premium" placeholder="Search products, services, or categories..." required>
             <button class="btn btn-search-premium" type="submit">
-                <i class="bi bi-search me-1"></i> Search
+                <i class="bi bi-search me-2"></i> Find
             </button>
         </form>
     </div>
@@ -218,25 +251,33 @@
 <div id="heroCarousel" class="carousel slide carousel-fade shadow-lg" data-bs-ride="carousel">
     <div class="carousel-inner">
         {% for item in hero_items %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="8000">
+        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="6000">
             <div class="hero-gradient d-flex align-items-center py-5">
-                <div class="container">
+                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(255, 193, 7, 0.1); border-radius: 50%; filter: blur(80px);"></div>
+                <div style="position: absolute; bottom: -50px; left: -50px; width: 300px; height: 300px; background: rgba(37, 99, 235, 0.1); border-radius: 50%; filter: blur(80px);"></div>
+
+                <div class="container position-relative z-2">
                     <div class="row align-items-center">
-                        <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0">
-                            <div class="hero-reward-badge">
-                                <i class="bi bi-lightning-charge-fill me-2"></i> EARN ₦{{ item.commission_naira|floatformat:2 }} PER INTERACTION
+                        <div class="col-lg-6 text-white text-lg-start text-center mb-5 mb-lg-0 animate__animated animate__fadeInLeft">
+                            <div class="hero-reward-badge shadow-sm">
+                                <i class="bi bi-wallet2 me-2"></i> 
+                                {% if item.commission_naira > 0 %}
+                                    EARN ₦{{ item.commission_naira|intcomma }} GUARANTEED
+                                {% else %}
+                                    VARIABLE COMMISSION REWARDS
+                                {% endif %}
                             </div>
                             <h1 class="display-4 mb-3">{{ item.name }}</h1>
-                            <p class="lead mb-5 opacity-75 fw-500">{{ item.description|truncatewords:20 }}</p>
+                            <p class="lead mb-5 opacity-75 fw-500" style="font-size: 1.1rem; line-height: 1.6;">{{ item.description|truncatewords:20 }}</p>
                             
                             <div class="d-flex justify-content-center justify-content-lg-start gap-3">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg">PROMOTE</a>
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600">VIEW DETAILS</a>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg hover-scale">PROMOTE</a>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600 hover-scale">DETAILS</a>
                             </div>
                         </div>
-                        <div class="col-lg-6 text-center">
+                        <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
                             {% if item.image %}
-                            <img src="{{ item.image.url }}" class="img-fluid hero-img-premium" style="max-height: 450px;" alt="{{ item.name }}">
+                            <img src="{{ item.image.url }}" class="img-fluid hero-img-premium" style="max-height: 480px; width: auto;" alt="{{ item.name }}">
                             {% endif %}
                         </div>
                     </div>
@@ -245,92 +286,152 @@
         </div>
         {% endfor %}
     </div>
+    {% if hero_items|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+    </button>
+    {% endif %}
 </div>
 
 <div class="container py-5 mt-5">
     <div class="text-center mb-5">
         <h2 class="section-head">The Kingdom Path</h2>
         <div class="section-divider"></div>
-        <p class="text-muted fw-800 text-uppercase small">Earn rewards in three simple steps</p>
+        <p class="text-muted fw-bold text-uppercase small ls-1">Simple steps to start earning</p>
     </div>
 
     <div class="row g-4 text-center">
         <div class="col-md-4">
             <div class="step-card">
-                <div class="step-icon-box"><i class="bi bi-shield-lock-fill"></i></div>
-                <h4 class="fw-800 mb-3">1. JOIN</h4>
-                <p class="text-muted small fw-600">Register for free and join our community of creators to access premium rewards.</p>
+                <div class="step-icon-box mx-auto"><i class="bi bi-person-plus-fill"></i></div>
+                <h4 class="fw-800 mb-3">1. JOIN FREE</h4>
+                <p class="text-muted small fw-600 lh-lg">Create your account in seconds. No hidden fees. Access our premium marketplace instantly.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="step-card">
-                <div class="step-icon-box"><i class="bi bi-megaphone-fill"></i></div>
-                <h4 class="fw-800 mb-3">2. VOUCH</h4>
-                <p class="text-muted small fw-600">Share your unique vouchers with the right people who need premium results.</p>
+                <div class="step-icon-box mx-auto"><i class="bi bi-share-fill"></i></div>
+                <h4 class="fw-800 mb-3">2. VOUCH & SHARE</h4>
+                <p class="text-muted small fw-600 lh-lg">Find products you trust. Share your unique link with friends or your audience who need them.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="step-card">
-                <div class="step-icon-box"><i class="bi bi-gem"></i></div>
-                <h4 class="fw-800 mb-3">3. EARN</h4>
-                <p class="text-muted small fw-600">Collect VOCOIN for every successful verified recommendation you provide.</p>
+                <div class="step-icon-box mx-auto"><i class="bi bi-cash-coin"></i></div>
+                <h4 class="fw-800 mb-3">3. EARN CASH</h4>
+                <p class="text-muted small fw-600 lh-lg">Get paid real Naira directly to your wallet for every successful purchase made through you.</p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-            <h2 class="section-head mb-0">Top Rated Picks</h2>
-            <div class="section-divider ms-0"></div>
+<div class="bg-white py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="section-head mb-0">Trending Vouchers</h2>
+                <div class="section-divider ms-0 mb-0 mt-2"></div>
+            </div>
+            <a href="{% url 'marketplace' %}" class="btn btn-outline-dark rounded-pill px-4 fw-800 btn-sm mb-2">
+                View All <i class="bi bi-arrow-right"></i>
+            </a>
         </div>
-        <a href="{% url 'category_list' %}" class="btn btn-dark rounded-pill px-4 fw-800 btn-sm mb-3">View Categories</a>
-    </div>
 
-    <div class="row g-4">
-        {% for item in top_rated %}
-        <div class="col-sm-6 col-lg-3">
-            <div class="premium-item-card shadow-sm">
-                <div class="card-reward-tag">₦{{ item.commission_naira|floatformat:0 }} REWARD</div>
-                
-                <a href="{% url 'item_detail' item.slug %}">
-                    {% if item.image %}
-                    <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
-                    {% else %}
-                    <div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height: 230px;">NO IMAGE</div>
-                    {% endif %}
-                </a>
-                <div class="p-4">
-                    <h5 class="fw-800 text-truncate mb-2">
-                        <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase" style="font-size: 1.1rem;">{{ item.name }}</a>
-                    </h5>
-                    <div class="mb-4 d-flex justify-content-between align-items-center">
-                        <div class="text-warning fw-800">
-                            {% if item.avg_rating %}{{ item.avg_rating|floatformat:1 }} ★{% else %}<span class="text-muted small">NEW</span>{% endif %}
-                        </div>
-                        <div class="fw-900 text-success small">₦{{ item.price|floatformat:0 }}</div>
+        <div class="row g-4">
+            {% for item in top_rated %}
+            <div class="col-sm-6 col-lg-3">
+                <div class="premium-item-card shadow-sm h-100 d-flex flex-column">
+                    <div class="card-reward-tag">
+                        {% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD
                     </div>
-                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium">PROMOTE & EARN</a>
+                    
+                    <a href="{% url 'item_detail' item.slug %}" class="flex-shrink-0">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="item-card-img" alt="{{ item.name }}">
+                        {% else %}
+                        <div class="bg-light text-muted d-flex align-items-center justify-content-center item-card-img">
+                            <i class="bi bi-image fs-1"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <div class="mb-auto">
+                            <h5 class="fw-800 text-truncate mb-1">
+                                <a href="{% url 'item_detail' item.slug %}" class="text-decoration-none text-midnight text-uppercase fs-6">{{ item.name }}</a>
+                            </h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-warning fw-800 small">
+                                    {{ item.avg_rating|default:"5.0"|floatformat:1 }} <i class="bi bi-star-fill"></i>
+                                </span>
+                                <span class="fw-900 text-success small">
+                                    {% if item.price > 0 %}₦{{ item.price|intcomma }}{% else %}PROMO{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">
+                            PROMOTE & EARN
+                        </a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="section-head">Top Community Voices</h2>
+        <div class="section-divider"></div>
+    </div>
+
+    <div class="row justify-content-center">
+        {% for reviewer in featured_reviewers %}
+        <div class="col-6 col-md-3 col-lg-2 text-center mb-4">
+            <img src="{{ reviewer.profile.image.url }}" class="avatar-ring mb-3" alt="{{ reviewer.username }}">
+            <h6 class="fw-800 mb-0 text-midnight">{{ reviewer.username }}</h6>
+            <span class="badge bg-light text-muted border rounded-pill mt-2">{{ reviewer.num_reviews }} Vouches</span>
         </div>
         {% endfor %}
     </div>
+
+    {% if featured_review %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg bg-dark text-white p-5 text-center" style="border-radius: 30px; background: linear-gradient(145deg, #0f172a, #1e293b);">
+                <i class="bi bi-quote fs-1 text-warning mb-3 d-block"></i>
+                <h4 class="fw-bold fst-italic mb-4">"{{ featured_review.content|truncatewords:30 }}"</h4>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <img src="{{ featured_review.author.profile.image.url }}" class="rounded-circle border border-2 border-warning" width="50" height="50">
+                    <div class="text-start">
+                        <div class="fw-800 text-warning">{{ featured_review.author.username }}</div>
+                        <div class="small opacity-75">Vouched for {{ featured_review.item.name }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
-<div class="container py-5">
-    <div class="bg-dark rounded-5 p-5 text-center text-white shadow-lg" style="border: 2px solid var(--accent); position: relative; overflow: hidden;">
-        <div style="position: relative; z-index: 2;">
-            <h2 class="display-5 fw-800 mb-3">Claim Your Seat</h2>
-            <p class="lead mb-5 opacity-75 fw-500">Your journey to earning through authentic community recommendations starts now.</p>
+<div class="container py-5 mb-5">
+    <div class="bg-warning rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
+        
+        <div class="position-relative z-2">
+            <h2 class="display-5 fw-900 text-dark mb-3">Ready to Claim Your Throne?</h2>
+            <p class="lead mb-5 text-dark fw-bold opacity-75">Join the fastest growing marketplace for authentic African commerce.</p>
+            
             {% if not user.is_authenticated %}
-            <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-800 px-5 py-3 rounded-pill text-dark shadow-lg">
-                JOIN NOW <i class="bi bi-arrow-right ms-2"></i>
+            <a href="{% url 'register' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg hover-scale">
+                START EARNING NOW <i class="bi bi-arrow-right ms-2"></i>
             </a>
             {% else %}
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg fw-800 px-5 py-3 rounded-pill">
-                BACK TO DASHBOARD
+            <a href="{% url 'dashboard' %}" class="btn btn-dark btn-lg fw-900 px-5 py-3 rounded-pill shadow-lg hover-scale">
+                GO TO DASHBOARD
             </a>
             {% endif %}
         </div>
