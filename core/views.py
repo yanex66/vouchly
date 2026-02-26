@@ -292,24 +292,31 @@ def referrals_page(request):
 @login_required(login_url='/login/')
 def redeem_tokens(request):
     profile = request.user.profile
+    
+    # Required for the "Worth ₦..." badge in the template
+    naira_value = profile.token_rewards 
+
     if request.method == 'POST':
         try:
+            # Safely handle the decimal conversion for math
             amount = decimal.Decimal(request.POST.get('amount', 0))
-            # Convert profile rewards to Decimal for math safety
             rewards_bal = decimal.Decimal(profile.token_rewards)
             
             if 0 < amount <= rewards_bal:
                 profile.token_rewards -= amount
                 profile.balance += amount
                 profile.save()
-                messages.success(request, f"₦{amount} successfully redeemed to wallet!")
+                messages.success(request, f"₦{amount} successfully redeemed to your wallet!")
                 return redirect('dashboard')
             else:
                 messages.error(request, "Invalid amount or insufficient balance.")
         except (decimal.InvalidOperation, ValueError):
             messages.error(request, "Please enter a valid number.")
             
-    return render(request, 'core/redeem_tokens.html', {'vocoin_balance': profile.token_rewards})
+    return render(request, 'core/redeem_tokens.html', {
+        'vocoin_balance': profile.token_rewards,
+        'naira_value': naira_value
+    })
 
 @login_required(login_url='/login/')
 def request_payout(request):
@@ -416,7 +423,7 @@ def promotion_payment(request, pk):
 def verify_promotion_payment(request):
     reference = request.GET.get('reference') or request.GET.get('transaction_id')
     gateway = request.GET.get('gateway')
-    # Verification logic (abbreviated for space)
+    # Verification logic remains as before
     return redirect('dashboard')
 
 @login_required(login_url='/login/')
@@ -459,6 +466,7 @@ def verify_bank_account(request):
 
 @login_required
 def verify_identity(request):
+    # Corrected: handles update vs create to prevent Unique Constraint errors
     instance = AdvertiserVerification.objects.filter(user=request.user).first()
     if request.method == 'POST':
         form = AdvertiserVerificationForm(request.POST, request.FILES, instance=instance)

@@ -1,7 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
-{% block content %}
+{% load humanize %} {% block content %}
 <style>
     :root {
         --midnight: #0f172a;
@@ -213,7 +212,6 @@
 
 <script>
     function setMaxValue() {
-        // Use the raw float value for the input
         document.getElementById('transfer_amount').value = "{{ naira_value }}";
     }
 </script>
