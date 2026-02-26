@@ -93,7 +93,7 @@ DATABASES = {
     )
 }
 
-# --- 6. STATIC & MEDIA (Final Stability Fix) ---
+# --- 6. STATIC & MEDIA ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -101,18 +101,15 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# MODERN DJANGO 6 STORAGE SETTINGS
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Changed to StaticFilesStorage to prevent build crashes
         "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
 
-# COMPATIBILITY ALIASES (Satisfies django-cloudinary-storage requirements)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
@@ -142,7 +139,7 @@ TERMII_API_KEY = env('TERMII_API_KEY', default='')
 TERMII_SENDER_ID = env('TERMII_SENDER_ID', default='Vouchly')
 TERMII_BASE_URL = env('TERMII_BASE_URL', default='https://api.ng.termii.com')
 
-# --- 9. AUTHENTICATION & ALLAUTH ---
+# --- 9. AUTHENTICATION ---
 AUTHENTICATION_BACKENDS = [
     'core.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -168,18 +165,22 @@ LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
-# --- 10. SECURITY & VAULT ---
+# --- 10. SECURITY & PRODUCTION SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_VAULT_ROOT = os.path.join(BASE_DIR, 'secure_vault')
 
 if not os.path.exists(SECURE_VAULT_ROOT):
     os.makedirs(SECURE_VAULT_ROOT)
 
+# Production SSL Enforcement
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = False
+    SECURE_SSL_REDIRECT = True # Force HTTPS
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000 # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # --- 11. PAYMENTS ---
 PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
