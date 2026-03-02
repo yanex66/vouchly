@@ -71,30 +71,24 @@
         border-radius: 10px;
     }
 
-    /* --- TEAM SECTION (FLEX SCROLL) --- */
+    /* --- TEAM SECTION (MOBILE HORIZONTAL ROW) --- */
     .team-flex-container {
         display: flex;
-        gap: 24px;
-        padding-bottom: 30px;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-    
-    .team-flex-container::-webkit-scrollbar {
-        display: none;
+        flex-direction: row;
+        gap: 8px; /* Tight gap for mobile */
+        padding-bottom: 20px;
+        justify-content: space-between;
     }
 
     .team-card-wrapper {
-        flex: 0 0 85%;
-        scroll-snap-align: center;
+        flex: 1 1 0;
+        min-width: 0; /* Prevents flex items from blowing out of bounds */
     }
 
     .team-card {
         background: var(--card-bg);
-        border-radius: var(--v-radius);
-        padding: 40px 20px;
+        border-radius: 16px;
+        padding: 15px 5px; /* Scaled down padding for mobile */
         text-align: center;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(15, 23, 42, 0.05);
@@ -110,14 +104,14 @@
     }
 
     .team-img-wrapper {
-        width: 140px;
-        height: 140px;
-        margin: 0 auto 25px;
+        width: 60px; /* Scaled down for mobile */
+        height: 60px;
+        margin: 0 auto 10px;
         position: relative;
         border-radius: 50%;
         overflow: hidden;
-        border: 5px solid white;
-        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
+        border: 2px solid white;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
     }
 
     .team-demo-img {
@@ -134,38 +128,59 @@
         transform: translate(-50%, -50%);
         background: rgba(2, 6, 23, 0.85);
         color: var(--accent);
-        font-size: 0.65rem;
+        font-size: 0.45rem;
         font-weight: 900;
-        padding: 6px 14px;
+        padding: 4px 8px;
         border-radius: 50px;
         white-space: nowrap;
-        letter-spacing: 1.5px;
         border: 1px solid var(--accent);
-        backdrop-filter: blur(4px);
     }
 
     .team-role {
-        font-size: 0.75rem;
+        font-size: 0.5rem;
         font-weight: 800;
         color: var(--midnight-dark);
         background: var(--accent);
-        padding: 6px 16px;
+        padding: 4px 8px;
         border-radius: 50px;
         display: inline-block;
-        margin-bottom: 15px;
-        letter-spacing: 0.5px;
+        margin-bottom: 8px;
     }
 
+    .team-card h5 {
+        font-size: 0.75rem; /* Scaled down text */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .team-card p {
+        font-size: 0.6rem;
+    }
+
+    /* Desktop Team Layout Overrides */
     @media (min-width: 768px) {
         .team-flex-container {
-            overflow-x: visible;
+            gap: 24px;
             justify-content: center;
-            flex-wrap: wrap;
         }
         .team-card-wrapper {
             flex: 0 0 calc(33.333% - 24px);
             max-width: 350px;
         }
+        .team-card {
+            padding: 40px 20px;
+            border-radius: var(--v-radius);
+        }
+        .team-img-wrapper {
+            width: 140px; height: 140px;
+            border-width: 5px;
+            margin-bottom: 25px;
+        }
+        .team-role { font-size: 0.75rem; padding: 6px 16px; margin-bottom: 15px; }
+        .team-card h5 { font-size: 1.25rem; white-space: normal; }
+        .team-card p { font-size: 0.875rem; }
+        .revealing-tag { font-size: 0.65rem; padding: 6px 14px; }
     }
 
     /* --- FEATURES & ADVANTAGE --- */
@@ -253,18 +268,18 @@
     .timeline-content { padding: 30px; background: var(--card-bg); border-radius: var(--v-radius); box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; }
     .timeline-content:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
 
-    /* --- STATS BAR (FLEX MODE) --- */
+    /* --- STATS BAR (MOBILE HORIZONTAL ROW) --- */
     .stats-flex-container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row; /* Forces items in a row on mobile */
         align-items: center;
-        justify-content: center;
+        justify-content: space-around;
         background: #0b1120;
-        border-radius: 40px;
-        padding: 60px 20px;
-        gap: 50px;
-        margin: 80px auto;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+        border-radius: 24px; /* Smaller radius for mobile */
+        padding: 30px 10px;
+        gap: 5px;
+        margin: 60px auto;
+        box-shadow: 0 15px 30px -10px rgba(15, 23, 42, 0.3);
         max-width: 1000px;
     }
 
@@ -273,30 +288,40 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
+        flex: 1;
     }
 
     .stat-value {
-        font-size: 4rem;
+        font-size: 1.6rem; /* Scaled down heavily to fit 3 in a row on mobile */
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         line-height: 1;
     }
 
     .stat-label {
-        font-size: 0.85rem;
+        font-size: 0.55rem; /* Scaled down for mobile */
         font-weight: 600;
         color: rgba(255, 255, 255, 0.75);
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
     }
 
+    /* Desktop Stats Layout Overrides */
     @media (min-width: 768px) {
         .stats-flex-container {
-            flex-direction: row;
-            justify-content: space-around;
             padding: 70px 40px;
+            border-radius: 40px;
             gap: 0;
+            margin: 80px auto;
+        }
+        .stat-value {
+            font-size: 4rem;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            letter-spacing: 1px;
         }
     }
     
