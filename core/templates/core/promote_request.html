@@ -7,90 +7,149 @@
         --midnight: #0f172a;
         --accent: #ffc107;
         --soft-bg: #f8fafc;
+        --card-radius: 24px;
     }
     
     body { background-color: var(--soft-bg); }
 
     .dash-flex-wrapper {
         display: flex;
-        gap: 20px;
+        gap: 25px;
         align-items: flex-start;
-        padding: 20px;
+        padding: 30px 20px;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
     .promo-card {
         background: white;
-        border-radius: 25px !important;
+        border-radius: var(--card-radius) !important;
         padding: 40px;
-        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04);
         border: 1px solid #f1f5f9;
     }
 
     .form-label-custom {
         font-weight: 800;
         color: var(--midnight);
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 10px;
         display: block;
     }
 
-    .form-control, .form-select, .btn {
-        border-radius: 12px !important;
-        padding: 14px;
+    /* Target all Django generated inputs perfectly */
+    .promo-card input[type="text"],
+    .promo-card input[type="number"],
+    .promo-card input[type="url"],
+    .promo-card input[type="file"],
+    .promo-card textarea,
+    .promo-card select,
+    .form-select-custom {
+        width: 100%;
+        border-radius: 14px !important;
+        padding: 16px 20px;
         font-weight: 600;
         font-size: 0.95rem;
-        border: 1px solid #e2e8f0;
+        border: 2px solid #e2e8f0;
         background: #f8fafc;
+        color: var(--midnight);
+        transition: 0.3s ease;
+    }
+
+    .promo-card input:focus, 
+    .promo-card textarea:focus, 
+    .promo-card select:focus,
+    .form-select-custom:focus {
+        border-color: var(--midnight);
+        outline: none;
+        background: white;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .promo-card textarea {
+        min-height: 140px;
+        resize: vertical;
     }
 
     /* Strategy Toggle Styling */
     .strategy-selector {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 20px;
+        gap: 15px;
+        margin-bottom: 25px;
     }
 
     .strat-btn {
         border: 2px solid #e2e8f0;
-        background: white;
-        padding: 15px;
-        border-radius: 15px !important;
+        background: #f8fafc;
+        padding: 20px 15px;
+        border-radius: 18px !important;
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
         color: #64748b;
     }
 
-    .strat-btn i { font-size: 1.2rem; display: block; margin-bottom: 5px; }
-    .strat-btn span { font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .strat-btn:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    .strat-btn i { font-size: 1.5rem; display: block; margin-bottom: 8px; transition: 0.3s; }
+    .strat-btn span { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .strat-btn.active {
         border-color: var(--midnight);
         background: var(--midnight);
-        color: var(--accent);
+        color: white;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
     }
+    .strat-btn.active i { color: var(--accent); transform: scale(1.1); }
 
+    /* Info & Destination Boxes */
     .destination-box {
-        background: #f1f5f9;
-        padding: 25px;
-        margin: 25px 0;
-        border: 2px solid var(--midnight);
+        background: white;
+        padding: 30px;
+        margin: 30px 0;
+        border: 2px dashed #cbd5e1;
         border-radius: 20px !important;
     }
 
     .agreement-box {
-        background: #fff9e6;
-        border-left: 5px solid var(--accent);
-        padding: 20px;
+        background: #fffbeb;
+        border: 2px solid #fde68a;
+        padding: 25px;
         margin-bottom: 30px;
-        border-radius: 0 15px 15px 0;
+        border-radius: 18px;
+        transition: 0.3s;
+    }
+    .agreement-box:hover { box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); }
+
+    .promo-card input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        accent-color: var(--midnight);
+        cursor: pointer;
+        margin-top: 2px;
+    }
+
+    .btn-publish {
+        border-radius: 50px !important;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+    .btn-publish:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.2);
     }
 
     @media (max-width: 991px) {
-        .dash-flex-wrapper { flex-direction: column; padding: 10px; }
+        .dash-flex-wrapper { flex-direction: column; padding: 15px 10px; }
+        .promo-card { padding: 25px 20px; }
+        .strategy-selector { grid-template-columns: 1fr; }
     }
 </style>
 
@@ -104,40 +163,37 @@
                 
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-danger p-3 mb-4 border-0" style="border-radius: 12px; background: #fef2f2; color: #991b1b;">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ message }}
+                        <div class="alert alert-danger p-3 mb-4 border-0 d-flex align-items-center" style="border-radius: 12px; background: #fef2f2; color: #991b1b; font-weight: 700;">
+                            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i> 
+                            <div>{{ message }}</div>
                         </div>
                     {% endfor %}
                 {% endif %}
 
-                <div class="mb-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 pb-3 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h4 class="fw-900 text-midnight mb-1" style="letter-spacing: -1px;">LIST PRODUCT</h4>
-                        <p class="text-muted small fw-bold">Choose how you want marketers to promote you.</p>
+                        <h3 class="fw-900 text-midnight mb-1" style="letter-spacing: -1px;">LIST PRODUCT</h3>
+                        <p class="text-muted small fw-bold mb-0">Create your listing and choose how marketers promote you.</p>
                     </div>
-                    <i class="bi bi-megaphone fs-2 text-primary opacity-50"></i>
+                    <div class="bg-light p-3 rounded-circle d-none d-md-block mt-3 mt-md-0">
+                        <i class="bi bi-megaphone-fill fs-3 text-warning"></i>
+                    </div>
                 </div>
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    <div class="row">
+                    <div class="row g-4 mb-4">
                         <div class="col-md-8">
-                            <div class="mb-4">
+                            <div>
                                 <label class="form-label-custom">Product Name</label>
                                 {{ form.product_name }}
                             </div>
-
-                            <div class="mb-4">
-                                <label class="form-label-custom">Category</label>
-                                {{ form.category }}
-                            </div>
                         </div>
-
                         <div class="col-md-4">
-                            <div class="mb-4">
-                                <label class="form-label-custom text-primary">Ad Plan Duration</label>
-                                <select name="duration_days" class="form-select border-primary text-primary fw-bold" required>
+                            <div>
+                                <label class="form-label-custom text-primary"><i class="bi bi-calendar-check me-1"></i> Ad Duration</label>
+                                <select name="duration_days" class="form-select-custom border-primary text-primary fw-bold" required>
                                     <option value="30">30 Days (Standard)</option>
                                     <option value="60">60 Days (Professional)</option>
                                     <option value="90">90 Days (Enterprise)</option>
@@ -146,36 +202,49 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label-custom">Product Display Image</label>
-                        {{ form.product_image }}
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Category</label>
+                            {{ form.category }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Product Display Image</label>
+                            {{ form.product_image }}
+                        </div>
                     </div>
 
                     <div class="destination-box shadow-sm">
-                        <label class="form-label-custom">Promotion Strategy</label>
+                        <label class="form-label-custom text-center mb-4 fs-6">Promotion Strategy</label>
                         
                         <div class="strategy-selector">
                             <div class="strat-btn active" id="btn-internal" onclick="setStrategy('internal')">
-                                <i class="bi bi-shield-check"></i>
-                                <span>Promote on Vouchly</span>
+                                <i class="bi bi-shield-lock-fill"></i>
+                                <span>Escrow Protected<br><small class="text-muted text-capitalize fw-600" style="font-size: 0.6rem;">Sell directly on Vouchly</small></span>
                             </div>
                             <div class="strat-btn" id="btn-external" onclick="setStrategy('website')">
-                                <i class="bi bi-globe"></i>
-                                <span>Own Website</span>
+                                <i class="bi bi-box-arrow-up-right"></i>
+                                <span>External Agency<br><small class="text-muted text-capitalize fw-600" style="font-size: 0.6rem;">Redirect to your website</small></span>
                             </div>
                         </div>
 
                         <input type="hidden" name="destination_type" id="id_destination_type" value="internal">
 
-                        <div id="websiteInput" style="display: none;">
-                            <label class="form-label-custom">Insert Website URL</label>
+                        <div id="websiteInput" style="display: none;" class="mt-4 animate__animated animate__fadeIn">
+                            <label class="form-label-custom">Destination URL</label>
                             {{ form.website_url }}
-                            <small class="text-muted fw-bold d-block mt-2" style="font-size: 0.65rem;">Marketers will redirect traffic here.</small>
+                            <div class="mt-2 text-primary small fw-bold">
+                                <i class="bi bi-info-circle-fill me-1"></i> Marketers will send traffic directly to this link.
+                            </div>
                         </div>
 
-                        <div id="vouchlyInfo" class="p-3 bg-white rounded-3 border">
-                            <p class="mb-0 small fw-bold text-dark"><i class="bi bi-info-circle-fill text-primary me-2"></i> Internal Escrow</p>
-                            <small class="text-muted">Orders will be handled through Vouchly's secure checkout system.</small>
+                        <div id="vouchlyInfo" class="mt-4 p-3 bg-light rounded-4 border animate__animated animate__fadeIn">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-shield-check text-success fs-1 me-3"></i>
+                                <div>
+                                    <p class="mb-1 fw-900 text-dark">100% Secure Checkout</p>
+                                    <small class="text-muted fw-600">Vouchly will collect payments on your behalf and hold them in escrow until the buyer confirms delivery.</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -184,28 +253,32 @@
                         {{ form.description }}
                     </div>
 
-                    <div class="row g-3">
-                        <div class="col-6 mb-4">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
                             <label class="form-label-custom">Retail Price (₦)</label>
                             {{ form.product_price }}
                         </div>
-                        <div class="col-6 mb-4">
+                        <div class="col-md-6">
                             <label class="form-label-custom">Marketer Bonus (%)</label>
                             {{ form.commission_percentage }}
                         </div>
                     </div>
 
                     <div class="agreement-box shadow-sm">
-                        <div class="form-check d-flex align-items-center">
+                        <div class="form-check d-flex align-items-start">
                             {{ form.agree_to_commissions }}
-                            <label class="form-check-label ms-3 fw-800 text-midnight" for="id_agree_to_commissions" style="font-size: 0.85rem;">
-                                I AGREE TO PAY <span class="text-success">₦<span id="calc-naira">0.00</span></span> PER UNIT SOLD.
+                            <label class="form-check-label ms-3 pt-1 fw-800 text-midnight lh-sm" for="id_agree_to_commissions" style="font-size: 0.95rem;">
+                                I agree to automatically pay <span class="text-success fs-5 fw-900">₦<span id="calc-naira">0.00</span></span> to any marketer who successfully secures a sale for this product.
                             </label>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100 py-3 fw-900 border-0 shadow">
-                        {% if active_sub %}PUBLISH PRODUCT{% else %}PAY & LIST PRODUCT{% endif %}
+                    <button type="submit" class="btn btn-dark w-100 py-4 fw-900 border-0 shadow-lg btn-publish">
+                        {% if active_sub %}
+                            <i class="bi bi-rocket-takeoff-fill me-2 text-warning"></i> PUBLISH PRODUCT TO MARKETPLACE
+                        {% else %}
+                            <i class="bi bi-credit-card-fill me-2 text-warning"></i> PAY & LIST PRODUCT
+                        {% endif %}
                     </button>
                 </form>
             </div>
@@ -230,11 +303,19 @@
             vouchlyInfo.style.display = 'none';
             btnExternal.classList.add('active');
             btnInternal.classList.remove('active');
+            
+            // Adjust label colors for active state
+            btnExternal.querySelector('small').classList.replace('text-muted', 'text-light');
+            btnInternal.querySelector('small').classList.replace('text-light', 'text-muted');
         } else {
             websiteInput.style.display = 'none';
             vouchlyInfo.style.display = 'block';
             btnInternal.classList.add('active');
             btnExternal.classList.remove('active');
+            
+            // Adjust label colors for active state
+            btnInternal.querySelector('small').classList.replace('text-muted', 'text-light');
+            btnExternal.querySelector('small').classList.replace('text-light', 'text-muted');
         }
     }
 
@@ -247,12 +328,14 @@
             const price = parseFloat(priceInput.value) || 0;
             const perc = parseFloat(percInput.value) || 0;
             const total = (price * (perc / 100));
-            nairaPreview.textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2});
+            nairaPreview.textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
         
-        priceInput.addEventListener('input', calculateCommission);
-        percInput.addEventListener('input', calculateCommission);
-        calculateCommission(); 
+        if (priceInput && percInput) {
+            priceInput.addEventListener('input', calculateCommission);
+            percInput.addEventListener('input', calculateCommission);
+            calculateCommission(); 
+        }
     });
 </script>
 {% endblock %}
