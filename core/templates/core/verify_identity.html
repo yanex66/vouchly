@@ -16,7 +16,7 @@
         background: white;
         box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
         overflow: hidden;
-        max-width: 800px;
+        max-width: 650px; /* Slimmer for single document focus */
         margin: 0 auto;
     }
 
@@ -34,9 +34,9 @@
         background: #f8fafc;
         border: 2px dashed #e2e8f0;
         border-radius: 20px;
-        padding: 25px;
+        padding: 35px;
         transition: 0.3s;
-        height: 100%;
+        text-align: center;
     }
 
     .doc-upload-box:hover {
@@ -61,88 +61,62 @@
         font-weight: 600;
     }
 
-    /* Loader Animation */
     .spinner-border {
         display: none;
         width: 1.5rem;
         height: 1.5rem;
         margin-right: 10px;
     }
-    .loading .spinner-border {
-        display: inline-block;
-    }
-    .loading .btn-text {
-        display: none;
-    }
+    .loading .spinner-border { display: inline-block; }
+    .loading .btn-text { display: none; }
 </style>
 
 <div class="container py-5 mt-3">
     <div class="verify-card">
         <div class="verify-header">
-            <h2 class="fw-900 mb-1">🔒 Identity Verification</h2>
-            <p class="small opacity-75 fw-500 mb-0">Secure your business account to start listing products</p>
+            <div class="mb-3">
+                <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly" style="height: 50px;">
+            </div>
+            <h2 class="fw-900 mb-1">NIN Verification</h2>
+            <p class="small opacity-75 fw-500 mb-0">We use your NIN to securely verify your identity and address</p>
         </div>
 
         <div class="verify-body">
-            <div class="security-note mb-5 d-flex align-items-center">
-                <i class="bi bi-shield-lock-fill fs-3 me-3"></i>
+            <div class="security-note mb-4 d-flex align-items-center">
+                <i class="bi bi-shield-check fs-3 me-3"></i>
                 <div>
-                    <strong class="d-block">Your Privacy is Our Priority</strong>
-                    Your documents are encrypted and used strictly for verification. They are never shared with third parties or marketers.
+                    <strong>Automated Address Sync</strong><br>
+                    Your residential address will be automatically retrieved from your NIN records.
                 </div>
             </div>
 
             <form id="verificationForm" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-
                 <div id="formAlert" class="alert d-none rounded-4 fw-bold" role="alert"></div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label class="fw-800 small text-uppercase mb-2 d-block">Business Name</label>
-                        {{ form.business_name }}
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <label class="fw-800 small text-uppercase mb-2 d-block">Advertiser Full Name</label>
-                        {{ form.full_name }}
-                    </div>
+                <div class="mb-4">
+                    <label class="fw-800 small text-uppercase mb-2 d-block">Business Name</label>
+                    {{ form.business_name }}
+                </div>
 
-                    <div class="col-md-6 mb-4">
-                        <label class="fw-800 small text-uppercase mb-2 d-block">WhatsApp Contact Number</label>
-                        {{ form.contact_number }}
-                    </div>
-                    
-                    <div class="col-md-6 mb-4">
-                        <label class="fw-800 small text-uppercase mb-2 d-block">11-Digit NIN Number</label>
-                        <input type="text" name="nin_number" id="nin_number" class="form-control" placeholder="e.g. 12345678901" required maxlength="11" minlength="11">
-                    </div>
+                <div class="mb-4">
+                    <label class="fw-800 small text-uppercase mb-2 d-block">11-Digit NIN Number</label>
+                    <input type="text" name="nin_number" id="nin_number" class="form-control" placeholder="0000 0000 000" required maxlength="11">
+                </div>
 
-                    <div class="col-12 mb-4">
-                        <label class="fw-800 small text-uppercase mb-2 d-block">Residential / Office Address</label>
-                        {{ form.residential_address }}
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="doc-upload-box">
-                            <label class="fw-800 small text-uppercase mb-2 d-block">Proof of Identity Image</label>
-                            {{ form.proof_of_identity }}
-                            <small class="text-muted d-block mt-2">Upload a clear photo or PDF of your NIN card.</small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="doc-upload-box">
-                            <label class="fw-800 small text-uppercase mb-2 d-block">Proof of Address</label>
-                            {{ form.proof_of_address }}
-                            <small class="text-muted d-block mt-2">Upload a recent bank statement (last 3 months) matching your address.</small>
-                        </div>
+                <div class="mb-5">
+                    <div class="doc-upload-box">
+                        <i class="bi bi-card-heading fs-1 text-muted mb-2 d-block"></i>
+                        <label class="fw-800 small text-uppercase mb-2 d-block">Upload NIN Slip / Card</label>
+                        {{ form.proof_of_identity }}
+                        <small class="text-muted d-block mt-2">Upload a clear photo of your original NIN document.</small>
                     </div>
                 </div>
 
-                <button type="submit" id="submitBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-800 fs-5 shadow-lg mt-3 d-flex align-items-center justify-content-center">
+                <button type="submit" id="submitBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-800 fs-5 shadow-lg d-flex align-items-center justify-content-center">
                     <span class="spinner-border text-warning" role="status" aria-hidden="true"></span>
-                    <span class="btn-text">🛡️ Verify My Identity</span>
-                    <span class="btn-text loading-text d-none ms-2">Processing Documents...</span>
+                    <span class="btn-text">🛡️ Verify & Continue</span>
+                    <span class="btn-text loading-text d-none ms-2">Fetching NIN Details...</span>
                 </button>
             </form>
         </div>
@@ -151,65 +125,47 @@
 
 <script>
 document.getElementById('verificationForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Stop the default refresh
-    
-    const form = this;
+    e.preventDefault();
     const btn = document.getElementById('submitBtn');
     const alertBox = document.getElementById('formAlert');
-    const formData = new FormData(form);
+    const formData = new FormData(this);
     
-    // UI: Set Loading State
     btn.classList.add('loading');
     btn.disabled = true;
-    form.querySelectorAll('.btn-text')[0].classList.add('d-none');
-    form.querySelectorAll('.btn-text.loading-text')[0].classList.remove('d-none');
-    alertBox.classList.add('d-none');
-    alertBox.className = 'alert d-none rounded-4 fw-bold';
+    document.querySelector('.loading-text').classList.remove('d-none');
+    document.querySelector('.btn-text').classList.add('d-none');
 
     fetch("{% url 'verify_identity' %}", {
         method: 'POST',
         body: formData,
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': '{{ csrf_token }}'
         }
     })
     .then(response => response.json())
     .then(data => {
-        // UI: Reset Loading State
         btn.classList.remove('loading');
         btn.disabled = false;
-        form.querySelectorAll('.btn-text')[0].classList.remove('d-none');
-        form.querySelectorAll('.btn-text.loading-text')[0].classList.add('d-none');
+        document.querySelector('.loading-text').classList.add('d-none');
+        document.querySelector('.btn-text').classList.remove('d-none');
         
-        // Show Response Message
         alertBox.classList.remove('d-none');
         if (data.status === 'success') {
-            alertBox.classList.add('alert-success');
+            alertBox.className = 'alert alert-success rounded-4 fw-bold';
             alertBox.innerHTML = `✅ ${data.message}`;
-            
-            // If verified, redirect to dashboard after 2 seconds
-            if(data.is_verified) {
-                setTimeout(() => { window.location.href = "{% url 'dashboard' %}"; }, 2000);
-            } else {
-                 // Pending manual review
-                 setTimeout(() => { window.location.href = "{% url 'dashboard' %}"; }, 3500);
-            }
+            setTimeout(() => { window.location.href = "{% url 'dashboard' %}"; }, 2000);
         } else {
-            alertBox.classList.add('alert-danger');
-            alertBox.innerHTML = `❌ Error: Please ensure all documents are uploaded correctly.`;
+            alertBox.className = 'alert alert-danger rounded-4 fw-bold';
+            alertBox.innerHTML = `❌ ${data.message || 'Error processing NIN.'}`;
         }
     })
     .catch(error => {
         btn.classList.remove('loading');
         btn.disabled = false;
-        form.querySelectorAll('.btn-text')[0].classList.remove('d-none');
-        form.querySelectorAll('.btn-text.loading-text')[0].classList.add('d-none');
-        
         alertBox.classList.remove('d-none');
-        alertBox.classList.add('alert-danger');
-        alertBox.innerHTML = `❌ A server error occurred. Please try again later.`;
-        console.error('Error:', error);
+        alertBox.className = 'alert alert-danger rounded-4 fw-bold';
+        alertBox.innerHTML = `❌ Connection error. Please try again.`;
     });
 });
 </script>

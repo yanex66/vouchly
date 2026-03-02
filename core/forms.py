@@ -99,18 +99,8 @@ class ProfileUpdateForm(forms.ModelForm):
             css_class = 'form-select' if isinstance(current_widget, forms.Select) else 'form-control'
             current_widget.attrs.update({'class': f'{css_class} fw-bold border-2 rounded-4'})
 
-    def clean_whatsapp_number(self):
-        number = self.cleaned_data.get('whatsapp_number')
-        if number:
-            clean_num = number.replace("+", "").replace(" ", "").replace("-", "")
-            if not clean_num.isdigit():
-                raise forms.ValidationError("CONTACT NUMBER MUST CONTAIN ONLY DIGITS.")
-            return clean_num
-        return number
-
 # --- 3. REVIEW FORM ---
 class ReviewForm(forms.ModelForm):
-    # Added star options so the dropdown actually populates
     RATING_CHOICES = [
         (5, '⭐⭐⭐⭐⭐ (5/5) - Excellent'),
         (4, '⭐⭐⭐⭐ (4/5) - Very Good'),
@@ -132,13 +122,11 @@ class ReviewForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control fw-bold border-2 rounded-4', 'rows': 4, 'placeholder': 'Tell the community about your experience...', 'style': 'padding: 12px; background-color: #f8fafc;'}),
         }
 
-# --- 4. REGISTRATION FORM (FIXED) ---
+# --- 4. REGISTRATION FORM ---
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control fw-bold border-2 rounded-4'}))
-    
-    # Explicitly defining user_type ensures it's cleaned and available for the view
     user_type = forms.ChoiceField(
-        choices=[('MARKETER', 'Marketer'), ('ADVERTISER', 'Advertiser')], # Directly defining choices prevents import loops
+        choices=[('MARKETER', 'Marketer'), ('ADVERTISER', 'Advertiser')], 
         widget=forms.Select(attrs={'class': 'form-select fw-bold border-2 rounded-4'}),
         required=True,
         label="Account Role"
@@ -146,22 +134,17 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email'] # Password fields are added by UserCreationForm automatically
+        fields = ['username', 'email']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'class': 'form-control fw-bold border-2 rounded-4'})
-        # UserCreationForm adds password fields, we style them here
-        if 'password' in self.fields: # Some versions of Django name it differently, usually 'password' is built-in
-             pass 
-             
-    # We override save just in case, but the View Logic should handle it primarily
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
         if commit:
             user.save()
-            # If the view doesn't handle it, this is a fallback
             if hasattr(user, 'profile'):
                 profile = user.profile
                 profile.user_type = self.cleaned_data.get('user_type')
@@ -189,18 +172,20 @@ class PayoutRequestForm(forms.ModelForm):
             raise forms.ValidationError(f"INSUFFICIENT BALANCE. YOU HAVE ₦{self.user_balance}.")
         return amount
 
-# --- 6. IDENTITY VERIFICATION FORM ---
+# --- 6. IDENTITY VERIFICATION FORM (UPDATED FOR NIN-ONLY) ---
 class AdvertiserVerificationForm(forms.ModelForm):
     class Meta:
         model = AdvertiserVerification
         fields = [
             'business_name', 
-            'full_name', 
-            'contact_number', 
-            'residential_address', 
-            'proof_of_identity', 
-            'proof_of_address'
+            'nin_number', 
+            'proof_of_identity'
         ]
+        widgets = {
+            'business_name': forms.TextInput(attrs={'placeholder': 'Legal Business or Store Name'}),
+            'nin_number': forms.TextInput(attrs={'placeholder': '11-Digit National Identification Number', 'maxlength': '11'}),
+            'proof_of_identity': forms.FileInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -208,3 +193,9 @@ class AdvertiserVerificationForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control fw-bold border-2 rounded-4 p-3'
             })
+
+    def clean_nin_number(self):
+        nin = self.cleaned_data.get('nin_number')
+        if nin and (not nin.isdigit() or len(nin) != 11):
+            raise forms.ValidationError("NIN MUST BE EXACTLY 11 DIGITS.")
+        return nin

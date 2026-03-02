@@ -115,7 +115,6 @@ class Profile(models.Model):
         ('REJECTED', 'Rejected'),
     ]
 
-    # Values updated to official Paystack/Nigerian Bank Codes for API auto-verification
     BANK_CHOICES = [
         ('', 'Select Bank'),
         ('044', 'Access Bank'),
@@ -144,15 +143,9 @@ class Profile(models.Model):
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='MARKETER')
     verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='UNVERIFIED')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    
-    # Seller Contact Information
     whatsapp_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Seller Contact Info")
-    
-    # Wallet Balances
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     token_rewards = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    
-    # Bank Details for Payouts
     bank_name = models.CharField(max_length=100, choices=BANK_CHOICES, null=True, blank=True)
     account_number = models.CharField(max_length=10, null=True, blank=True)
     account_name = models.CharField(max_length=100, null=True, blank=True)
@@ -163,13 +156,18 @@ class Profile(models.Model):
 class AdvertiserVerification(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='verification_docs')
     business_name = models.CharField(max_length=255)
-    full_name = models.CharField(max_length=255)
-    contact_number = models.CharField(max_length=20)
-    residential_address = models.TextField()
-    proof_of_identity = models.FileField(upload_to=secure_verification_path)
-    proof_of_address = models.FileField(upload_to=secure_verification_path)
+    
+    # Updated NIN fields
+    nin_number = models.CharField(max_length=11, help_text="11-digit National Identification Number")
+    full_name = models.CharField(max_length=255, blank=True) 
+    residential_address = models.TextField(blank=True)
+    
+    proof_of_identity = models.FileField(upload_to=secure_verification_path, help_text="Upload NIN slip or Card image")
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"NIN Verification: {self.business_name}"
 
 # --- 5. SYSTEM SETTINGS ---
 class SubscriptionPrice(models.Model):
@@ -195,31 +193,21 @@ class Order(models.Model):
     buyer = models.ForeignKey(User, related_name='purchases', on_delete=models.CASCADE)
     seller = models.ForeignKey(User, related_name='sales', on_delete=models.CASCADE)
     referrer = models.ForeignKey(User, related_name='referred_orders', on_delete=models.SET_NULL, null=True, blank=True)
-    
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    
-    # --- VERIFICATION FIELDS ---
     delivery_pin = models.CharField(max_length=4, blank=True)
     is_delivered = models.BooleanField(default=False)
     payment_reference = models.CharField(max_length=100, unique=True, null=True, blank=True)
-    
-    # --- AUTO-REFUND TIMER ---
     created_at = models.DateTimeField(auto_now_add=True)
     refund_deadline = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # 1. Auto-generate 4-digit PIN if missing
         if not self.delivery_pin:
             self.delivery_pin = str(random.randint(1000, 9999))
-            
-        # 2. Set Auto-Refund Deadline (48 Hours from creation)
         if not self.refund_deadline:
             base_time = self.created_at if self.created_at else timezone.now()
             self.refund_deadline = base_time + timedelta(hours=48)
-            
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -257,12 +245,10 @@ def manage_user_profile(sender, instance, created, **kwargs):
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
     answer = models.TextField()
-    is_active = models.BooleanField(default=True, help_text="Uncheck to hide this question from the home page.")
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "FAQ"
-        verbose_name_plural = "FAQs"
         ordering = ['created_at']
 
     def __str__(self):

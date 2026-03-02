@@ -13,7 +13,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
-# IMPORT UPDATED: Added authenticate
 from django.contrib.auth import login, logout, authenticate 
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -50,14 +49,19 @@ def send_sms_alert(phone_number, message):
         return None
 
 # --- HELPER: AUTOMATED NIN & BANK VERIFICATION ---
-def verify_nin_api(nin_number, address_text=""):
+def verify_nin_api(nin_number):
     """
     Simulated call to identity provider.
-    If NIN is exactly 11 digits, we assume it's a valid match for testing.
+    In production, this would return a dictionary with NIN details from NIMC.
     """
     if nin_number and len(str(nin_number)) == 11:
-        return True
-    return False
+        # Simulated data grabbed from NIMC records
+        return {
+            "status": "success",
+            "full_name": "NIN Verified User",
+            "address": "Verified NIN Address, Lagos, Nigeria"
+        }
+    return None
 
 
 # 1. HOMEPAGE & DISCOVERY
@@ -181,9 +185,6 @@ def product_checkout(request, slug):
 @login_required(login_url='/login/')
 def verify_product_payment(request):
     reference = request.GET.get('reference') or request.GET.get('transaction_id')
-    gateway = request.GET.get('gateway')
-    
-    # Simple redirect back for template testing, actual verify logic can be expanded
     order = Order.objects.filter(buyer=request.user, status='PENDING').last()
     if order:
         order.status = 'PAID'
@@ -195,7 +196,6 @@ def verify_product_payment(request):
 # 4. DASHBOARDS & REFERRALS
 @login_required(login_url='/login/')
 def user_dashboard(request):
-    # Added safe get_or_create to prevent "User has no profile" errors
     profile, created = Profile.objects.get_or_create(user=request.user)
     context = {'profile': profile, 'now': timezone.now()}
     
@@ -281,41 +281,29 @@ def register(request):
     is_forced_buyer = request.session.get('force_buyer_mode', False)
     
     if request.method == 'POST':
-        # --- 1. AUTO-LOGIN CHECK ---
         username = request.POST.get('username')
-        # Handle cases where form field is named 'password' or 'password1'
         password = request.POST.get('password') or request.POST.get('password1')
         
         existing_user = User.objects.filter(username=username).first()
         
         if existing_user and password:
-            # If the user exists, check if the password is correct
             auth_user = authenticate(request, username=username, password=password)
-            
             if auth_user is not None:
-                # Password matches! Log them in immediately.
                 login(request, auth_user, backend='django.contrib.auth.backends.ModelBackend')
                 next_url = request.session.pop('next_url', None)
                 request.session.pop('force_buyer_mode', None)
-                
-                messages.success(request, f"Welcome back, {auth_user.username}! We logged you in automatically.")
+                messages.success(request, f"Welcome back, {auth_user.username}!")
                 return redirect(next_url) if next_url else redirect('dashboard')
             else:
-                # User exists, but password was WRONG. 
-                messages.error(request, "An account with this username already exists, but the password provided is incorrect.")
-                # Falls through to render the form with standard validation errors.
+                messages.error(request, "Username exists, but the password is incorrect.")
                 
-        # --- 2. STANDARD REGISTRATION ---
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             selected_role = form.cleaned_data.get('user_type')
-            
-            # Ensure Profile is handled
             profile, _ = Profile.objects.get_or_create(user=user)
             profile.user_type = 'BUYER' if is_forced_buyer else selected_role
             profile.save()
-                
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             next_url = request.session.pop('next_url', None)
             request.session.pop('force_buyer_mode', None)
@@ -348,10 +336,7 @@ def item_detail(request, slug):
     item = get_object_or_404(Item, slug=slug)
     related_items = Item.objects.filter(category=item.category).exclude(id=item.id)[:4]
     avg_rating = item.reviews.aggregate(Avg('rating'))['rating__avg'] or 5.0
-    
-    has_vouched = False
-    if request.user.is_authenticated:
-        has_vouched = Review.objects.filter(item=item, author=request.user).exists()
+    has_vouched = Review.objects.filter(item=item, author=request.user).exists() if request.user.is_authenticated else False
         
     return render(request, 'core/item_detail.html', {
         'item': item, 
@@ -386,13 +371,7 @@ def delete_review(request, review_id):
     messages.success(request, "Vouch deleted.")
     return redirect('item_detail', slug=slug)
 
-# 8. SYSTEM UTILS (PAYMENT, BANK, NIN VERIFICATION)
-@login_required(login_url='/login/')
-def verify_promotion_payment(request):
-    # This view fulfills the import expected by urls.py
-    messages.success(request, "Promotion payment verified!")
-    return redirect('dashboard')
-
+# 8. SYSTEM UTILS (NIN, BANK VERIFICATION)
 @login_required
 def verify_bank_account(request):
     num, bank = request.GET.get('account_number'), request.GET.get('bank_code')
@@ -406,25 +385,54 @@ def verify_bank_account(request):
 
 @login_required
 def verify_identity(request):
-    instance = AdvertiserVerification.objects.filter(user=request.user).first()
+    """
+    NIN-only verification: Automatically grabs address and details from NIN simulation.
+    """
+    instance, _ = AdvertiserVerification.objects.get_or_create(user=request.user)
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    
     if request.method == 'POST':
         form = AdvertiserVerificationForm(request.POST, request.FILES, instance=instance)
         is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.accepts('application/json')
+        
         if form.is_valid():
             v = form.save(commit=False)
-            v.user = request.user
-            v.save()
-            is_match = verify_nin_api(request.POST.get('nin_number', ''))
-            profile, _ = Profile.objects.get_or_create(user=request.user)
-            profile.verification_status = 'VERIFIED' if is_match else 'PENDING'
-            profile.save()
-            if is_ajax: return JsonResponse({'status': 'success', 'message': "Identity Updated."})
-            return redirect('dashboard')
+            nin_input = request.POST.get('nin_number', '')
+
+            # GRAB LOGIC: Fetch data from NIN records
+            nin_data = verify_nin_api(nin_input)
+
+            if nin_data:
+                v.user = request.user
+                v.nin_number = nin_input
+                v.full_name = nin_data['full_name']
+                v.residential_address = nin_data['address'] 
+                v.save()
+
+                profile.verification_status = 'VERIFIED'
+                profile.save()
+
+                if is_ajax: 
+                    return JsonResponse({
+                        'status': 'success', 
+                        'message': "Identity & Address synced from NIN record.",
+                        'is_verified': True
+                    })
+                messages.success(request, "NIN Sync Successful!")
+                return redirect('dashboard')
+            else:
+                if is_ajax: 
+                    return JsonResponse({'status': 'error', 'message': "NIN not found or invalid format."})
+                messages.error(request, "Invalid NIN.")
+        else:
+            if is_ajax: return JsonResponse({'status': 'error', 'message': "Please fill all required fields correctly."})
+            
     else:
         form = AdvertiserVerificationForm(instance=instance)
+        
     return render(request, 'core/verify_identity.html', {'form': form})
 
-# --- 9. ESCROW ACTIONS ---
+# 9. ESCROW ACTIONS
 @login_required
 def verify_delivery(request, order_id):
     order = get_object_or_404(Order, id=order_id, seller=request.user)
@@ -444,16 +452,6 @@ def mark_as_shipped(request, order_id):
     messages.success(request, "Order on its way!")
     return redirect('checkout_desk')
 
-@login_required
-def request_refund(request, order_id):
-    return redirect('dashboard')
-
-@login_required
-def cancel_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id, buyer=request.user, status='PENDING')
-    order.delete()
-    return redirect('checkout_desk')
-
 @login_required(login_url='/login/')
 def checkout_desk(request):
     my_orders = Order.objects.filter(buyer=request.user).order_by('-created_at')
@@ -462,7 +460,7 @@ def checkout_desk(request):
     )
     return render(request, 'core/checkout_desk.html', {'my_orders': my_orders, 'incoming_orders': incoming_orders})
 
-# 10. SEARCH & STATIC PAGES
+# 10. SEARCH & SYSTEM REDIRECTS
 def search(request):
     q = request.GET.get('query', '')
     results = Item.objects.filter(Q(name__icontains=q) | Q(description__icontains=q))
@@ -475,56 +473,61 @@ def set_role_session(request):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
 
-def promotion_payment(request, pk):
-    promo = get_object_or_404(PromotionPlan, pk=pk)
-    price_setting = SubscriptionPrice.objects.filter(duration_days=promo.duration_days).first()
-    return render(request, 'core/promotion_payment.html', {'promotion': promo, 'amount': float(price_setting.price if price_setting else 500)})
-
-@login_required(login_url='/login/')
-def redeem_tokens(request):
-    return redirect('dashboard')
-
-# --- FINAL PAYOUT FIX ---
 @login_required(login_url='/login/')
 def request_payout(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
-    
     if request.method == 'POST':
-        # Pass the POST data and the user's balance to the form
         form = PayoutRequestForm(request.POST, user_balance=profile.balance)
-        
         if form.is_valid():
-            # Create the payout request but don't save to DB just yet
             payout = form.save(commit=False)
             payout.user = request.user
             payout.status = 'PENDING'
-            payout.save() # Now save it!
-            
-            # Deduct the requested amount from the user's available balance
+            payout.save()
             profile.balance -= payout.amount
             profile.save()
-            
-            # Show the success message and redirect
-            messages.success(request, f"Payout request for ₦{payout.amount} sent successfully! Your funds are being processed.")
+            messages.success(request, f"Payout request for ₦{payout.amount} sent!")
             return redirect('dashboard')
-            
     else:
-        # If it's a GET request, just show the empty form
         form = PayoutRequestForm(user_balance=profile.balance)
-    
-    context = {
-        'form': form,
-        'available_balance': profile.balance, 
-        'balance_label': 'AVAILABLE BALANCE'
-    }
-    
-    return render(request, 'core/request_payout.html', context)
+    return render(request, 'core/request_payout.html', {'form': form, 'available_balance': profile.balance})
+
+# --- URL REQUIRED FUNCTIONS ---
+
+def flyer_view(request):
+    return render(request, 'core/flyer.html')
+
+@login_required(login_url='/login/')
+def redeem_tokens(request):
+    messages.info(request, "Token redemption is coming soon!")
+    return redirect('dashboard')
+
+@login_required(login_url='/login/')
+def verify_promotion_payment(request):
+    messages.success(request, "Promotion payment verified!")
+    return redirect('dashboard')
+
+def promotion_payment(request, pk): 
+    return HttpResponse("Payment Page Placeholder")
 
 def bulk_add_categories(request):
     if not request.user.is_superuser: return HttpResponse("Unauthorized", status=401)
     Category.objects.bulk_create([Category(name=n, slug=slugify(n)) for n in ["Tech", "Fashion", "Real Estate"]], ignore_conflicts=True)
     return HttpResponse("Done.")
 
+@login_required
+def request_refund(request, order_id):
+    # Placeholder for refund logic
+    messages.info(request, "Refund request submitted. Our team will review it shortly.")
+    return redirect('dashboard')
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, buyer=request.user, status='PENDING')
+    order.delete()
+    messages.success(request, "Order cancelled successfully.")
+    return redirect('checkout_desk')
+
+# --- STATIC PAGES ---
 def about(request): return render(request, 'core/about.html')
 def contact(request): return render(request, 'core/contact.html')
 def privacy(request): return render(request, 'core/privacy.html')

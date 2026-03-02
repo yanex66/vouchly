@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
+from core.views import flyer_view
 
 # IMPORT ALLAUTH LOGIN VIEW
 from allauth.account.views import LoginView
@@ -138,7 +139,9 @@ urlpatterns = [
     path('contact/', contact, name='contact'),
     path('privacy/', privacy, name='privacy'),
     path('terms/', terms, name='terms'),
-]
+
+
+path('flyer/', flyer_view, name='flyer'),]
 
 # --- CRITICAL: MEDIA & STATIC SERVING ---
 # This block allows Django to serve uploaded images (media) during development.
