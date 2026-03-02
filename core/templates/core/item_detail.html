@@ -271,8 +271,8 @@
                     </div>
                     <label class="small fw-800 text-muted mb-2 ps-1">SHAREABLE LINK</label>
                     <div class="d-flex p-1 bg-light" style="border-radius: 50px;">
-                        <input type="text" class="form-control border-0 bg-transparent fw-bold" value="{{ referral_link }}" id="refLink" readonly>
-                        <button class="btn btn-dark text-white px-4 fw-bold rounded-pill" onclick="copyRef()">COPY</button>
+                        <input type="text" class="form-control border-0 bg-transparent fw-bold text-dark" value="Generating link..." id="refLink" readonly>
+                        <button class="btn btn-dark text-white px-4 fw-bold rounded-pill" onclick="copyRef(event)">COPY</button>
                     </div>
                 </div>
             </div>
@@ -283,12 +283,33 @@
 </div>
 
 <script>
-    function copyRef() {
+    // Automatically construct the URL securely on the frontend
+    document.addEventListener("DOMContentLoaded", function() {
+        const refInput = document.getElementById("refLink");
+        if (refInput) {
+            const domain = window.location.origin; // Gets https://vouchly.com or http://127.0.0.1
+            const itemPath = "{% url 'buy_item' item.slug %}";
+            const username = "{{ user.username }}";
+            
+            // Piece them together and inject into the input box
+            refInput.value = `${domain}${itemPath}?ref=${username}`;
+        }
+    });
+
+    function copyRef(event) {
         var copyText = document.getElementById("refLink");
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyText.value);
-        alert("Referral Link Copied!");
+        
+        // Visual feedback (Turns the copy button green momentarily)
+        const btn = event.target;
+        btn.innerText = "COPIED!";
+        btn.classList.replace("btn-dark", "btn-success");
+        setTimeout(() => {
+            btn.innerText = "COPY";
+            btn.classList.replace("btn-success", "btn-dark");
+        }, 2000);
     }
 
     function scrollToPromote() {

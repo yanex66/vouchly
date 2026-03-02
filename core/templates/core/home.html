@@ -342,7 +342,7 @@
     }
 </style>
 
-{% if free_slots_left > 0 %}
+{% if free_slots_left > 0 and not user.is_authenticated %}
 <div class="container mt-3">
     <div class="early-bird-alert d-flex align-items-center justify-content-center py-3 px-4 shadow-sm animate__animated animate__fadeInDown">
         <span class="badge bg-danger rounded-pill me-3 animate__animated animate__pulse animate__infinite shadow-sm">LIMITED</span>

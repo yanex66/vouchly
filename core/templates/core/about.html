@@ -7,33 +7,58 @@
         --midnight: #0f172a;
         --midnight-dark: #020617;
         --accent: #ffc107;
+        --accent-hover: #e0a800;
         --soft-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-muted: #64748b;
         --v-radius: 24px;
+        --v-radius-lg: 32px;
+        --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
     }
 
-    body { background-color: var(--soft-bg); }
+    body { background-color: var(--soft-bg); font-family: 'Inter', system-ui, sans-serif; }
 
     /* --- HERO --- */
     .about-hero {
-        background: linear-gradient(135deg, var(--midnight) 0%, #1e293b 100%);
+        background: linear-gradient(to bottom, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.95)), 
+                    url('{% static "core/images/office setting.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         color: white;
-        padding: 100px 20px;
+        padding: 140px 20px 100px;
         text-align: center;
-        border-radius: 0 0 40px 40px;
-        margin-bottom: 60px;
-        border-bottom: 5px solid var(--accent);
+        border-radius: 0 0 60px 60px;
+        margin-bottom: 80px;
+        border-bottom: 6px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .hero-badge {
+        background: rgba(255, 193, 7, 0.15);
+        color: var(--accent);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        display: inline-block;
+        margin-bottom: 20px;
+        text-transform: uppercase;
     }
 
     /* --- SECTION HEADERS --- */
     .section-title {
-        font-weight: 800;
+        font-weight: 900;
         color: var(--midnight);
         position: relative;
-        padding-bottom: 15px;
-        margin-bottom: 50px;
+        padding-bottom: 20px;
+        margin-bottom: 60px;
         text-align: center;
-        text-transform: uppercase;
-        letter-spacing: -0.5px;
+        font-size: 2.5rem;
+        letter-spacing: -1px;
     }
 
     .section-title::after {
@@ -41,140 +66,278 @@
         position: absolute;
         bottom: 0; left: 50%;
         transform: translateX(-50%);
-        width: 60px; height: 4px;
+        width: 80px; height: 5px;
         background: var(--accent);
-        border-radius: 2px;
+        border-radius: 10px;
     }
 
-    /* --- TEAM SECTION --- */
+    /* --- TEAM SECTION (FLEX SCROLL) --- */
+    .team-flex-container {
+        display: flex;
+        gap: 24px;
+        padding-bottom: 30px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .team-flex-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .team-card-wrapper {
+        flex: 0 0 85%;
+        scroll-snap-align: center;
+    }
+
     .team-card {
-        background: white;
+        background: var(--card-bg);
         border-radius: var(--v-radius);
-        padding: 30px;
+        padding: 40px 20px;
         text-align: center;
-        transition: 0.3s;
-        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        box-shadow: var(--shadow-sm);
         height: 100%;
         position: relative;
-        overflow: hidden;
     }
 
-    .team-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+    .team-card:hover { 
+        transform: translateY(-12px); 
+        box-shadow: var(--shadow-lg); 
+        border-color: rgba(255, 193, 7, 0.3);
+    }
 
     .team-img-wrapper {
-        width: 130px;
-        height: 130px;
-        margin: 0 auto 20px;
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 25px;
         position: relative;
         border-radius: 50%;
         overflow: hidden;
-        border: 4px solid white;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border: 5px solid white;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
     }
 
     .team-demo-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: blur(15px);
-        transform: scale(1.2);
+        filter: blur(10px) brightness(0.9);
+        transform: scale(1.1);
     }
 
     .revealing-tag {
         position: absolute;
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(15, 23, 42, 0.8);
+        background: rgba(2, 6, 23, 0.85);
         color: var(--accent);
-        font-size: 0.6rem;
+        font-size: 0.65rem;
         font-weight: 900;
-        padding: 5px 10px;
+        padding: 6px 14px;
         border-radius: 50px;
         white-space: nowrap;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         border: 1px solid var(--accent);
+        backdrop-filter: blur(4px);
     }
 
     .team-role {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 800;
-        color: var(--accent);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        background: var(--midnight);
-        padding: 4px 12px;
+        color: var(--midnight-dark);
+        background: var(--accent);
+        padding: 6px 16px;
         border-radius: 50px;
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
     }
 
-    /* --- ICON BOXES --- */
-    .icon-box {
-        background: white;
-        border-radius: var(--v-radius);
-        padding: 40px 30px;
-        height: 100%;
-        transition: 0.3s;
-        border: 1px solid rgba(0,0,0,0.05);
-        text-align: center;
+    @media (min-width: 768px) {
+        .team-flex-container {
+            overflow-x: visible;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .team-card-wrapper {
+            flex: 0 0 calc(33.333% - 24px);
+            max-width: 350px;
+        }
     }
-    .icon-box:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+
+    /* --- FEATURES & ADVANTAGE --- */
+    .feature-icon-wrapper {
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    .bg-accent-soft { background: rgba(255, 193, 7, 0.15); color: #d39e00; }
+    .bg-primary-soft { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+    .bg-success-soft { background: rgba(25, 135, 84, 0.1); color: #198754; }
+
+    .advantage-box {
+        background: var(--card-bg);
+        border-radius: var(--v-radius-lg);
+        padding: 40px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(15, 23, 42, 0.05);
+    }
+    .advantage-item {
+        background: var(--soft-bg);
+        border-radius: 16px;
+        padding: 20px 15px;
+        text-align: center;
+        transition: 0.3s;
+        border: 1px solid transparent;
+    }
+    .advantage-item:hover {
+        background: white;
+        border-color: var(--accent);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* --- HOW IT WORKS ICON BOXES --- */
+    .icon-box {
+        background: var(--card-bg);
+        border-radius: var(--v-radius);
+        padding: 50px 30px;
+        height: 100%;
+        transition: 0.4s;
+        border: 1px solid rgba(0,0,0,0.03);
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        z-index: 1;
+    }
+    .icon-box:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); z-index: 2; }
     
     .icon-circle {
-        width: 60px; height: 60px;
-        background: var(--soft-bg);
-        color: var(--midnight);
-        border-radius: 18px;
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 20px;
-        font-size: 1.5rem;
-        border-bottom: 3px solid var(--accent);
-    }
-
-    /* --- STATS BAR --- */
-    .stats-bar {
-        background: var(--midnight);
-        color: white;
-        padding: 60px 0;
-        border-radius: var(--v-radius);
-        margin: 80px 0;
-    }
-
-    /* --- HOW IT WORKS STEPS --- */
-    .step-number {
-        font-size: 4rem;
-        font-weight: 900;
+        width: 70px; height: 70px;
+        background: var(--midnight-dark);
         color: var(--accent);
-        opacity: 0.2;
+        border-radius: 22px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 1.8rem;
+        transform: rotate(-5deg);
+        transition: 0.3s;
+    }
+    .icon-box:hover .icon-circle { transform: rotate(0deg) scale(1.1); }
+
+    .step-number {
+        font-size: 6rem;
+        font-weight: 900;
+        color: var(--soft-bg);
         position: absolute;
-        top: -10px; left: 20px;
+        top: -15px; right: 20px;
+        z-index: -1;
+        transition: 0.3s;
+        -webkit-text-stroke: 2px rgba(15, 23, 42, 0.05);
     }
 
     /* --- TIMELINE --- */
-    .timeline { position: relative; max-width: 1000px; margin: 40px auto; }
-    .timeline::after { content: ''; position: absolute; width: 4px; background: var(--midnight); top: 0; bottom: 0; left: 50%; margin-left: -2px; opacity: 0.1; }
-    .timeline-item { padding: 20px 40px; position: relative; width: 50%; }
-    .timeline-item::after { content: ''; position: absolute; width: 16px; height: 16px; right: -8px; background: var(--accent); border: 3px solid white; top: 30px; border-radius: 50%; z-index: 1; }
+    .timeline { position: relative; max-width: 900px; margin: 60px auto; }
+    .timeline::after { content: ''; position: absolute; width: 4px; background: linear-gradient(to bottom, var(--accent), var(--midnight)); top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 5px; }
+    .timeline-item { padding: 20px 50px; position: relative; width: 50%; }
+    .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; right: -10px; background: var(--midnight); border: 4px solid var(--accent); top: 35px; border-radius: 50%; z-index: 1; transition: 0.3s; }
+    .timeline-item:hover::after { transform: scale(1.3); background: var(--accent); border-color: white;}
     .left { left: 0; text-align: right; }
     .right { left: 50%; }
-    .right::after { left: -8px; }
-    .timeline-content { padding: 25px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); }
+    .right::after { left: -10px; }
+    .timeline-content { padding: 30px; background: var(--card-bg); border-radius: var(--v-radius); box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; }
+    .timeline-content:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
 
-    .cta-box { background: var(--midnight-dark); border-radius: 35px; padding: 70px 40px; border: 2px solid var(--accent); }
+    /* --- STATS BAR (FLEX MODE) --- */
+    .stats-flex-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0b1120;
+        border-radius: 40px;
+        padding: 60px 20px;
+        gap: 50px;
+        margin: 80px auto;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+        max-width: 1000px;
+    }
 
+    .stat-flex-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    @media (min-width: 768px) {
+        .stats-flex-container {
+            flex-direction: row;
+            justify-content: space-around;
+            padding: 70px 40px;
+            gap: 0;
+        }
+    }
+    
+    /* --- CTA --- */
+    .cta-box { 
+        background: var(--midnight-dark); 
+        border-radius: 40px; 
+        padding: 80px 40px; 
+        position: relative;
+        overflow: hidden;
+    }
+    .cta-box::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 60%);
+        z-index: 0; pointer-events: none;
+    }
+    .cta-content { position: relative; z-index: 1; }
+    .btn-cta {
+        background: var(--accent); color: var(--midnight-dark); border: none;
+        padding: 18px 45px; font-size: 1.1rem; border-radius: 50px;
+        transition: 0.3s; box-shadow: 0 10px 25px rgba(255, 193, 7, 0.4);
+    }
+    .btn-cta:hover { background: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255, 193, 7, 0.5); color: var(--midnight-dark); }
+
+    /* Media Queries */
     @media (max-width: 768px) {
+        .about-hero { padding: 100px 15px 60px; border-radius: 0 0 30px 30px; }
+        .section-title { font-size: 2rem; }
         .timeline::after { left: 31px; }
-        .timeline-item { width: 100%; padding-left: 70px; text-align: left; }
+        .timeline-item { width: 100%; padding-left: 70px; text-align: left; padding-right: 0;}
         .timeline-item::after { left: 21px; }
         .right { left: 0%; }
+        .cta-box { padding: 50px 20px; border-radius: 30px; }
     }
 </style>
 
 <div class="about-hero">
     <div class="container">
-        <h1 class="display-4 fw-800 mb-3">The Ultimate Commerce & Rewards Ecosystem</h1>
-        <p class="lead opacity-75 mx-auto" style="max-width: 700px;">
+        <span class="hero-badge">Welcome to Vouchly</span>
+        <h1 class="display-3 fw-900 mb-4" style="letter-spacing: -1px;">The Ultimate Commerce & Rewards Ecosystem</h1>
+        <p class="lead opacity-75 mx-auto" style="max-width: 750px; font-weight: 400; line-height: 1.8;">
             Vouchly is a unified platform built to empower creators and commerce. Whether you are here to buy quality, sell products, or advertise your brand, we provide the security and tools you need to thrive.
         </p>
     </div>
@@ -182,150 +345,198 @@
 
 <div class="container pb-5">
     
-    <div class="row g-4 align-items-center mb-5 pb-5">
-        <div class="col-lg-6">
-            <h2 class="fw-800 text-midnight mb-4">Trade and Grow with Confidence</h2>
-            <p class="text-muted fw-500 mb-4" style="line-height: 1.8;">
-                At Vouchly, we bridge the gap between secure transactions and impactful marketing. Our platform allows you to **Buy** with escrow protection, **Sell** products with ease, and **Advertise** your brand through a network of trusted community vouchers.
+    <div class="row g-5 align-items-center mb-5 pb-5">
+        <div class="col-lg-6 pr-lg-5">
+            <h2 class="fw-900 text-midnight mb-4" style="font-size: 2.5rem; letter-spacing: -1px;">Trade and Grow with Confidence</h2>
+            <p class="text-muted mb-5" style="line-height: 1.8; font-size: 1.1rem;">
+                We bridge the gap between secure transactions and impactful marketing. Our platform allows you to buy with protection, sell with ease, and advertise through trusted community vouchers.
             </p>
-            <div class="d-flex align-items-start mb-3">
-                <i class="bi bi-cart-check-fill text-primary me-3 mt-1"></i>
-                <p class="small fw-700 text-midnight mb-0"><strong>BUY:</strong> Browse verified listings and finalize purchases via our secure Checkout Desk.</p>
+            
+            <div class="d-flex align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
+                <div class="feature-icon-wrapper bg-primary-soft me-4">
+                    <i class="bi bi-cart-check-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-800 mb-1 text-midnight">BUY SECURELY</h6>
+                    <p class="small text-muted mb-0">Browse verified listings and finalize purchases via our Checkout Desk.</p>
+                </div>
             </div>
-            <div class="d-flex align-items-start mb-3">
-                <i class="bi bi-shop-window text-success me-3 mt-1"></i>
-                <p class="small fw-700 text-midnight mb-0"><strong>SELL:</strong> Vendors can list products and reach a wide audience of active buyers instantly.</p>
+            
+            <div class="d-flex align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
+                <div class="feature-icon-wrapper bg-success-soft me-4">
+                    <i class="bi bi-shop-window"></i>
+                </div>
+                <div>
+                    <h6 class="fw-800 mb-1 text-midnight">SELL GLOBALLY</h6>
+                    <p class="small text-muted mb-0">Vendors list products and reach an active audience instantly.</p>
+                </div>
             </div>
-            <div class="d-flex align-items-start mb-3">
-                <i class="bi bi-megaphone-fill text-warning me-3 mt-1"></i>
-                <p class="small fw-700 text-midnight mb-0"><strong>ADVERTISE:</strong> Promote your store or services using our high-performance core architecture and reward systems.</p>
+
+            <div class="d-flex align-items-center p-3 bg-white rounded-4 shadow-sm border">
+                <div class="feature-icon-wrapper bg-accent-soft me-4">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-800 mb-1 text-midnight">ADVERTISE</h6>
+                    <p class="small text-muted mb-0">Promote your brand using our high-performance reward systems.</p>
+                </div>
             </div>
         </div>
+        
         <div class="col-lg-6">
-            <div class="p-5 bg-white shadow-sm border" style="border-radius: 30px;">
-                <h4 class="fw-800 text-center mb-4">The Vouchly Advantage</h4>
+            <div class="advantage-box">
+                <h4 class="fw-900 text-center mb-5 text-midnight">The Vouchly Advantage</h4>
                 <div class="row g-3">
-                    <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-bag-plus fs-3"></i><div class="small fw-800 mt-2">Buy Securely</div></div></div>
-                    <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-box-seam fs-3"></i><div class="small fw-800 mt-2">Sell Globally</div></div></div>
-                    <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-graph-up-arrow fs-3"></i><div class="small fw-800 mt-2">Advertise</div></div></div>
-                    <div class="col-6"><div class="p-3 bg-light text-center rounded-4"><i class="bi bi-shield-check fs-3"></i><div class="small fw-800 mt-2">Escrow Protected</div></div></div>
+                    <div class="col-6">
+                        <div class="advantage-item">
+                            <i class="bi bi-bag-plus fs-2 text-primary mb-2 d-block"></i>
+                            <span class="small fw-800 text-midnight">Buy Securely</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="advantage-item">
+                            <i class="bi bi-box-seam fs-2 text-success mb-2 d-block"></i>
+                            <span class="small fw-800 text-midnight">Sell Globally</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="advantage-item">
+                            <i class="bi bi-graph-up-arrow fs-2 text-warning mb-2 d-block"></i>
+                            <span class="small fw-800 text-midnight">Advertise</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="advantage-item">
+                            <i class="bi bi-shield-check fs-2 text-dark mb-2 d-block"></i>
+                            <span class="small fw-800 text-midnight">Escrow Protected</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <h2 class="section-title">Meet the Team</h2>
-    <div class="row g-4 mb-5 pb-5 justify-content-center">
-        <div class="col-md-4 col-sm-6">
+    <h2 class="section-title mt-5">Meet the Leadership</h2>
+    <div class="team-flex-container mb-5 pb-5">
+        
+        <div class="team-card-wrapper">
             <div class="team-card">
                 <div class="team-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
                     <div class="revealing-tag">COMING SOON</div>
                 </div>
                 <div class="team-role">CEO & Founder</div>
-                <h5 class="fw-800 mb-1">IBJ IYANUOLUWA</h5>
+                <h5 class="fw-900 mb-1 text-midnight">IBJ IYANUOLUWA</h5>
                 <p class="small text-muted mb-0 fw-600">Visionary & Strategy</p>
             </div>
         </div>
-        <div class="col-md-4 col-sm-6">
+
+        <div class="team-card-wrapper">
             <div class="team-card">
                 <div class="team-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
                     <div class="revealing-tag">COMING SOON</div>
                 </div>
                 <div class="team-role">Operations Manager</div>
-                <h5 class="fw-800 mb-1">Alexander Vance</h5>
+                <h5 class="fw-900 mb-1 text-midnight">Alexander Vance</h5>
                 <p class="small text-muted mb-0 fw-600">Product & Systems</p>
             </div>
         </div>
-        <div class="col-md-4 col-sm-6">
+
+        <div class="team-card-wrapper">
             <div class="team-card">
                 <div class="team-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" class="team-demo-img">
                     <div class="revealing-tag">COMING SOON</div>
                 </div>
                 <div class="team-role">Head of Community</div>
-                <h5 class="fw-800 mb-1">Sarah Jenkins</h5>
+                <h5 class="fw-900 mb-1 text-midnight">Sarah Jenkins</h5>
                 <p class="small text-muted mb-0 fw-600">Support & Safety</p>
             </div>
         </div>
+
     </div>
 
-    <h2 class="section-title">How Vouchly Works</h2>
+    <h2 class="section-title mt-5">How Vouchly Works</h2>
     <div class="row g-4 mb-5 pb-5">
         <div class="col-md-4">
-            <div class="icon-box position-relative">
+            <div class="icon-box">
                 <span class="step-number">01</span>
                 <div class="icon-circle"><i class="bi bi-search"></i></div>
-                <h5 class="fw-800">List or Find Deals</h5>
-                <p class="small text-muted fw-600">Sellers list products, and buyers find quality deals verified by community reviews.</p>
+                <h4 class="fw-900 text-midnight mb-3">List or Find Deals</h4>
+                <p class="text-muted fw-500 line-height-lg">Sellers list products, and buyers find quality deals verified by trusted community reviews.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="icon-box position-relative">
+            <div class="icon-box">
                 <span class="step-number">02</span>
                 <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                <h5 class="fw-800">Secure Payment</h5>
-                <p class="small text-muted fw-600">Buyers pay through the Checkout Desk; funds are held in Escrow until delivery is confirmed.</p>
+                <h4 class="fw-900 text-midnight mb-3">Secure Payment</h4>
+                <p class="text-muted fw-500 line-height-lg">Buyers pay through the Checkout Desk; funds are held safely in Escrow until delivery is confirmed.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="icon-box position-relative">
+            <div class="icon-box">
                 <span class="step-number">03</span>
                 <div class="icon-circle"><i class="bi bi-cash-coin"></i></div>
-                <h5 class="fw-800">Earn Commissions</h5>
-                <p class="small text-muted fw-600">Marketers share links and earn a commission for every successful sale generated.</p>
+                <h4 class="fw-900 text-midnight mb-3">Earn Commissions</h4>
+                <p class="text-muted fw-500 line-height-lg">Marketers share unique links and earn direct commissions for every successful sale generated.</p>
             </div>
         </div>
     </div>
 
-    <h2 class="section-title">The Evolution</h2>
+    <h2 class="section-title">Our Evolution</h2>
     <div class="timeline">
         <div class="timeline-item left">
             <div class="timeline-content">
-                <h6 class="fw-800 mb-1" style="color: var(--midnight);">JAN 2025</h6>
-                <p class="text-muted mb-0 small fw-bold">Blueprint Phase: The concept for a community-driven reward architecture was finalized.</p>
+                <div class="badge bg-warning text-dark fw-bold mb-2">JAN 2025</div>
+                <h5 class="fw-900 mb-2 text-midnight">Blueprint Phase</h5>
+                <p class="text-muted mb-0 small fw-500">The core concept for a community-driven reward architecture was finalized and mapped out.</p>
             </div>
         </div>
         <div class="timeline-item right">
             <div class="timeline-content">
-                <h6 class="fw-800 mb-1" style="color: var(--midnight);">MAY 2025</h6>
-                <p class="text-muted mb-0 small fw-bold">Infrastructure Launch: Transitioned to our high-performance core architecture.</p>
+                <div class="badge bg-warning text-dark fw-bold mb-2">MAY 2025</div>
+                <h5 class="fw-900 mb-2 text-midnight">Infrastructure Launch</h5>
+                <p class="text-muted mb-0 small fw-500">Successfully transitioned to our high-performance core architecture, ensuring speed and security.</p>
             </div>
         </div>
         <div class="timeline-item left">
             <div class="timeline-content">
-                <h6 class="fw-800 mb-1" style="color: var(--midnight);">JAN 2026</h6>
-                <p class="text-muted mb-0 small fw-bold">Milestone: Successfully integrated global partners and reached 50K+ verified community vouches.</p>
+                <div class="badge bg-warning text-dark fw-bold mb-2">JAN 2026</div>
+                <h5 class="fw-900 mb-2 text-midnight">Global Scaling</h5>
+                <p class="text-muted mb-0 small fw-500">Integrated global partners and reached a major milestone of 50K+ verified community vouches.</p>
             </div>
         </div>
     </div>
 
-    <div class="stats-bar text-center">
-        <div class="row">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h2 class="fw-900 text-accent mb-1">50K+</h2>
-                <div class="small fw-800 text-uppercase opacity-75">Verified Vouches</div>
-            </div>
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h2 class="fw-900 text-accent mb-1">₦25M+</h2>
-                <div class="small fw-800 text-uppercase opacity-75">Commissions Paid</div>
-            </div>
-            <div class="col-md-4">
-                <h2 class="fw-900 text-accent mb-1">100+</h2>
-                <div class="small fw-800 text-uppercase opacity-75">Global Partners</div>
-            </div>
+    <div class="stats-flex-container">
+        <div class="stat-flex-item">
+            <div class="stat-value">50K+</div>
+            <div class="stat-label">Verified Vouches</div>
+        </div>
+        <div class="stat-flex-item">
+            <div class="stat-value">₦25M+</div>
+            <div class="stat-label">Commissions Paid</div>
+        </div>
+        <div class="stat-flex-item">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">Global Partners</div>
         </div>
     </div>
 
     {% if not user.is_authenticated %}
-    <div class="text-center mt-5">
+    <div class="text-center mt-5 mb-5">
         <div class="cta-box shadow-lg">
-            <h2 class="display-5 fw-800 text-white mb-3">Ready to Join?</h2>
-            <p class="text-white opacity-75 mb-5 lead fw-500">Join thousands of vendors, buyers, and marketers earning through the Vouchly ecosystem.</p>
-            <a href="{% url 'register' %}" class="btn btn-warning fw-800 px-5 py-3 rounded-pill text-dark shadow-lg">
-                CREATE YOUR FREE ACCOUNT
-            </a>
+            <div class="cta-content">
+                <h2 class="display-5 fw-900 text-white mb-4">Ready to Transform Your Commerce?</h2>
+                <p class="text-white opacity-75 mb-5 lead fw-500 mx-auto" style="max-width: 600px;">
+                    Join thousands of vendors, buyers, and marketers who are already earning and scaling through the secure Vouchly ecosystem.
+                </p>
+                <a href="{% url 'register' %}" class="btn btn-cta fw-900 text-uppercase">
+                    Create Your Free Account <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
     {% endif %}

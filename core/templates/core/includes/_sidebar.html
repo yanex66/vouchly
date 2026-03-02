@@ -196,6 +196,11 @@
     </a>
 
     {% if request.user.profile.user_type == 'ADVERTISER' %}
+        <a href="{% url 'promote_request' %}" class="nav-item-link {% if request.resolver_match.url_name == 'promote_request' %}active{% endif %}">
+            <i class="bi bi-plus-circle-fill"></i>
+            <span class="nav-text">Add</span>
+        </a>
+        
         <a href="{% url 'checkout_desk' %}" class="nav-item-link {% if request.resolver_match.url_name == 'checkout_desk' %}active{% endif %}">
             <i class="bi bi-box-seam"></i>
             <span class="nav-text">Desk</span>
