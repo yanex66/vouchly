@@ -18,28 +18,45 @@
     /* --- SIDE-BY-SIDE FLEX --- */
     .dash-flex-wrapper {
         display: flex;
+        flex-direction: column; /* Mobile first: stack vertically */
         gap: 20px;
-        align-items: flex-start;
-        padding: 20px;
+        padding: 15px;
     }
 
-    /* --- NAVIGATION TABS --- */
+    @media (min-width: 992px) {
+        .dash-flex-wrapper {
+            flex-direction: row; /* Desktop: side-by-side */
+            padding: 20px;
+        }
+    }
+
+    /* --- NAVIGATION TABS (FIXED FOR VISIBILITY & MOBILE) --- */
+    .nav-pills {
+        gap: 10px; 
+    }
+    
     .nav-pills .nav-link {
         border-radius: 30px !important;
         padding: 12px 25px;
-        font-weight: 800;
-        color: #64748b;
-        background: white;
-        border: 1px solid #e2e8f0;
-        margin-right: 10px;
+        font-weight: 900 !important; /* Force extra bold */
+        color: #0f172a !important; /* Pure dark text so it doesn't vanish */
+        background-color: #e2e8f0 !important; /* Solid grey background for the inactive state */
+        border: 1px solid #cbd5e1 !important; /* Visible border */
+        opacity: 1 !important; /* KILLS Bootstrap's default faded look */
         transition: 0.3s;
+        margin: 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #cbd5e1 !important; /* Slightly darker grey on hover */
     }
 
     .nav-pills .nav-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-        border-color: var(--midnight);
-        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+        background-color: var(--midnight) !important;
+        color: var(--accent) !important;
+        border-color: var(--midnight) !important;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15) !important;
     }
 
     /* --- CURVED CARD DESIGN --- */
@@ -118,6 +135,7 @@
     <div class="dash-flex-wrapper">
         
         {% include 'core/includes/_sidebar.html' %}
+        
         <div class="flex-grow-1" style="min-width: 0;">
             
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
@@ -126,7 +144,7 @@
                     <p class="text-muted small mb-0">Track purchases & manage sales</p>
                 </div>
                 
-                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                <ul class="nav nav-pills d-flex flex-wrap" id="pills-tab" role="tablist">
                     <li class="nav-item">
                         <button class="nav-link active" id="pills-buying-tab" data-bs-toggle="pill" data-bs-target="#pills-buying" type="button">
                             <i class="bi bi-bag-fill me-2"></i>My Purchases

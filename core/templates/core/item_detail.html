@@ -13,7 +13,6 @@
 
     body { background-color: var(--soft-bg); }
 
-    /* --- CURVED GLOBAL DESIGN --- */
     .btn, .card, .form-control, .badge, img, .promote-card, .detail-img-wrapper, .collapse > div {
         border-radius: var(--v-radius) !important;
     }
@@ -44,16 +43,8 @@
         overflow: hidden;
         box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
         position: relative;
-        /* Image is no longer clickable */
         cursor: default;
     }
-
-    .detail-img-wrapper img {
-        /* Removed transform transitions to keep image static */
-        border-radius: var(--v-radius) !important;
-    }
-
-    /* Removed .detail-img-wrapper:hover scale effect */
 
     .escrow-badge, .agency-badge {
         font-size: 0.7rem;
@@ -114,6 +105,21 @@
         background: #f8fafc;
         font-weight: 600;
     }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: none;
+    }
+
+    /* Custom scrollbar for vouches dropdown */
+    .vouch-scroll {
+        max-height: 350px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .vouch-scroll::-webkit-scrollbar { width: 5px; }
+    .vouch-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+    .vouch-scroll::-webkit-scrollbar-thumb { background: var(--midnight); border-radius: 10px; }
 </style>
 
 <div class="container py-5 mt-3">
@@ -170,23 +176,75 @@
                         <i class="bi bi-bag-check-fill me-2"></i> BUY NOW & HOLD IN ESCROW
                     </a>
                 {% else %}
-                    <a id="mainActionButton" href="{{ referral_link }}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
+                    <a id="mainActionButton" href="{% url 'buy_item' item.slug %}{% if request.GET.ref %}?ref={{ request.GET.ref }}{% endif %}" target="_blank" class="btn btn-agency-link text-decoration-none text-center">
                         <i class="bi bi-box-arrow-up-right me-2"></i> 
                         {% if item.price > 0 %}VISIT OFFICIAL SITE{% else %}GET STARTED NOW{% endif %}
                     </a>
                 {% endif %}
 
                 {% if user.is_authenticated %}
-                <div class="row g-2">
+                <div class="row g-2 mt-2">
                     <div class="col-6">
                         <button onclick="scrollToPromote()" class="btn btn-outline-dark w-100 py-3 fw-bold border-2 rounded-pill">
                             PROMOTE
                         </button>
                     </div>
                     <div class="col-6">
+                        {% if has_vouched %}
+                        <button class="btn btn-success w-100 py-3 fw-bold rounded-pill border-0 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="collapse" data-bs-target="#viewAllVouches">
+                            VOUCHED <i class="bi bi-check-circle-fill ms-2"></i> <i class="bi bi-chevron-down small ms-2"></i>
+                        </button>
+                        {% else %}
                         <button class="btn btn-dark w-100 py-3 fw-bold rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
                             VOUCH
                         </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if not has_vouched %}
+                <div class="collapse mt-3" id="reviewForm">
+                    <div class="card card-body bg-white border-0 shadow-sm p-4">
+                        <h5 class="fw-800 text-midnight mb-3">Leave a Vouch</h5>
+                        <form action="{% url 'add_review' item.slug %}" method="POST">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-dark w-100 py-3 fw-bold rounded-pill mt-2">
+                                Submit Vouch
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="collapse mt-3" id="viewAllVouches">
+                    <div class="card card-body bg-white border-0 shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-800 text-midnight mb-0">Community Feedback</h5>
+                            <span class="badge bg-light text-dark border rounded-pill px-3">{{ item.reviews.count }} Total</span>
+                        </div>
+                        <div class="vouch-scroll">
+                            {% for review in item.reviews.all %}
+                                <div class="mb-4 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-800 text-midnight small text-uppercase">{{ review.author.username }}</span>
+                                        <span class="text-warning small">
+                                            {% for i in "12345" %}
+                                                <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill{% endif %}"></i>
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                    <h6 class="fw-bold small mb-1">{{ review.title }}</h6>
+                                    <p class="text-muted small mb-0" style="line-height: 1.5;">{{ review.content }}</p>
+                                    <small class="text-muted opacity-50" style="font-size: 0.7rem;">{{ review.created_at|naturaltime }}</small>
+                                </div>
+                            {% empty %}
+                                <div class="text-center py-4">
+                                    <i class="bi bi-chat-heart text-muted fs-1"></i>
+                                    <p class="text-muted small mt-2">No community vouches yet.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}

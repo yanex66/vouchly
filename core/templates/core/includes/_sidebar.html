@@ -1,133 +1,229 @@
 {% load static %}
 <style>
-    /* --- SHARED SIDEBAR STYLES (Curved) --- */
-    .side-nav {
-        width: 60px; 
-        flex-shrink: 0;
-        position: sticky;
-        top: 90px;
-        background: white;
-        border-radius: 25px !important; /* Unified curves */
-        padding: 20px 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 1px solid #f1f5f9;
-        z-index: 99;
+    :root {
+        --midnight: #0f172a;
+        --accent: #ffc107;
     }
 
-    /* Sidebar Header (Profile Area) */
-    .sidebar-header { display: none; } /* Hidden on mobile mini-sidebar */
+    /* =========================================
+       MOBILE: APP-STYLE BOTTOM NAV (Under 992px)
+       ========================================= */
+    @media (max-width: 991px) {
+        .side-nav {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 65px !important; /* Perfect thumb-reach height */
+            background: #ffffff !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-evenly !important; /* Perfect equal spacing */
+            align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06) !important;
+            border-top: 1px solid #f1f5f9 !important;
+            border-radius: 0 !important;
+        }
 
-    .nav-item-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: var(--midnight);
-        text-decoration: none;
-        border-radius: 12px !important; 
-        margin-bottom: 10px;
-        transition: 0.2s;
-        position: relative;
+        /* Hide desktop-only profile header */
+        .sidebar-header, hr.my-2 { display: none !important; }
+
+        .nav-item-link {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex: 1 !important; /* Forces all tabs to be exactly the same width */
+            height: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: #94a3b8 !important; /* Soft grey for inactive */
+            text-decoration: none !important;
+            background: transparent !important;
+            position: relative;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .nav-item-link i {
+            font-size: 1.3rem !important; /* Balanced icon size */
+            margin-bottom: 2px !important;
+            transition: 0.2s ease-in-out;
+            width: auto !important;
+        }
+
+        .nav-text {
+            font-size: 0.6rem !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.3px;
+            margin-left: 0 !important;
+        }
+
+        /* Active Tab Styling */
+        .nav-item-link.active { 
+            color: var(--midnight) !important; 
+        }
+
+        .nav-item-link.active i {
+            transform: translateY(-2px); /* Tiny lift effect */
+            color: var(--accent) !important; 
+        }
+
+        /* Active Top Indicator Line */
+        .nav-item-link.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px; /* Small pill-like indicator */
+            height: 3px;
+            background: var(--accent);
+            border-radius: 0 0 5px 5px;
+        }
+        
+        /* Subtle red for the Exit button */
+        .nav-item-link.text-danger { color: #ef4444 !important; }
     }
 
-    .nav-item-link:hover {
-        background-color: #f1f5f9;
-        transform: translateY(-2px);
-    }
-
-    .nav-item-link.active {
-        background: var(--midnight);
-        color: var(--accent);
-        box-shadow: 0 5px 15px rgba(15, 23, 42, 0.2);
-    }
-
-    .nav-text { display: none; }
-
+    /* =========================================
+       DESKTOP: VERTICAL SIDEBAR (992px & Up)
+       ========================================= */
     @media (min-width: 992px) {
-        .side-nav { width: 260px; align-items: stretch; padding: 25px; }
-        .sidebar-header { display: block; text-align: center; margin-bottom: 30px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; }
-        .nav-item-link { width: 100%; height: auto; justify-content: flex-start; padding: 12px 20px; }
-        .nav-text { display: inline; margin-left: 15px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    }
+        .side-nav {
+            width: 260px;
+            position: sticky;
+            top: 100px;
+            background: white;
+            border-radius: 25px !important;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            z-index: 1050;
+        }
 
-    .profile-img-sidebar {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--accent);
-        margin-bottom: 10px;
-    }
+        .sidebar-header {
+            display: block;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
 
-    .role-badge {
-        font-size: 0.6rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-        padding: 5px 12px;
-        border-radius: 50px;
-        background: var(--midnight);
-        color: var(--accent);
-        display: inline-block;
+        .profile-img-sidebar {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 20px;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 14px !important;
+            margin-bottom: 6px;
+            transition: 0.2s ease;
+            font-weight: 700;
+        }
+
+        .nav-item-link i { 
+            font-size: 1.2rem; 
+            width: 25px;
+            text-align: center;
+        }
+
+        .nav-text {
+            margin-left: 12px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item-link:hover { 
+            background-color: #f8fafc; 
+            color: var(--midnight);
+        }
+
+        .nav-item-link.active {
+            background: var(--midnight);
+            color: white;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+        }
+        
+        .nav-item-link.active i {
+            color: var(--accent);
+        }
+
+        .nav-item-link.text-danger:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .nav-item-link.active::after { display: none; }
     }
 </style>
 
 <div class="side-nav">
     <div class="sidebar-header">
         <div class="position-relative d-inline-block">
-            {% if request.user.profile.profile_picture %}
-                <img src="{{ request.user.profile.profile_picture.url }}" class="profile-img-sidebar shadow-sm">
-            {% elif request.user.profile.image %}
+            {% if request.user.profile.image %}
                 <img src="{{ request.user.profile.image.url }}" class="profile-img-sidebar shadow-sm">
             {% else %}
                 <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0f172a&color=ffc107&bold=true" class="profile-img-sidebar shadow-sm">
             {% endif %}
         </div>
         <h6 class="fw-900 mb-1 text-dark">{{ request.user.username|upper }}</h6>
-        <div class="role-badge">{{ request.user.profile.user_type|default:"MEMBER" }}</div>
+        <div class="badge bg-dark text-warning rounded-pill px-3 py-1" style="font-size: 0.6rem;">
+            {{ request.user.profile.user_type|default:"MEMBER" }}
+        </div>
     </div>
 
-    <a href="{% url 'dashboard' %}" class="nav-item-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="Overview">
+    <a href="{% url 'dashboard' %}" class="nav-item-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
         <i class="bi bi-grid-fill"></i>
-        <span class="nav-text">Overview</span>
+        <span class="nav-text">Hub</span>
     </a>
 
     {% if request.user.profile.user_type == 'ADVERTISER' %}
-        <a href="{% url 'checkout_desk' %}" class="nav-item-link {% if request.resolver_match.url_name == 'checkout_desk' %}active{% endif %}" title="Orders">
+        <a href="{% url 'checkout_desk' %}" class="nav-item-link {% if request.resolver_match.url_name == 'checkout_desk' %}active{% endif %}">
             <i class="bi bi-box-seam"></i>
-            <span class="nav-text">Checkout Desk</span>
+            <span class="nav-text">Desk</span>
         </a>
-        <a href="{% url 'ad_analytics' %}" class="nav-item-link {% if request.resolver_match.url_name == 'ad_analytics' %}active{% endif %}" title="Analytics">
+        <a href="{% url 'ad_analytics' %}" class="nav-item-link {% if request.resolver_match.url_name == 'ad_analytics' %}active{% endif %}">
             <i class="bi bi-bar-chart-fill"></i>
-            <span class="nav-text">Analytics</span>
-        </a>
-        <a href="{% url 'promote_request' %}" class="nav-item-link {% if request.resolver_match.url_name == 'promote_request' %}active{% endif %}" title="Promote">
-            <i class="bi bi-megaphone-fill"></i>
-            <span class="nav-text">Promote</span>
+            <span class="nav-text">Stats</span>
         </a>
     {% else %}
-        <a href="{% url 'referrals_page' %}" class="nav-item-link {% if request.resolver_match.url_name == 'referrals_page' %}active{% endif %}" title="Referrals">
+        <a href="{% url 'referrals_page' %}" class="nav-item-link {% if request.resolver_match.url_name == 'referrals_page' %}active{% endif %}">
             <i class="bi bi-people-fill"></i>
-            <span class="nav-text">Referrals</span>
+            <span class="nav-text">Network</span>
         </a>
-        <a href="{% url 'marketplace' %}" class="nav-item-link {% if request.resolver_match.url_name == 'marketplace' %}active{% endif %}" title="Browse">
+        <a href="{% url 'marketplace' %}" class="nav-item-link {% if request.resolver_match.url_name == 'marketplace' %}active{% endif %}">
             <i class="bi bi-shop"></i>
-            <span class="nav-text">Marketplace</span>
+            <span class="nav-text">Shop</span>
         </a>
     {% endif %}
 
-    <a href="{% url 'edit_profile' %}" class="nav-item-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" title="Settings">
+    <a href="{% url 'edit_profile' %}" class="nav-item-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
         <i class="bi bi-gear-fill"></i>
         <span class="nav-text">Settings</span>
     </a>
 
-    <hr class="my-2 border-secondary opacity-25">
+    <hr class="my-2 border-secondary opacity-10">
 
-    <a href="#" class="nav-item-link text-danger" onclick="confirmLogout(event)" title="Sign Out">
+    <a href="{% url 'logout' %}" class="nav-item-link text-danger">
         <i class="bi bi-box-arrow-right"></i>
-        <span class="nav-text">Sign Out</span>
+        <span class="nav-text">Exit</span>
     </a>
 </div>

@@ -44,6 +44,8 @@ from core.views import (
     bulk_add_categories,
     request_refund, 
     cancel_order,
+    delete_product, # NEW: Added Advertiser Delete View
+    logout_user     # NEW: Added Custom Logout View
 )
 
 urlpatterns = [
@@ -61,7 +63,7 @@ urlpatterns = [
     
     # Using LoginView to support email-only login via allauth configuration
     path('login/', LoginView.as_view(template_name='core/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='core/logout.html'), name='logout'),
+    path('logout/', logout_user, name='logout'), # UPDATED: Pointing to custom logout view
     
     path('set-role-session/', set_role_session, name='set_role_session'),
     path('accounts/profile/', lambda request: redirect('dashboard')),
@@ -115,12 +117,14 @@ urlpatterns = [
     path('order/mark-shipped/<int:order_id>/', mark_as_shipped, name='mark_shipped'),
     path('verify-delivery/<int:order_id>/', verify_delivery, name='verify_delivery'),
     path('order/refund/<int:order_id>/', request_refund, name='request_refund'), 
+    path('order/cancel/<int:order_id>/', cancel_order, name='cancel_order'),
 
     # --- Advertiser Product Listing ---
     path('promote/request/', promote_request, name='promote_request'),
     path('promote/payment/<int:pk>/', promotion_payment, name='promotion_payment'),
     path('promote/verify/', verify_promotion_payment, name='verify_promotion_payment'),
     path('promote/analytics/', ad_analytics, name='ad_analytics'),
+    path('product/<slug:slug>/delete/', delete_product, name='delete_product'), # NEW: Route to delete product
     
     # --- Marketer Affiliate Redirect ---
     path('buy/<slug:slug>/', buy_item, name='buy_item'),
@@ -134,7 +138,6 @@ urlpatterns = [
     path('contact/', contact, name='contact'),
     path('privacy/', privacy, name='privacy'),
     path('terms/', terms, name='terms'),
-    path('order/cancel/<int:order_id>/', cancel_order, name='cancel_order'),
 ]
 
 # --- CRITICAL: MEDIA & STATIC SERVING ---

@@ -252,3 +252,18 @@ def manage_user_profile(sender, instance, created, **kwargs):
         Profile.objects.get_or_create(user=instance)
     if hasattr(instance, 'profile'):
         instance.profile.save()
+
+# --- 8. SYSTEM UTILS ---
+class FAQ(models.Model):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    is_active = models.BooleanField(default=True, help_text="Uncheck to hide this question from the home page.")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "FAQ"
+        verbose_name_plural = "FAQs"
+        ordering = ['created_at']
+
+    def __str__(self):
+        return self.question

@@ -3,179 +3,85 @@
 
 {% block content %}
 <style>
-    :root {
-        --midnight: #0f172a;
-        --accent: #ffc107;
-        --soft-bg: #f8fafc;
-    }
-    
-    body { background-color: var(--soft-bg); }
-
-    .stat-card-inner, .table-card, .btn-action-curved, .badge {
-        border-radius: 20px !important;
-    }
-
-    .dash-flex-wrapper {
+    /* Add this to your existing styles */
+    .dash-main-wrapper {
         display: flex;
+        flex-direction: column;
+        padding: 15px;
         gap: 20px;
-        align-items: flex-start;
-        padding: 20px;
     }
 
-    .stat-card-inner {
-        background: white;
-        padding: 25px;
-        border: 1px solid #e2e8f0;
-        height: 100%;
-        transition: 0.3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-    }
-    
-    .stat-card-inner:hover { transform: translateY(-5px); }
-
-    .table-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        padding: 25px;
-        margin-bottom: 30px;
-    }
-
-    .btn-action-curved {
-        border-radius: 30px !important;
-        font-weight: 700;
-        padding: 12px 25px;
-    }
-
-    .badge-pill-custom {
-        border-radius: 30px !important;
-        padding: 6px 12px;
-        font-weight: 800;
-        font-size: 0.65rem;
-    }
-
-    .user-pill {
-        background: #f1f5f9;
-        padding: 4px 10px;
-        border-radius: 10px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--midnight);
-    }
-
-    @media (max-width: 991px) {
-        .dash-flex-wrapper { padding: 10px; gap: 10px; }
+    @media (min-width: 992px) {
+        .dash-main-wrapper {
+            flex-direction: row; /* Side-by-side on desktop */
+            padding: 40px;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .content-area {
+            flex-grow: 1;
+            max-width: calc(100% - 300px); /* Account for 260px sidebar + gap */
+        }
     }
 </style>
 
 <div class="container-fluid">
-    <div class="dash-flex-wrapper">
+    <div class="dash-main-wrapper">
         
         {% include 'core/includes/_sidebar.html' %}
 
-        <div class="flex-grow-1" style="min-width: 0;">
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-900 mb-0">Marketer Hub</h2>
-                    <p class="text-muted mb-0">Monitoring your referred network and earnings</p>
+        <div class="content-area">
+            <div class="text-center text-lg-start mb-4">
+                <h2 class="fw-900 mb-0">Marketer Hub</h2>
+                <p class="text-muted small">Your network growth and revenue</p>
+            </div>
+
+            <div class="hero-balance-card mb-4" style="background: var(--midnight); color: white; border-radius: 28px; padding: 30px;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="text-white-50 small fw-bold text-uppercase">Available Balance</span>
+                        <h1 class="fw-900 mb-0 mt-1" style="font-size: 2.5rem;">₦{{ available_balance|floatformat:2|intcomma }}</h1>
+                    </div>
                 </div>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'referrals_page' %}" class="btn btn-outline-dark btn-action-curved">
-                        <i class="bi bi-person-plus me-2"></i> INVITE
+                <div class="mt-4">
+                    <a href="{% url 'referrals_page' %}" class="btn btn-light rounded-pill px-4 fw-800 small py-2">
+                        <i class="bi bi-person-plus-fill me-1"></i> INVITE
                     </a>
-                    <a href="{% url 'request_payout' %}" class="btn btn-dark btn-action-curved shadow">
-                        <i class="bi bi-cash-stack me-2"></i> WITHDRAW ₦
-                    </a>
                 </div>
             </div>
 
-            <div class="row g-4 mb-5">
-                <div class="col-md-4">
-                    <div class="stat-card-inner border-start border-5 border-success">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="small fw-bold text-muted text-uppercase">Naira Balance</span>
-                            <i class="bi bi-wallet2 text-success fs-5"></i>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="p-3 bg-white border rounded-4 shadow-sm d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary"><i class="bi bi-people-fill"></i></div>
+                        <div>
+                            <span class="text-muted extra-small d-block fw-bold">NETWORK</span>
+                            <span class="fw-900">{{ request.user.referrals.count|default:"0" }}</span>
                         </div>
-                        <h2 class="fw-900 mb-0 text-dark">₦{{ available_balance|floatformat:2|intcomma }}</h2>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                    <div class="stat-card-inner border-start border-5 border-primary">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="small fw-bold text-muted text-uppercase">Total Network</span>
-                            <i class="bi bi-people-fill text-primary fs-5"></i>
+                <div class="col-6">
+                    <div class="p-3 bg-white border rounded-4 shadow-sm d-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-10 p-2 rounded-3 text-warning"><i class="bi bi-coin"></i></div>
+                        <div>
+                            <span class="text-muted extra-small d-block fw-bold">REWARDS</span>
+                            <span class="fw-900">{{ request.user.profile.token_rewards|floatformat:0 }}</span>
                         </div>
-                        <h2 class="fw-900 mb-0 text-dark">{{ request.user.referrals.count|default:"0" }}</h2>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="stat-card-inner border-start border-5 border-warning">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="small fw-bold text-muted text-uppercase">Token Rewards</span>
-                            <i class="bi bi-coin text-warning fs-5"></i>
-                        </div>
-                        <h2 class="fw-900 mb-0 text-dark">{{ request.user.profile.token_rewards|floatformat:0 }}</h2>
                     </div>
                 </div>
             </div>
 
-            <div class="table-card shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-900 mb-0">LIVE NETWORK FLOW</h5>
-                    <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Tracking Buyer-Seller Deals</span>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="bg-light">
-                            <tr>
-                                <th>Transaction</th>
-                                <th>The Deal</th>
-                                <th>Status</th>
-                                <th class="text-end">Commission</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for order in referred_orders %}
-                            <tr class="order-row">
-                                <td>
-                                    <div class="fw-900 text-dark small">{{ order.item.name|upper }}</div>
-                                    <div class="extra-small text-muted fw-bold">{{ order.created_at|date:"M d, Y" }}</div>
-                                </td>
-                                <td>
-                                    <div class="d-flex flex-column gap-1">
-                                        <span class="user-pill"><i class="bi bi-person me-1"></i> {{ order.buyer.username }} (Buyer)</span>
-                                        <span class="user-pill" style="background: #fff9e6;"><i class="bi bi-shop me-1"></i> {{ order.seller.username }} (Seller)</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if order.status == 'COMPLETED' %}
-                                        <span class="badge badge-pill-custom bg-success bg-opacity-10 text-success">COMPLETED</span>
-                                    {% elif order.status == 'SHIPPED' %}
-                                        <span class="badge badge-pill-custom bg-primary bg-opacity-10 text-primary">SHIPPED</span>
-                                    {% else %}
-                                        <span class="badge badge-pill-custom bg-warning bg-opacity-10 text-warning">IN ESCROW</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end fw-900">
-                                    <span class="{% if order.status == 'COMPLETED' %}text-success{% else %}text-muted{% endif %}">
-                                        ₦{{ order.commission_earned|intcomma }}
-                                    </span>
-                                    <div class="extra-small fw-bold text-uppercase" style="font-size: 0.6rem;">
-                                        {% if order.status == 'COMPLETED' %}Settled{% else %}Pending{% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="4" class="text-center py-5 text-muted fw-bold">No network activity detected yet.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="mb-5">
+                <a href="{% url 'request_payout' %}" class="btn btn-dark w-100 rounded-4 py-3 fw-900 shadow">
+                    <i class="bi bi-cash-stack me-2"></i> REQUEST WITHDRAWAL
+                </a>
             </div>
 
+            <h6 class="fw-900 mb-3 text-uppercase small ls-1">Recent Activity</h6>
+            <div class="bg-white rounded-4 border p-4 text-center shadow-sm">
+                <i class="bi bi-inbox text-muted fs-1 opacity-25"></i>
+                <p class="text-muted small fw-bold mt-2">No activity detected yet.</p>
+            </div>
         </div>
     </div>
 </div>

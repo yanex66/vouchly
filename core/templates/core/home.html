@@ -103,7 +103,7 @@
         backdrop-filter: blur(5px);
     }
 
-    /* STATS BANNER (Idea #2) */
+    /* STATS BANNER */
     .stats-section {
         background: var(--midnight);
         border-radius: 40px;
@@ -185,12 +185,6 @@
         text-decoration: underline;
     }
 
-    .item-card-img {
-        height: 240px;
-        width: 100%;
-        object-fit: cover;
-    }
-
     .card-reward-tag {
         position: absolute;
         top: 15px;
@@ -228,23 +222,31 @@
         border-color: var(--midnight);
     }
 
-    /* 6. SLIDING REVIEWS (INITIALS) */
+    /* 6. HYBRID SLIDING REVIEWS */
     .review-viewport {
-        overflow: hidden;
         width: 100%;
         padding: 20px 0;
     }
 
     .review-track {
         display: flex;
-        transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
-        width: max-content;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+        padding-bottom: 15px;
+    }
+    
+    .review-track::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome/Safari */
     }
 
     .review-slide {
-        width: 350px;
+        width: 300px; /* Slimmer for mobile view */
         flex-shrink: 0;
-        padding: 0 15px;
+        padding: 0 10px;
+        scroll-snap-align: center;
     }
 
     .avatar-initials {
@@ -272,7 +274,7 @@
         min-height: 80px;
     }
 
-    /* FAQ STYLING (Idea #5) */
+    /* FAQ STYLING */
     .faq-card {
         border: none;
         background: white;
@@ -310,13 +312,33 @@
         margin: 15px auto 40px;
     }
 
+    /* --- MOBILE OPTIMIZATION --- */
+    @media (min-width: 768px) {
+        .review-slide { width: 350px; padding: 0 15px; } /* Wider on desktop */
+    }
+
     @media (max-width: 768px) {
-        .hero-gradient { min-height: 500px; padding: 40px 0; }
-        .display-4 { font-size: 2.5rem !important; }
+        .hero-gradient { min-height: auto; padding: 40px 0; }
+        .display-4 { font-size: 2.2rem !important; text-align: center; } /* Slogan alignment */
+        .lead { text-align: center; } 
+        .hero-reward-badge { display: flex; justify-content: center; margin: 0 auto 20px; width: fit-content; }
+        
         .top-search-section { padding: 15px 0; }
-        .search-pill { max-width: 92%; }
-        .stats-section { margin-top: -30px; padding: 30px 10px; }
-        .stat-number { font-size: 1.8rem; }
+        .search-pill { max-width: 95%; }
+        
+        /* Simpler Stats for Mobile */
+        .stats-section { margin-top: -30px; padding: 25px 10px; border-radius: 25px; }
+        .stat-number { font-size: 1.5rem; }
+        .stat-label { font-size: 0.65rem; }
+        
+        .step-card { padding: 25px 15px; }
+        
+        /* Centering the Bottom CTA Banner specifically for Mobile */
+        .bottom-cta-banner { padding: 40px 20px !important; text-align: center; border-radius: 25px !important; }
+        .bottom-cta-banner h2 { font-size: 1.8rem; }
+        .bottom-cta-banner p { font-size: 1rem; }
+        
+        .hero-action-buttons { justify-content: center !important; }
     }
 </style>
 
@@ -357,9 +379,9 @@
                             </div>
                             <h1 class="display-4 mb-3">{{ item.name }}</h1>
                             <p class="lead mb-5 opacity-75 fw-500" style="font-size: 1.1rem; line-height: 1.6;">{{ item.description|truncatewords:20 }}</p>
-                            <div class="d-flex justify-content-center justify-content-lg-start gap-3">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-5 fw-800 text-dark rounded-pill shadow-lg hover-scale">PROMOTE</a>
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-600 hover-scale">DETAILS</a>
+                            <div class="d-flex hero-action-buttons justify-content-lg-start gap-3">
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-warning btn-lg px-4 px-md-5 fw-800 text-dark rounded-pill shadow-lg hover-scale">PROMOTE</a>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-outline-light btn-lg px-4 px-md-5 rounded-pill fw-600 hover-scale">DETAILS</a>
                             </div>
                         </div>
                         <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
@@ -394,7 +416,7 @@
     </div>
 </div>
 
-<div class="container py-5 mt-5">
+<div class="container py-5 mt-4">
     <div class="text-center mb-5">
         <h2 class="section-head">The Kingdom Path</h2>
         <div class="section-divider"></div>
@@ -431,26 +453,36 @@
             <h2 class="section-head">Trending Vouchers</h2>
             <div class="section-divider"></div>
         </div>
-        <div class="row g-4">
+        
+        <div class="row g-2 g-md-4">
             {% for item in top_rated %}
-            <div class="col-sm-6 col-lg-3">
-                <div class="premium-item-card shadow-sm h-100 d-flex flex-column p-4 text-center border">
-                    <div class="card-reward-tag">
-                        {% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %} REWARD
+            
+            <div class="col-6 col-lg-3">
+                <div class="premium-item-card shadow-sm h-100 d-flex flex-column p-2 p-md-4 text-center border">
+                    
+                    <div class="card-reward-tag" style="font-size: 0.65rem; padding: 4px 8px;">
+                        {% if item.commission_naira > 0 %}₦{{ item.commission_naira|intcomma }}{% else %}VAR{% endif %}
                     </div>
+                    
                     {% if item.image %}
-                        <img src="{{ item.image.url }}" class="img-fluid rounded-3 mb-3 shadow-sm" style="height: 150px; object-fit: cover;">
+                        <img src="{{ item.image.url }}" class="img-fluid rounded-3 mb-2 shadow-sm" style="height: 120px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded-3 mb-2 d-flex align-items-center justify-content-center shadow-sm" style="height: 120px;">
+                            <i class="bi bi-image text-muted fs-3"></i>
+                        </div>
                     {% endif %}
-                    <div class="mb-auto">
-                        <a href="{% url 'item_detail' item.slug %}" class="product-link-title text-uppercase">
-                            {{ item.name|truncatechars:35 }} <i class="bi bi-box-arrow-up-right small ms-1 opacity-50"></i>
+                    
+                    <div class="mb-auto mt-2">
+                        <a href="{% url 'item_detail' item.slug %}" class="product-link-title text-uppercase" style="font-size: 0.85rem;">
+                            {{ item.name|truncatechars:20 }} <i class="bi bi-box-arrow-up-right small ms-1 opacity-50"></i>
                         </a>
                     </div>
-                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-3">PROMOTE & EARN</a>
+                    <a href="{% url 'item_detail' item.slug %}" class="btn-promote-premium mt-2 py-2" style="font-size: 0.75rem;">PROMOTE</a>
                 </div>
             </div>
             {% endfor %}
         </div>
+
     </div>
 </div>
 
@@ -482,7 +514,9 @@
                     <h5 class="fw-800 mb-2 text-midnight text-uppercase">{{ review.author.username }}</h5>
                     <div class="comment-text">"{{ review.content|truncatewords:20 }}"</div>
                     <div class="mt-auto">
-                        <span class="badge bg-light text-muted border rounded-pill px-4 py-2">Verified Vouch</span>
+                        <span class="badge bg-light text-muted border rounded-pill px-4 py-2">
+                            <i class="bi bi-shield-check text-success me-1"></i> Verified Vouch
+                        </span>
                     </div>
                 </div>
             </div>
@@ -499,6 +533,22 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="accordion" id="vouchlyFaq">
+                
+                {% for faq in faqs %}
+                <div class="accordion-item faq-card">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}">
+                            {{ faq.question }}
+                        </button>
+                    </h2>
+                    <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#vouchlyFaq">
+                        <div class="accordion-body text-muted fw-500">
+                            {{ faq.answer }}
+                        </div>
+                    </div>
+                </div>
+                
+                {% empty %}
                 <div class="accordion-item faq-card">
                     <h2 class="accordion-header">
                         <button class="accordion-button faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
@@ -535,13 +585,16 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
+                
             </div>
         </div>
     </div>
 </div>
 
+{% if not user.is_authenticated %}
 <div class="container py-5 mb-5">
-    <div class="bg-warning rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
+    <div class="bottom-cta-banner bg-warning rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
         <div class="position-relative z-2">
             <h2 class="display-5 fw-900 text-dark mb-3">Ready to Claim Your Throne?</h2>
@@ -550,28 +603,37 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <script>
+    // HYBRID AUTO-SCROLL LOGIC
     document.addEventListener("DOMContentLoaded", function() {
         const track = document.getElementById('review-track');
-        const slides = document.querySelectorAll('.review-slide');
-        if (slides.length === 0) return;
-        let index = 0;
-        const cardWidth = 350; 
+        if (!track) return;
+        
+        let isPaused = false;
+        
+        // Pause scrolling if the user interacts (touch, hover, scroll)
+        track.addEventListener('touchstart', () => isPaused = true, {passive: true});
+        track.addEventListener('touchend', () => { setTimeout(() => isPaused = false, 3000); }, {passive: true});
+        track.addEventListener('mouseenter', () => isPaused = true);
+        track.addEventListener('mouseleave', () => isPaused = false);
 
-        function slide() {
-            index++;
-            track.style.transition = "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
-            track.style.transform = `translateX(-${index * cardWidth}px)`;
-            if (index >= slides.length / 2) {
-                setTimeout(() => {
-                    track.style.transition = "none";
-                    index = 0;
-                    track.style.transform = `translateX(0)`;
-                }, 850);
+        function autoScroll() {
+            if (isPaused) return;
+            
+            // If scrolled to the end, smoothly scroll back to the beginning
+            if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
+                track.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                // Scroll right by approximately one card width
+                let cardWidth = track.querySelector('.review-slide').offsetWidth;
+                track.scrollBy({ left: cardWidth, behavior: 'smooth' });
             }
         }
-        setInterval(slide, 10000);
+        
+        // Trigger scroll every 4 seconds
+        setInterval(autoScroll, 4000);
     });
 </script>
 {% endblock %}

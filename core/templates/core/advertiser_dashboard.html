@@ -6,235 +6,192 @@
     :root {
         --midnight: #0f172a;
         --accent: #ffc107;
-        --soft-bg: #f8fafc;
+        --soft-bg: #f1f5f9;
         --v-green: #16a34a;
     }
-    
-    body { background-color: var(--soft-bg); }
 
-    /* --- GLOBAL CURVED DESIGN --- */
-    .stat-card, .table-card, .btn-sharp, .badge, .stat-card-inner, .listing-box {
-        border-radius: 20px !important; /* Unified curves */
-    }
-
-    /* --- SIDEBAR LAYOUT --- */
+    /* --- DASHBOARD FLEX WRAPPER --- */
     .dash-flex-wrapper {
         display: flex;
+        flex-direction: column;
         gap: 20px;
-        align-items: flex-start;
-        padding: 20px;
+        padding: 15px;
     }
 
-    /* --- WALLET SECTION --- */
+    /* --- DESKTOP VIEW RESET --- */
+    @media (min-width: 992px) {
+        .dash-flex-wrapper {
+            flex-direction: row;
+            padding: 40px;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .dashboard-main-content { 
+            flex-grow: 1; 
+            min-width: 0; 
+        }
+    }
+
+    /* --- UI CARDS --- */
     .vocoin-card {
         background: var(--midnight);
-        padding: 30px;
-        color: white;
-        border-left: 10px solid var(--accent);
-        margin-bottom: 25px;
-        border-radius: 25px !important; /* Curved edges */
-    }
-
-    /* --- ORDER TRACKING --- */
-    .table-card {
-        background: white;
-        border: 1px solid #e2e8f0;
         padding: 25px;
-        margin-top: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        color: white;
+        border-radius: 28px !important;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.2);
+        position: relative;
+        overflow: hidden;
     }
 
-    .order-row {
-        border-bottom: 1px solid #f1f5f9;
-        padding: 15px 0;
-        transition: 0.2s;
+    .stat-tile-box {
+        background: white;
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid #e2e8f0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
-    .order-row:hover { background-color: #fcfcfc; }
+    .order-mobile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
 
-    .status-badge {
-        font-size: 0.65rem;
+    .status-pill {
+        font-size: 0.6rem;
         font-weight: 900;
-        padding: 8px 12px;
+        padding: 5px 10px;
+        border-radius: 30px;
         text-transform: uppercase;
-        border-radius: 30px !important; /* Pill shape */
     }
 
     .bg-escrow { background: #e0f2fe; color: #0369a1; }
     .bg-paid { background: #dcfce7; color: #166534; }
-
-    /* --- STAT CARD STYLING --- */
-    .stat-card-inner {
-        background: white;
-        padding: 20px;
-        border: 1px solid #e2e8f0;
-        height: 100%;
-    }
-
-    .btn-action-curved {
-        border-radius: 30px !important;
-        font-weight: 700;
-        padding: 10px 20px;
-    }
-
-    @media (max-width: 991px) {
-        .dash-flex-wrapper { padding: 10px; gap: 10px; }
-    }
 </style>
 
 <div class="container-fluid">
     <div class="dash-flex-wrapper">
         
         {% include 'core/includes/_sidebar.html' %}
-        <div class="flex-grow-1">
+
+        <div class="dashboard-main-content">
             
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="vocoin-card shadow-sm h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <span class="badge bg-warning text-dark fw-900 px-3 py-2">ESCROW WALLET</span>
-                            <span class="small fw-bold opacity-75">REAL-TIME BALANCE</span>
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <div class="vocoin-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-warning text-dark fw-900 px-3 py-1 rounded-pill small">ESCROW WALLET</span>
+                            <span class="small fw-bold opacity-50">REAL-TIME</span>
                         </div>
-                        <h6 class="fw-bold opacity-50 small mb-1">{{ balance_label }}</h6>
-                        
-                        <h1 class="fw-900 mb-4" style="font-size: 3rem;">
+                        <h1 class="fw-900 mb-4" style="font-size: 2.2rem;">
                             ₦{{ available_balance|floatformat:2|intcomma }}
                         </h1>
-                        
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{% url 'request_payout' %}" class="btn btn-warning w-100 btn-action-curved py-3 fw-bold">WITHDRAW</a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{% url 'checkout_desk' %}" class="btn btn-outline-light w-100 btn-action-curved py-3 border-2 fw-bold">ORDERS</a>
-                            </div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'request_payout' %}" class="btn btn-warning flex-grow-1 rounded-pill py-3 fw-900 small">WITHDRAW</a>
+                            <a href="{% url 'checkout_desk' %}" class="btn btn-outline-light flex-grow-1 rounded-pill py-3 border-2 fw-900 small">ORDERS</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-5">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="stat-card-inner shadow-sm">
-                                <i class="bi bi-box-seam text-muted fs-4"></i>
-                                <div class="mt-2 small fw-bold text-muted">ACTIVE ADS</div>
-                                <h3 class="fw-900 mb-0">{{ my_products.count }}</h3>
-                            </div>
+                <div class="col-6">
+                    <div class="stat-tile-box">
+                        <div class="bg-light p-2 rounded-3"><i class="bi bi-box-seam text-midnight"></i></div>
+                        <div>
+                            <span class="text-muted extra-small d-block fw-bold">ACTIVE ADS</span>
+                            <span class="fw-900">{{ my_products.count }}</span>
                         </div>
-                        <div class="col-6">
-                            <div class="stat-card-inner shadow-sm">
-                                <i class="bi bi-people text-muted fs-4"></i>
-                                <div class="mt-2 small fw-bold text-muted">MARKETERS</div>
-                                <h3 class="fw-900 mb-0">12</h3> 
-                            </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="stat-tile-box">
+                        <div class="bg-light p-2 rounded-3"><i class="bi bi-people text-midnight"></i></div>
+                        <div>
+                            <span class="text-muted extra-small d-block fw-bold">MARKETERS</span>
+                            <span class="fw-900">12</span>
                         </div>
-                        <div class="col-12">
-                            <div class="stat-card-inner shadow-sm border-start border-5 border-primary">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="text-start">
-                                        <div class="small fw-bold text-muted">TOTAL SALES REVENUE</div>
-                                        <h4 class="fw-900 mb-0 text-primary">₦{{ total_revenue|floatformat:2|intcomma }}</h4>
-                                    </div>
-                                    <i class="bi bi-currency-exchange fs-1 opacity-25"></i>
-                                </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="stat-tile-box border-start border-5 border-primary">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div>
+                                <span class="text-muted extra-small d-block fw-bold">TOTAL REVENUE</span>
+                                <span class="fw-900 text-primary fs-4">₦{{ total_revenue|floatformat:0|intcomma }}</span>
                             </div>
+                            <i class="bi bi-currency-exchange fs-2 text-primary opacity-25"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="table-card shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-900 mb-0" style="letter-spacing: -1px;">ESCROW SALES</h5>
-                    <a href="{% url 'checkout_desk' %}" class="btn btn-dark btn-sm btn-action-curved px-4">VIEW ALL</a>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="border-0 small fw-900">ORDER #</th>
-                                <th class="border-0 small fw-900">PRODUCT</th>
-                                <th class="border-0 small fw-900">STATUS</th>
-                                <th class="border-0 small fw-900 text-end">ACTIONS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for order in my_sales %}
-                            <tr class="order-row">
-                                <td class="fw-bold">#{{ order.id }}</td>
-                                <td>
-                                    <div class="fw-900 small">{{ order.item.name|upper|truncatechars:20 }}</div>
-                                    <div class="extra-small text-muted fw-bold">Buyer: {{ order.buyer.username }}</div>
-                                </td>
-                                <td>
-                                    {% if order.status == 'PAID' %}
-                                        <span class="badge bg-paid status-badge">READY TO SHIP</span>
-                                    {% elif order.status == 'SHIPPED' %}
-                                        <span class="badge bg-escrow status-badge">IN TRANSIT</span>
-                                    {% elif order.status == 'COMPLETED' %}
-                                        <span class="badge bg-success text-white status-badge">SETTLED</span>
-                                    {% else %}
-                                        <span class="badge bg-light text-dark status-badge">{{ order.status }}</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end">
-                                    {% if order.status == 'PAID' %}
-                                        <form action="{% url 'mark_as_shipped' order.id %}" method="POST" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-dark btn-sm btn-action-curved px-3">MARK SHIPPED</button>
-                                        </form>
-                                    {% elif order.status == 'SHIPPED' %}
-                                        <a href="{% url 'checkout_desk' %}" class="btn btn-outline-primary btn-sm btn-action-curved fw-bold">ENTER PIN</a>
-                                    {% else %}
-                                        <i class="bi bi-check2-all text-success fs-5"></i>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center py-5 text-muted fw-bold">No escrow sales recorded yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-900 mb-0 text-uppercase ls-1" style="font-size: 0.8rem;">Escrow Sales</h6>
+                <a href="{% url 'checkout_desk' %}" class="text-primary small fw-bold text-decoration-none">VIEW ALL</a>
             </div>
 
-            <div class="table-card shadow-sm mt-4 mb-5">
-                <h5 class="fw-900 mb-4" style="letter-spacing: -1px;">MY LIVE LISTINGS</h5>
-                <div class="row g-3">
-                    {% for item in my_products %}
-                    <div class="col-md-6 col-xl-4">
-                        <div class="border p-3 d-flex align-items-center listing-box">
-                            <div class="flex-shrink-0" style="width: 60px; height: 60px;">
-                                {% if item.image %}
-                                    <img src="{{ item.image.url }}" class="w-100 h-100 object-fit-cover rounded-3">
-                                {% endif %}
-                            </div>
-                            <div class="ms-3 flex-grow-1 overflow-hidden">
-                                <div class="fw-900 small text-truncate">{{ item.name|upper }}</div>
-                                <div class="extra-small fw-bold text-muted">COMMISSION: ₦{{ item.commission_naira|floatformat:0|intcomma }}</div>
-                            </div>
-                            <div class="ms-2">
-                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-light btn-sm border rounded-circle"><i class="bi bi-eye"></i></a>
-                            </div>
+            <div class="activity-feed mb-4">
+                {% for order in my_sales %}
+                <div class="order-mobile-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="fw-900 small text-midnight d-block">{{ order.item.name|upper|truncatechars:25 }}</span>
+                            <span class="text-muted extra-small fw-bold">Order #{{ order.id }} | {{ order.buyer.username }}</span>
+                        </div>
+                        <div class="text-end">
+                            {% if order.status == 'PAID' %}
+                                <span class="status-pill bg-paid">READY</span>
+                            {% elif order.status == 'SHIPPED' %}
+                                <span class="status-pill bg-escrow">TRANSIT</span>
+                            {% else %}
+                                <span class="status-pill bg-light text-dark">{{ order.status }}</span>
+                            {% endif %}
                         </div>
                     </div>
-                    {% endfor %}
+                    <div class="mt-2">
+                        {% if order.status == 'PAID' %}
+                        <form action="{% url 'mark_as_shipped' order.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-dark w-100 rounded-pill btn-sm fw-900">MARK SHIPPED</button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
+                {% empty %}
+                <div class="bg-white border rounded-4 p-5 text-center">
+                    <i class="bi bi-inbox text-muted fs-1 opacity-25"></i>
+                    <p class="text-muted small fw-bold mt-2">No escrow sales recorded yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h6 class="fw-900 mb-3 text-uppercase ls-1" style="font-size: 0.8rem;">My Live Listings</h6>
+            <div class="row g-2 mb-5">
+                {% for item in my_products %}
+                <div class="col-12 col-md-6">
+                    <div class="bg-white p-3 rounded-4 border d-flex align-items-center shadow-sm">
+                        <div class="flex-shrink-0 bg-light rounded-3 overflow-hidden" style="width: 50px; height: 50px;">
+                            {% if item.image %}<img src="{{ item.image.url }}" class="w-100 h-100 object-fit-cover">{% endif %}
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-900 small text-truncate">{{ item.name|upper }}</div>
+                            <div class="extra-small text-muted fw-bold">COMMISSION: ₦{{ item.commission_naira|floatformat:0|intcomma }}</div>
+                        </div>
+                        <a href="{% url 'item_detail' item.slug %}" class="btn btn-light btn-sm rounded-circle border ms-2"><i class="bi bi-eye"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
 
         </div>
     </div>
 </div>
-
-<script>
-    function confirmLogout(e) {
-        e.preventDefault();
-        if(confirm("Confirm Sign Out?")) {
-            window.location.href = "{% url 'logout' %}";
-        }
-    }
-</script>
 {% endblock %}

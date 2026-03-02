@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/introjs.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -188,10 +190,25 @@
 
         main { flex: 1; }
 
+        /* --- CRITICAL MOBILE FIXES --- */
         @media (max-width: 991px) {
             .offcanvas { background-color: var(--midnight); width: 280px !important; }
             .nav-link { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            
+            /* Ensures bottom nav bar isn't covered and doesn't cover content */
+            body { padding-bottom: 85px !important; }
+            .site-footer { padding-bottom: 90px !important; }
         }
+        
+        /* IntroJS Custom Styling */
+        .introjs-tooltip {
+            border-radius: 15px;
+            font-family: 'Outfit', sans-serif;
+            border: 2px solid var(--midnight);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .introjs-button { border-radius: 50px; font-weight: bold; }
+        .introjs-nextbutton { background: var(--midnight) !important; color: white !important; text-shadow: none !important; }
     </style>
 </head>
 <body>
@@ -206,12 +223,12 @@
                 <img src="{% static 'core/images/vlogo.png' %}" alt="Vouchly Logo" height="45">
             </a>
 
-            <div class="d-none d-lg-flex flex-grow-1 justify-content-center">
+            <div class="d-none d-lg-flex flex-grow-1 justify-content-center" id="tour-main-nav">
                 <ul class="navbar-nav flex-row align-items-center">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'marketplace' %}">Marketplace</a></li>
                     
-                    <li class="nav-item mx-2">
+                    <li class="nav-item mx-2" id="tour-checkout-desk">
                         <a href="{% url 'checkout_desk' %}" class="position-relative d-inline-block text-decoration-none" title="Checkout Desk">
                             <div class="desk-symbol-wrapper">
                                 <i class="bi bi-wallet2 fs-5"></i>
@@ -230,7 +247,7 @@
 
             <div class="d-flex align-items-center">
                 {% if user.is_authenticated %}
-                    <div class="dropdown me-3">
+                    <div class="dropdown me-3" id="tour-profile">
                         <a href="#" class="p-0 d-flex align-items-center dropdown-toggle no-caret" data-bs-toggle="dropdown">
                             {% if user.profile.image %}
                                 <img src="{{ user.profile.image.url }}" class="profile-nav-icon" alt="Profile">
@@ -343,22 +360,47 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/intro.min.js"></script>
+    
     <script>
         function confirmLogout(event) {
             event.preventDefault();
             if (confirm("Sign out of Vouchly?")) { 
                 sessionStorage.removeItem('hasBeenGreeted');
+                sessionStorage.removeItem('hasTakenTour');
                 document.getElementById('logout-form').submit(); 
             }
         }
 
-        /* --- DEEP TONE LADY AI VOICE LOGIC --- */
+        /* --- DEEP TONE LADY AI VOICE & TOUR LOGIC --- */
         const isAuth = "{{ user.is_authenticated|yesno:'true,false' }}";
         const userType = "{{ user.profile.user_type|default:'' }}";
+        
+        const currentPath = window.location.pathname;
+        const isTargetPage = currentPath.includes('/dashboard') || currentPath.includes('/checkout-desk');
+
+        function startVouchlyTour() {
+            if (isAuth === 'true' && !sessionStorage.getItem('hasTakenTour') && window.innerWidth > 991) {
+                introJs().setOptions({
+                    steps: [
+                        { intro: `<b>Welcome to Vouchly!</b><br><br>You're signed in as a ${userType}. Let's take a quick 15-second tour to show you around.` },
+                        { element: document.querySelector('#tour-main-nav'), intro: 'Use the top navigation to browse the marketplace or search for products you want to buy or promote.', position: 'bottom' },
+                        { element: document.querySelector('#tour-checkout-desk'), intro: '<b>The Checkout Desk</b><br>This is the most important button. Click here to check your Escrow orders, track deliveries, and release funds.', position: 'bottom' },
+                        { element: document.querySelector('#tour-profile'), intro: 'Access your Wallet, edit your profile, or sign out from this menu.<br><br><b>You are all set!</b>', position: 'left' }
+                    ],
+                    showProgress: true,
+                    showBullets: false,
+                    tooltipClass: 'customTooltip'
+                }).start();
+                
+                sessionStorage.setItem('hasTakenTour', 'true');
+            }
+        }
 
         function speakVouchlyWelcome() {
-            if ('speechSynthesis' in window && isAuth === 'true' && !sessionStorage.getItem('hasBeenGreeted')) {
+            if ('speechSynthesis' in window && isAuth === 'true' && isTargetPage && !sessionStorage.getItem('hasBeenGreeted')) {
                 
+                sessionStorage.setItem('hasBeenGreeted', 'true');
                 window.speechSynthesis.cancel(); 
 
                 const msg = new SpeechSynthesisUtterance();
@@ -376,10 +418,9 @@
 
                 msg.text = "Vouchers, welcome to Vouchly! We are glad you are here. You are signed in as a " + userType.toLowerCase() + ". " + roleExplanation + " " + closingPhrase;
                 
-                // --- DEEPER & MATURE TONE SETTINGS ---
                 msg.volume = 1;
-                msg.rate = 0.9;  // Slightly slower for maturity
-                msg.pitch = 0.7; // DEEPER (Standard is 1.0)
+                msg.rate = 0.9;  
+                msg.pitch = 0.7; 
 
                 const voices = window.speechSynthesis.getVoices();
                 if (voices.length > 0) {
@@ -395,17 +436,25 @@
 
                 const voiceUI = document.getElementById('voiceUI');
                 msg.onstart = () => { if(voiceUI) voiceUI.style.display = 'flex'; };
-                msg.onend = () => { if(voiceUI) voiceUI.style.display = 'none'; };
+                msg.onend = () => { 
+                    if(voiceUI) voiceUI.style.display = 'none'; 
+                    startVouchlyTour(); 
+                };
 
                 window.speechSynthesis.speak(msg);
-                sessionStorage.setItem('hasBeenGreeted', 'true');
+            } else if (isAuth === 'true' && isTargetPage && !sessionStorage.getItem('hasTakenTour')) {
+                startVouchlyTour(); 
             }
         }
 
-        window.speechSynthesis.onvoiceschanged = () => {};
-
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(speakVouchlyWelcome, 500); 
+        });
+        
         document.addEventListener('click', function() {
-            speakVouchlyWelcome();
+            if(isAuth === 'true' && !sessionStorage.getItem('hasBeenGreeted')) {
+                speakVouchlyWelcome();
+            }
         }, { once: true });
     </script>
 </body>

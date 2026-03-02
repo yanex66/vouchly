@@ -8,7 +8,7 @@ from datetime import timedelta
 from .models import (
     Category, Item, Review, Profile, Referral, 
     PayoutRequest, PromotionPlan, ProductReferral, ChatMessage,
-    AdvertiserVerification, SubscriptionPrice, Order  # Added Order here
+    AdvertiserVerification, SubscriptionPrice, Order, FAQ  # Added FAQ here
 )
 
 # --- INLINE SETTINGS ---
@@ -190,3 +190,9 @@ class PayoutRequestAdmin(admin.ModelAdmin):
 admin.site.register(Referral)
 admin.site.register(Review)
 admin.site.register(ChatMessage)
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ('question', 'is_active', 'created_at')
+    list_editable = ('is_active',)
+    search_fields = ('question', 'answer')

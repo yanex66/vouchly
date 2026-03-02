@@ -110,13 +110,26 @@ class ProfileUpdateForm(forms.ModelForm):
 
 # --- 3. REVIEW FORM ---
 class ReviewForm(forms.ModelForm):
+    # Added star options so the dropdown actually populates
+    RATING_CHOICES = [
+        (5, '⭐⭐⭐⭐⭐ (5/5) - Excellent'),
+        (4, '⭐⭐⭐⭐ (4/5) - Very Good'),
+        (3, '⭐⭐⭐ (3/5) - Average'),
+        (2, '⭐⭐ (2/5) - Poor'),
+        (1, '⭐ (1/5) - Terrible'),
+    ]
+    
+    rating = forms.ChoiceField(
+        choices=RATING_CHOICES, 
+        widget=forms.Select(attrs={'class': 'form-select fw-bold border-2 rounded-4', 'style': 'padding: 12px; background-color: #f8fafc;'})
+    )
+
     class Meta:
         model = Review
         fields = ['rating', 'title', 'content']
         widgets = {
-            'rating': forms.Select(attrs={'class': 'form-select fw-bold border-2 rounded-4'}),
-            'title': forms.TextInput(attrs={'class': 'form-control fw-bold border-2 rounded-4'}),
-            'content': forms.Textarea(attrs={'class': 'form-control fw-bold border-2 rounded-4', 'rows': 4}),
+            'title': forms.TextInput(attrs={'class': 'form-control fw-bold border-2 rounded-4', 'placeholder': 'Summarize your vouch...', 'style': 'padding: 12px; background-color: #f8fafc;'}),
+            'content': forms.Textarea(attrs={'class': 'form-control fw-bold border-2 rounded-4', 'rows': 4, 'placeholder': 'Tell the community about your experience...', 'style': 'padding: 12px; background-color: #f8fafc;'}),
         }
 
 # --- 4. REGISTRATION FORM (FIXED) ---
