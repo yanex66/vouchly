@@ -159,7 +159,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True 
 ACCOUNT_EMAIL_VERIFICATION = 'none' 
 SOCIALACCOUNT_ADAPTER = 'core.adapters.MySocialAccountAdapter'
